@@ -26,14 +26,11 @@ INCLUDE =	$(addprefix -I ./includes, \
 ####################################################################################################
 
 MAIN_HEADERS	= $(addprefix ./includes/, \
-					ft_algorithm.hpp \
-					ft_iterator_types.hpp \
-					map.hpp \
-					vector.hpp \
-					)
-
-UTILS_HEADERS	= $(addprefix ./includes/0-Utilities/, \
-					teste.hpp \
+					ParserConfig.hpp \
+					Server.hpp \
+					ServerConfig.hpp \
+					ServerConfig.hpp \
+					WebServer.hpp \
 					)
 
 
@@ -43,11 +40,15 @@ UTILS_HEADERS	= $(addprefix ./includes/0-Utilities/, \
 
 SRC		= $(addprefix ./src/, \
           	main.cpp \
-          	ParserConfig.cpp \
+          	$(PARSER_SRC) $(MODELS_SRC) \
 		  	)
 
 PARSER_SRC	= $(addprefix 0-config/, \
-				Parser.cpp \
+				ParserConfig.cpp \
+				)
+
+MODELS_SRC	= $(addprefix 1-models/, \
+				Server.cpp \
 				)
 
 ####################################################################################################

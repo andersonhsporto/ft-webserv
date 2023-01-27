@@ -1,4 +1,4 @@
-#include "ParserConfig.hpp"
+#include "../../includes/ParserConfig.hpp"
 
 // -Constructors
 ParserConfig::ParserConfig(void) {
@@ -27,43 +27,43 @@ ParserConfig &ParserConfig::operator=(ParserConfig const &rhs) {
 }
 
 // -Getters
-const std::string &ParserConfig::get_file(void) const {
+const std::string &ParserConfig::getFile(void) const {
 	return (this->_file);
 }
 
 // -Setters
-void ParserConfig::set_file(std::string file) {
-	this->_file = file;
+void ParserConfig::setFile(std::string _file) {
+  this->_file = _file;
 }
 
 // -Methods
 
 // Correct method void ParserConfig::parseFile(const std::string &FilePath, WebServer &WebServer)
 void ParserConfig::parseFile(const std::string &FilePath) {
-	this->openFile(FilePath);
-	this->splitServers();
+	this->_openFile(FilePath);
+	this->_splitServers();
 	return ;
 }
 
 
 // -Private Methods
 
-inline void ParserConfig::splitServers() {
+inline void ParserConfig::_splitServers() {
 	std::stack<int> brackets;
 	std::string currentServer;
 	bool insideServer = false;
 
-	for (size_t i = 0; i < this->get_file().size(); i++) {
-		if (this->get_file()[i] == '{') {
+	for (size_t i = 0; i < this->getFile().size(); i++) {
+		if (this->getFile()[i] == '{') {
 			if (!insideServer) {
-				currentServer += this->get_file()[i];
+				currentServer += this->getFile()[i];
 				insideServer = true;
 			}
 			brackets.push(i);
 		}
-		else if (this->get_file()[i] == '}') {
+		else if (this->getFile()[i] == '}') {
 			if (brackets.size() == 1) {
-				currentServer += this->get_file()[i];
+				currentServer += this->getFile()[i];
 				this->_configServers.push_back(currentServer);
 				currentServer.clear();
 				insideServer = false;
@@ -71,11 +71,8 @@ inline void ParserConfig::splitServers() {
 			brackets.pop();
 		}
 		else if (insideServer) {
-			currentServer += this->get_file()[i];
+			currentServer += this->getFile()[i];
 		}
-	}
-	if (!brackets.empty()) {
-		throw std::runtime_error("Unclosed curly brace");
 	}
 	std::cout << "Here\n";
 	for (size_t i = 0; i < this->_configServers.size(); i++) {
@@ -83,7 +80,22 @@ inline void ParserConfig::splitServers() {
 	}
 }
 
-inline void	ParserConfig::openFile(const std::string &FilePath) {
+bool ParserConfig::_isCurlyBracketBalanced(std::string fileContent) {
+  std::stack<char> stack;
+  for (std::string::size_type i = 0; i < fileContent.size(); i++) {
+    if (fileContent[i] == '{') {
+      stack.push('{');
+    } else if (fileContent[i] == '}') {
+      if (stack.empty())
+        return false;
+      stack.pop();
+    }
+  }
+  return stack.empty();
+}
+
+
+inline void	ParserConfig::_openFile(const std::string &FilePath) {
 	std::ifstream file;
 
 	file.open(FilePath.c_str());
@@ -91,11 +103,16 @@ inline void	ParserConfig::openFile(const std::string &FilePath) {
 		throw std::runtime_error("Failed to open config file");
 	}
 	std::string fileContent((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-	this->set_file(fileContent);
+
+    if (!this->_isCurlyBracketBalanced(fileContent)) {
+        throw std::runtime_error("Curly brackets are not balanced");
+    }
+
+	this->setFile(fileContent);
 }
 
 // -Functions
 std::ostream &operator<<(std::ostream &out, ParserConfig const &in) {
-	out << "The file:\n" << in.get_file() << "\n";
+	out << "The file:\n" << in.getFile() << "\n";
 	return (out);
 }
