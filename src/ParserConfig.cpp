@@ -50,7 +50,6 @@ void ParserConfig::parseFile(const std::string &FilePath) {
 
 inline void ParserConfig::splitServers() {
 	std::stack<int> brackets;
-	std::vector<std::string> servers;
 	std::string currentServer;
 	bool insideServer = false;
 
@@ -65,7 +64,7 @@ inline void ParserConfig::splitServers() {
 		else if (this->get_file()[i] == '}') {
 			if (brackets.size() == 1) {
 				currentServer += this->get_file()[i];
-				servers.push_back(currentServer);
+				this->_configServers.push_back(currentServer);
 				currentServer.clear();
 				insideServer = false;
 			}
@@ -79,8 +78,8 @@ inline void ParserConfig::splitServers() {
 		throw std::runtime_error("Unclosed curly brace");
 	}
 	std::cout << "Here\n";
-	for (size_t i = 0; i < servers.size(); i++) {
-		std::cout << "Server " << i + 1 << ": " << servers[i] << std::endl;
+	for (size_t i = 0; i < this->_configServers.size(); i++) {
+		std::cout << "Server " << i + 1 << ": " << this->_configServers[i] << std::endl;
 	}
 }
 
