@@ -1,4 +1,4 @@
-#include "../../includes/ServerLocation.hpp"
+#include "../../includes/1-models/ServerLocation.hpp"
 
 // -Constructors
 ServerLocation::ServerLocation(void) {

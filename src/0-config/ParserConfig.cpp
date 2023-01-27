@@ -1,4 +1,4 @@
-#include "../../includes/ParserConfig.hpp"
+#include "ParserConfig.hpp"
 
 // -Constructors
 ParserConfig::ParserConfig(void) {

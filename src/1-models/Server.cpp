@@ -1,4 +1,4 @@
-#include "../../includes/Server.hpp"
+#include "../../includes/1-models/Server.hpp"
 // -Constructors
 Server::Server(void) {
 	std::cout << "Server default constructor called\n";
@@ -30,5 +30,6 @@ Server &Server::operator=(Server const &rhs) {
 // -Methods
 // -Functions
 std::ostream &operator<<(std::ostream &out, Server const &in) {
-	return (out);
+  (void)in;
+  return (out);
 }

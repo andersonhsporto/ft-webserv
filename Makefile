@@ -18,7 +18,8 @@ CFLAGS	= -Wall -Wextra -std=c++98 -g #-Werror
 INCLUDE =	$(addprefix -I ./includes, \
 			/ \
 			/ParserConfig.hpp \
-			 \
+			/0-config/ \
+			/1-models/ \
 			)
 
 ####################################################################################################
@@ -26,12 +27,17 @@ INCLUDE =	$(addprefix -I ./includes, \
 ####################################################################################################
 
 MAIN_HEADERS	= $(addprefix ./includes/, \
-					ParserConfig.hpp \
-					Server.hpp \
-					ServerConfig.hpp \
-					ServerConfig.hpp \
-					WebServer.hpp \
-					)
+					$(PARSER_HEADERS) $(MODELS_HEADERS) \
+				)
+
+PARSER_HEADERS	= $(addprefix 0-config/, \
+				ParserConfig.hpp \
+				)
+
+MODELS_HEADERS	= $(addprefix 1-models/, \
+				Server.hpp \
+				ServerLocation.hpp \
+				)
 
 
 ####################################################################################################
@@ -49,20 +55,20 @@ PARSER_SRC	= $(addprefix 0-config/, \
 
 MODELS_SRC	= $(addprefix 1-models/, \
 				Server.cpp \
+				ServerLocation.cpp \
 				)
 
 ####################################################################################################
 ########################################## Objects files ###########################################
 ####################################################################################################
 
-%_ft.o: %.cpp
+%_ft.o: %.cpp $(MAIN_HEADERS)
 	echo $(INCLUDE)
 	$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $(<:%.cpp=%_ft.o)
 
 all: $(NAME)
 
 OBJ_FT	= $(SRC:%.cpp=%_ft.o)
-
 
 $(NAME): $(OBJ_FT)
 	$(CC) $(CFLAGS) $(OBJ_FT) -o $(NAME)
