@@ -17,9 +17,8 @@ CFLAGS	= -Wall -Wextra -std=c++98 -g #-Werror
 
 INCLUDE =	$(addprefix -I ./includes, \
 			/ \
-			/0-Utilities \
-			/1-Iterators \
-			/3-map \
+			/ParserConfig.hpp \
+			 \
 			)
 
 ####################################################################################################
@@ -27,14 +26,11 @@ INCLUDE =	$(addprefix -I ./includes, \
 ####################################################################################################
 
 MAIN_HEADERS	= $(addprefix ./includes/, \
-					ft_algorithm.hpp \
-					ft_iterator_types.hpp \
-					map.hpp \
-					vector.hpp \
-					)
-
-UTILS_HEADERS	= $(addprefix ./includes/0-Utilities/, \
-					teste.hpp \
+					ParserConfig.hpp \
+					Server.hpp \
+					ServerConfig.hpp \
+					ServerConfig.hpp \
+					WebServer.hpp \
 					)
 
 
@@ -44,11 +40,15 @@ UTILS_HEADERS	= $(addprefix ./includes/0-Utilities/, \
 
 SRC		= $(addprefix ./src/, \
           	main.cpp \
-          	$(PARSER_SRC) \
+          	$(PARSER_SRC) $(MODELS_SRC) \
 		  	)
 
 PARSER_SRC	= $(addprefix 0-config/, \
-				Parser.cpp \
+				ParserConfig.cpp \
+				)
+
+MODELS_SRC	= $(addprefix 1-models/, \
+				Server.cpp \
 				)
 
 ####################################################################################################
@@ -56,6 +56,7 @@ PARSER_SRC	= $(addprefix 0-config/, \
 ####################################################################################################
 
 %_ft.o: %.cpp
+	echo $(INCLUDE)
 	$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $(<:%.cpp=%_ft.o)
 
 all: $(NAME)
