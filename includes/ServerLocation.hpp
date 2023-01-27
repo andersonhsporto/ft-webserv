@@ -2,28 +2,37 @@
 #define SERVERLOCATION_HPP
 
 #include <iostream>
+#include <vector>
 
 class ServerLocation {
-	public:
-		// -Constructors
-		ServerLocation(void);
-		ServerLocation(ServerLocation const &rhs);
+ public:
+  // -Constructors
+  ServerLocation(void);
+  ServerLocation(ServerLocation const &rhs);
 
-		// -Destructor
-		~ServerLocation(void);
+  // -Destructor
+  ~ServerLocation(void);
 
-		// -Operators
-		ServerLocation &operator=(ServerLocation const &rhs);
+  // -Operators
+  ServerLocation &operator=(ServerLocation const &rhs);
 
-		// -Getters
+  // -Getters
 
-		// -Setters
+  // -Setters
 
-		// -Methods
+  // -Methods
 
-	private:
+ private:
+  // /location
+  std::string path;
 
-	protected:
+  // root /var/www/localhost/htdocs;
+  std::string root;
+
+  // limit_except GET POST;
+  std::vector<std::string> resquestsHttp;
+
+ protected:
 
 };
 
