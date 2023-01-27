@@ -79,10 +79,10 @@ $(NAME): $(OBJ_FT)
 ####################################################################################################
 
 clean:
-	rm -rf $(OBJ_STD) $(OBJ_FT)
+	rm -rf $(OBJ_FT)
 
 fclean: clean
-	rm -rf $(NAME) $(NAME2)
+	rm -rf $(NAME)
 
 re: fclean all
 
