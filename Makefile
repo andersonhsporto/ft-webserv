@@ -17,9 +17,8 @@ CFLAGS	= -Wall -Wextra -std=c++98 -g #-Werror
 
 INCLUDE =	$(addprefix -I ./includes, \
 			/ \
-			/0-Utilities \
-			/1-Iterators \
-			/3-map \
+			/ParserConfig.hpp \
+			 \
 			)
 
 ####################################################################################################
@@ -44,7 +43,7 @@ UTILS_HEADERS	= $(addprefix ./includes/0-Utilities/, \
 
 SRC		= $(addprefix ./src/, \
           	main.cpp \
-          	$(PARSER_SRC) \
+          	ParserConfig.cpp \
 		  	)
 
 PARSER_SRC	= $(addprefix 0-config/, \
@@ -56,6 +55,7 @@ PARSER_SRC	= $(addprefix 0-config/, \
 ####################################################################################################
 
 %_ft.o: %.cpp
+	echo $(INCLUDE)
 	$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $(<:%.cpp=%_ft.o)
 
 all: $(NAME)

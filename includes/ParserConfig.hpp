@@ -2,10 +2,9 @@
 #define PARSERCONFIG_HPP
 
 #include <iostream>
+#include <sstream>
 #include <fstream>
 #include <string>
-#include <vector>
-#include <stack>
 #include "WebServer.hpp"
 
 class ParserConfig {
@@ -27,14 +26,9 @@ class ParserConfig {
 		void	set_file(std::string _file);
 
 		// -Methods
-		// correct one void	parseFile(const std::string &FilePath, WebServer& WebServer);
-		void	parseFile(const std::string &FilePath);
+		void	parseFile(const std::string &FilePath, WebServer& WebServer);
 	private:
-		std::string					_file;
-		std::vector<std::string>	_configServers;
-
-		inline void		openFile(const std::string &FilePath);
-		inline void		splitServers();
+		std::string		_file;
 	protected:
 
 };
