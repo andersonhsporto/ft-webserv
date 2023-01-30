@@ -64,7 +64,7 @@ const int &Server::getPort(void) const {
 	return (this->_port);
 }
 
-const int &Server::getHost(void) const {
+const in_addr_t &Server::getHost(void) const {
 	return (this->_host);
 }
 
@@ -101,11 +101,14 @@ void Server::setPort(int Port) {
 	this->_port = Port;
 }
 
-void Server::setHost(int Host) {
+void Server::setHost(in_addr_t Host) {
 	this->_host = Host;
 }
 
 // -Methods
+void Server::addErrorPages(int code, std::string page) {
+	this->_errorPages[code] = page;
+}
 // -Functions
 std::ostream &operator<<(std::ostream &out, Server const &in) {
   out << in.name << "\n";
