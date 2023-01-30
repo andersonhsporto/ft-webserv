@@ -22,10 +22,9 @@ class WebServer {
 		// -Setters
 
 		// -Methods
-
+		void	addServer();
 	private:
-		std::vector<Server>	_serverList;
-
+		std::vector<Server*>	_serverList;
 	protected:
 
 };

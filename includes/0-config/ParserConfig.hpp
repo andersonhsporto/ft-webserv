@@ -49,6 +49,7 @@ class ParserConfig {
 		static void		_parseRoot(const std::string &value);
 		static void		_parseIndex(const std::string &value);
 		static void		_parseErrorPage(const std::string &value);
+		static void		_parseTimeOut(const std::string &value);
 		static void		_parseLocation(const std::string &value);
 	protected:
 };

@@ -8,6 +8,7 @@ ParserConfig::ParserConfig(void) {
 	this->_parseFuncs["root"] = &_parseRoot;
 	this->_parseFuncs["index"] = &_parseIndex;
 	this->_parseFuncs["error_page"] = &_parseErrorPage;
+	this->_parseFuncs["timeout"] = &_parseTimeOut;
 	this->_parseFuncs["location"] = &_parseLocation;
 	std::cout << "ParserConfig default constructor called\n";
 	return ;
@@ -130,42 +131,54 @@ inline void ParserConfig::_setServers() {
 	for (std::vector<std::string>::iterator it = this->_configServers.begin(); it != this->_configServers.end(); ++it) {
 		std::string line = *it;
 		std::istringstream iss(line);
+
 		for (std::string subLine; std::getline(iss, subLine, '\n'); ) {
 			lines.push_back(subLine);
 		}
-	}
-	for (std::vector<std::string>::iterator it = lines.begin(); it != lines.end(); ++it) {
-		std::string &line = *it;
+		for (std::vector<std::string>::iterator it2 = lines.begin(); it2 != lines.end(); ++it2) {
+			std::string &line = *it2;
 
-		std::string key;
-		std::string value;
-		std::stringstream ss(line);
+			std::string key;
+			std::string value;
+			std::stringstream ss(line);
 
-		ss >> key;
-		std::size_t first = key.find_first_not_of(" ");
-		std::size_t last = key.find_last_not_of(" ") + 1;
-		if (first != std::string::npos && last != std::string::npos && first < last) {
-			key = key.substr(first, last - first);
-		}
+			ss >> key;
+			std::size_t first = key.find_first_not_of(" ");
+			std::size_t last = key.find_last_not_of(" ") + 1;
+			if (first != std::string::npos && last != std::string::npos && first < last) {
+				key = key.substr(first, last - first);
+			}
+			if (key == "{")
+				this->_webServer.addServer();
+			std::getline(ss, value);
+			first = value.find_first_not_of(" ");
+			last = value.find_last_not_of(" ") + 1;
+			if (first != std::string::npos && last != std::string::npos && first < last) {
+				if (key == "location")
+					last--;
+				value = value.substr(first, last - first);
+			}
+			if (key == "location") {
+				while (it2 + 1 != lines.end() && (*(it2 + 1)).find("}") == std::string::npos) {
+					it2++;
+					value += "\n" + (*it2);
+				}
+				it2++;
+			}
 
-		std::getline(ss, value);
-		first = value.find_first_not_of(" ");
-		last = value.find_last_not_of(" ") + 1;
-		if (first != std::string::npos && last != std::string::npos && first < last) {
-			value = value.substr(first, last - first);
-		}
-
-		// std::cout << "Key: " << key << std::endl;
-		// std::cout << "Value: " << value << std::endl;
-		if (key != "{" && key != "}")
-		{
-			try {
-				this->_parseFuncs.at(key);
-				_parseFuncs[key](value);
-			} catch (const std::out_of_range& e) {
-				throw std::runtime_error("Invalid server configuration");
+			std::cout << "Key: " << key << std::endl;
+			std::cout << "Value: " << value << std::endl;
+			if (key != "{" && key != "}")
+			{
+				try {
+					this->_parseFuncs.at(key);
+					_parseFuncs[key](value);
+				} catch (const std::out_of_range& e) {
+					throw std::runtime_error("Invalid server configuration");
+				}
 			}
 		}
+		lines.clear();
 	}
 	return ;
 }
@@ -203,6 +216,14 @@ void ParserConfig::_parseErrorPage(const std::string &value) {
     // int code = std::stoi(value.substr(0, pos));
     // std::string page = value.substr(pos + 1);
     // server.errorPages[code] = page;
+}
+
+void ParserConfig::_parseTimeOut(const std::string &value) {
+	std::cout << "Parser TimeOut called:   " << "The value: "<< value << "\n\n";
+    // ServerLocation location;
+    // location.path = value;
+    // // ...
+    // server.locations.push_back(location);
 }
 
 void ParserConfig::_parseLocation(const std::string &value) {

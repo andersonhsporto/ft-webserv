@@ -29,6 +29,11 @@ WebServer &WebServer::operator=(WebServer const &rhs) {
 // -Getters
 // -Setters
 // -Methods
+void WebServer::addServer() {
+	Server *add = new Server();
+	this->_serverList.push_back(add);
+}
+
 // -Functions
 std::ostream &operator<<(std::ostream &out, WebServer const &in) {
 	(void)in;
