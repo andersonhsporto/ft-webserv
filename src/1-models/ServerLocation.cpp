@@ -6,6 +6,11 @@ ServerLocation::ServerLocation(void) {
 	return ;
 }
 
+ServerLocation::ServerLocation(int name) : name(name) {
+	std::cout << "ServerLocation int constructor called\n";
+	return ;
+}
+
 ServerLocation::ServerLocation(ServerLocation const &rhs) {
 	std::cout << "ServerLocation copy constructor called\n";
 	*this = rhs;
@@ -31,6 +36,6 @@ ServerLocation &ServerLocation::operator=(ServerLocation const &rhs) {
 // -Methods
 // -Functions
 std::ostream &operator<<(std::ostream &out, ServerLocation const &in) {
-	(void)in;
+	out << in.name << "\n";
 	return (out);
 }

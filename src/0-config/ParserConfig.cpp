@@ -254,6 +254,7 @@ void ParserConfig::_parseIndex(const std::string &value, Server &server) {
 	std::vector<std::string> split;
 	std::istringstream iss(value);
 	std::string line;
+
 	while (std::getline(iss, line, ' ')) {
 		split.push_back(line);
 	}
@@ -289,8 +290,10 @@ void ParserConfig::_parseTimeOut(const std::string &value, Server &server) {
 }
 
 void ParserConfig::_parseLocation(const std::string &value, Server &server) {
-	std::cout << "Parser Location called:   " << "The value: "<< value << "\n\n";
-    std::cout << "Server Number: " << server << "\n\n";
+	// std::cout << "Parser Location called:   " << "The value: "<< value << "\n\n";
+    std::cout << "\nServer Number: " << server << "\n";
+	server.addLocations(value);
+	std::cout << "Location Number: " << server.getLocations().back()->name << "\n";
 	// ServerLocation location;
     // location.path = value;
     // // ...

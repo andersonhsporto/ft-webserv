@@ -6,6 +6,7 @@ Server::Server(void) {
 }
 
 Server::Server(int numb) {
+	this->total = 0;
 	this->name = numb;
 	std::cout << "Server numb constructor called\n";
 	return ;
@@ -44,7 +45,7 @@ const std::map<int,std::string> &Server::getErrorpages(void) const {
 	return (this->_errorPages);
 }
 
-const std::vector<ServerLocation> &Server::getLocations(void) const {
+const std::vector<ServerLocation*> &Server::getLocations(void) const {
 	return (this->_locations);
 }
 
@@ -81,7 +82,7 @@ void Server::setErrorpages(std::map<int,std::string> Errorpages) {
 	this->_errorPages = Errorpages;
 }
 
-void Server::setLocations(std::vector<ServerLocation> Locations) {
+void Server::setLocations(std::vector<ServerLocation*> Locations) {
 	this->_locations = Locations;
 }
 
@@ -106,8 +107,14 @@ void Server::setHost(in_addr_t Host) {
 }
 
 // -Methods
-void Server::addErrorPages(int code, std::string page) {
+void Server::addErrorPages(const int &code, const std::string &page) {
 	this->_errorPages[code] = page;
+}
+
+void Server::addLocations(const std::string &values) {
+	this->total++;
+	ServerLocation *add = new ServerLocation(this->total);
+	this->_locations.push_back(add);
 }
 // -Functions
 std::ostream &operator<<(std::ostream &out, Server const &in) {

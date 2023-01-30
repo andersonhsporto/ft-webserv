@@ -24,7 +24,7 @@ class Server {
 		const int							&getMaxbodysize(void) const;
 		const int							&getTimeout(void) const;
 		const std::map<int,std::string>		&getErrorpages(void) const;
-		const std::vector<ServerLocation>	&getLocations(void) const;
+		const std::vector<ServerLocation*>	&getLocations(void) const;
 		const std::vector<std::string>		&getServername(void) const;
 		const std::vector<std::string>		&getIndex(void) const;
 		const std::string					&getRoot(void) const;
@@ -35,7 +35,7 @@ class Server {
 		void	setMaxbodysize(int Maxbodysize);
 		void	setTimeout(int Timeout);
 		void	setErrorpages(std::map<int,std::string> Errorpages);
-		void	setLocations(std::vector<ServerLocation> Locations);
+		void	setLocations(std::vector<ServerLocation*> Locations);
 		void	setServername(std::vector<std::string> Servername);
 		void	setIndex(std::vector<std::string> Index);
 		void	setRoot(std::string Root);
@@ -43,8 +43,10 @@ class Server {
 		void	setHost(in_addr_t Host);
 
 		int	name; // debbug
+		int total; //debug
 		// -Methods
-		void	addErrorPages(int code, std::string page);
+		void	addErrorPages(const int &code, const std::string &page);
+		void	addLocations(const std::string &values);
 	private:
 		int					_maxBodySize;
 		int					_timeOut;
@@ -66,7 +68,7 @@ class Server {
 		std::map<int, std::string>	_errorPages;
 
 		// location / {
-		std::vector<ServerLocation>	_locations;
+		std::vector<ServerLocation*>	_locations;
 
 
 

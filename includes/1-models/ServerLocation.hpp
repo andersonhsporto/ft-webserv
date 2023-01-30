@@ -8,6 +8,7 @@ class ServerLocation {
  public:
   // -Constructors
   ServerLocation(void);
+  ServerLocation(int name);
   ServerLocation(ServerLocation const &rhs);
 
   // -Destructor
@@ -21,7 +22,7 @@ class ServerLocation {
   // -Setters
 
   // -Methods
-
+	int	name;
  private:
   // /location
   std::string path;
