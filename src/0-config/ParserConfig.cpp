@@ -4,6 +4,7 @@
 ParserConfig::ParserConfig(void) {
 	this->_parseFuncs["listen"] = &_parseListen;
 	this->_parseFuncs["server_name"] = &_parseServerName;
+	this->_parseFuncs["client_max_body_size"] = &_parseMaxSizeBody;
 	this->_parseFuncs["root"] = &_parseRoot;
 	this->_parseFuncs["index"] = &_parseIndex;
 	this->_parseFuncs["error_page"] = &_parseErrorPage;
@@ -52,18 +53,25 @@ void ParserConfig::parseFile(const std::string &FilePath) {
 
 // -Private Methods
 inline void	ParserConfig::_openFile(const std::string &FilePath) {
-	std::ifstream file;
+	std::ifstream	file;
+	std::string		fileString = "";
 
 	file.open(FilePath.c_str());
 	if (!file.is_open()) {
 		throw std::runtime_error("Failed to open config file");
 	}
 	std::string fileContent((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+	std::istringstream iss(fileContent);
+	for (std::string line; std::getline(iss, line); ) {
+		if (!line.empty()) {
+			fileString += line + '\n';
+		}
+	}
 
-	if (!this->_isCurlyBracketBalanced(fileContent)) {
+	if (!this->_isCurlyBracketBalanced(fileString)) {
 		throw std::runtime_error("Curly brackets are not balanced");
 	}
-	this->setFile(fileContent);
+	this->setFile(fileString);
 }
 
 bool ParserConfig::_isCurlyBracketBalanced(std::string fileContent) {
@@ -89,15 +97,15 @@ inline void ParserConfig::_splitServers() {
 
 	for (size_t i = 0; i < this->getFile().size(); i++) {
 		if (this->getFile()[i] == '{') {
+			currentServer += this->getFile()[i];
 			if (!insideServer) {
-				currentServer += this->getFile()[i];
 				insideServer = true;
 			}
 			brackets.push(i);
 		}
 		else if (this->getFile()[i] == '}') {
+			currentServer += this->getFile()[i];
 			if (brackets.size() == 1) {
-				currentServer += this->getFile()[i];
 				this->_configServers.push_back(currentServer);
 				currentServer.clear();
 				insideServer = false;
@@ -114,48 +122,91 @@ inline void ParserConfig::_splitServers() {
 	}
 }
 
+
 inline void ParserConfig::_setServers() {
+	std::cout << "Inside set Server\n";
+	std::vector<std::string> lines;
+	
+	for (std::vector<std::string>::iterator it = this->_configServers.begin(); it != this->_configServers.end(); ++it) {
+		std::string line = *it;
+		std::istringstream iss(line);
+		for (std::string subLine; std::getline(iss, subLine, '\n'); ) {
+			lines.push_back(subLine);
+		}
+	}
+	for (std::vector<std::string>::iterator it = lines.begin(); it != lines.end(); ++it) {
+		std::string &line = *it;
+
+		std::string key;
+		std::string value;
+		std::stringstream ss(line);
+
+		ss >> key;
+		std::size_t first = key.find_first_not_of(" ");
+		std::size_t last = key.find_last_not_of(" ") + 1;
+		if (first != std::string::npos && last != std::string::npos && first < last) {
+			key = key.substr(first, last - first);
+		}
+
+		std::getline(ss, value);
+		first = value.find_first_not_of(" ");
+		last = value.find_last_not_of(" ") + 1;
+		if (first != std::string::npos && last != std::string::npos && first < last) {
+			value = value.substr(first, last - first);
+		}
+
+		// std::cout << "Key: " << key << std::endl;
+		// std::cout << "Value: " << value << std::endl;
+		if (key != "{" && key != "}")
+		{
+			try {
+				this->_parseFuncs.at(key);
+				_parseFuncs[key](value);
+			} catch (const std::out_of_range& e) {
+				throw std::runtime_error("Invalid server configuration");
+			}
+		}
+	}
 	return ;
 }
 
-void ParserConfig::_parseListen(Server &server, const std::string &value) {
-	(void)server;
-	(void)value;
+void ParserConfig::_parseListen(const std::string &value) {
+	std::cout << "Parser Listen called:   " << "The value: "<< value << "\n\n";
     // std::string::size_type pos = value.find(':');
     // server.host = value.substr(0, pos);
     // server.port = std::stoi(value.substr(pos + 1));
 }
 
-void ParserConfig::_parseServerName(Server &server, const std::string &value) {
-	(void)server;
-	(void)value;
+void ParserConfig::_parseServerName(const std::string &value) {
+	std::cout << "Parser Server Name called:   " << "The value: "<< value << "\n\n";
     // server.serverName = split(value, ' ');
 }
 
-void ParserConfig::_parseRoot(Server &server, const std::string &value) {
-	(void)server;
-	(void)value;
+
+void ParserConfig::_parseMaxSizeBody(const std::string &value) {
+	std::cout << "Parser Max Size Body called:   " << "The value: "<< value << "\n\n";
+}
+
+void ParserConfig::_parseRoot(const std::string &value) {
+	std::cout << "Parser Root called:   " << "The value: "<< value << "\n\n";
     // server.root = value;
 }
 
-void ParserConfig::_parseIndex(Server &server, const std::string &value) {
-	(void)server;
-	(void)value;
+void ParserConfig::_parseIndex(const std::string &value) {
+	std::cout << "Parser Index called:   " << "The value: "<< value << "\n\n";
     // server.index.push_back(value);
 }
 
-void ParserConfig::_parseErrorPage(Server &server, const std::string &value) {
-	(void)server;
-	(void)value;
+void ParserConfig::_parseErrorPage(const std::string &value) {
+	std::cout << "Parser Error Page called:   " << "The value: "<< value << "\n\n";
     // std::string::size_type pos = value.find(' ');
     // int code = std::stoi(value.substr(0, pos));
     // std::string page = value.substr(pos + 1);
     // server.errorPages[code] = page;
 }
 
-void ParserConfig::_parseLocation(Server &server, const std::string &value) {
-	(void)server;
-	(void)value;
+void ParserConfig::_parseLocation(const std::string &value) {
+	std::cout << "Parser Location called:   " << "The value: "<< value << "\n\n";
     // ServerLocation location;
     // location.path = value;
     // // ...
