@@ -31,5 +31,6 @@ WebServer &WebServer::operator=(WebServer const &rhs) {
 // -Methods
 // -Functions
 std::ostream &operator<<(std::ostream &out, WebServer const &in) {
+	(void)in;
 	return (out);
 }

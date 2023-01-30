@@ -27,7 +27,7 @@ INCLUDE =	$(addprefix -I ./includes, \
 ####################################################################################################
 
 MAIN_HEADERS	= $(addprefix ./includes/, \
-					$(PARSER_HEADERS) $(MODELS_HEADERS) \
+					WebServer.hpp $(PARSER_HEADERS) $(MODELS_HEADERS) \
 				)
 
 PARSER_HEADERS	= $(addprefix 0-config/, \
@@ -45,7 +45,7 @@ MODELS_HEADERS	= $(addprefix 1-models/, \
 ####################################################################################################
 
 SRC		= $(addprefix ./src/, \
-          	main.cpp \
+          	main.cpp WebServer.cpp \
           	$(PARSER_SRC) $(MODELS_SRC) \
 		  	)
 

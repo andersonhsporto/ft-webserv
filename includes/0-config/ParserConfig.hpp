@@ -9,35 +9,46 @@
 #include "WebServer.hpp"
 
 class ParserConfig {
- public:
-  // -Constructors
-  ParserConfig(void);
-  ParserConfig(ParserConfig const &rhs);
+	private:
+		// -Typedefs
+		typedef void (*_parseServerFunc)(Server &server, const std::string &value);
 
-  // -Destructor
-  ~ParserConfig(void);
+	public:
+		// -Constructors
+		ParserConfig(void);
+		ParserConfig(ParserConfig const &rhs);
 
-  // -Operators
-  ParserConfig &operator=(ParserConfig const &rhs);
+		// -Destructor
+		~ParserConfig(void);
 
-  // -Getters
-  const std::string	&getFile(void) const;
+		// -Operators
+		ParserConfig &operator=(ParserConfig const &rhs);
 
-  // -Setters
-  void	setFile(std::string _file);
+		// -Getters
+		const std::string	&getFile(void) const;
 
-  // -Methods
-  // correct one void	parseFile(const std::string &FilePath, WebServer& WebServer);
-  void	parseFile(const std::string &FilePath);
- private:
-  std::string					_file;
-  std::vector<std::string>	_configServers;
+		// -Setters
+		void	setFile(std::string _file);
 
-  inline void		_openFile(const std::string &FilePath);
-  inline void		_splitServers();
-  inline bool       _isCurlyBracketBalanced(std::string fileContent);
- protected:
+		// -Methods
+		void	parseFile(const std::string &FilePath);
+	private:
+		std::string								_file;
+		std::vector<std::string>				_configServers;
+		WebServer								_webServer;
+		std::map<std::string, _parseServerFunc>	_parseFuncs;
 
+		inline void		_openFile(const std::string &FilePath);
+		inline bool		_isCurlyBracketBalanced(std::string fileContent);
+		inline void		_splitServers();
+		inline void		_setServers();
+		static void		_parseListen(Server &server, const std::string &value);
+		static void		_parseServerName(Server &server, const std::string &value);
+		static void		_parseRoot(Server &server, const std::string &value);
+		static void		_parseIndex(Server &server, const std::string &value);
+		static void		_parseErrorPage(Server &server, const std::string &value);
+		static void		_parseLocation(Server &server, const std::string &value);
+	protected:
 };
 
 // -Functions

@@ -31,5 +31,6 @@ ServerLocation &ServerLocation::operator=(ServerLocation const &rhs) {
 // -Methods
 // -Functions
 std::ostream &operator<<(std::ostream &out, ServerLocation const &in) {
+	(void)in;
 	return (out);
 }

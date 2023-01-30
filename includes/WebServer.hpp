@@ -2,6 +2,8 @@
 #define WEBSERVER_HPP
 
 #include <iostream>
+#include <vector>
+#include "Server.hpp"
 
 class WebServer {
 	public:
@@ -22,6 +24,7 @@ class WebServer {
 		// -Methods
 
 	private:
+		std::vector<Server>	_serverList;
 
 	protected:
 
