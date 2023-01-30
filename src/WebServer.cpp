@@ -2,6 +2,7 @@
 
 // -Constructors
 WebServer::WebServer(void) {
+	this->total = 0;
 	std::cout << "WebServer default constructor called\n";
 	return ;
 }
@@ -30,8 +31,13 @@ WebServer &WebServer::operator=(WebServer const &rhs) {
 // -Setters
 // -Methods
 void WebServer::addServer() {
-	Server *add = new Server();
+	this->total++;
+	Server *add = new Server(total);
 	this->_serverList.push_back(add);
+}
+
+Server &WebServer::getLastServer() {
+	return (*this->_serverList.back());
 }
 
 // -Functions

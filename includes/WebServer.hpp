@@ -23,8 +23,10 @@ class WebServer {
 
 		// -Methods
 		void	addServer();
+		Server	&getLastServer();
 	private:
 		std::vector<Server*>	_serverList;
+		int		total;
 	protected:
 
 };

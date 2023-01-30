@@ -117,10 +117,10 @@ inline void ParserConfig::_splitServers() {
 			currentServer += this->getFile()[i];
 		}
 	}
-	std::cout << "Here\n";
-	for (size_t i = 0; i < this->_configServers.size(); i++) {
-		std::cout << "Server " << i + 1 << ": " << this->_configServers[i] << std::endl;
-	}
+	// std::cout << "Here\n";
+	// for (size_t i = 0; i < this->_configServers.size(); i++) {
+	// 	std::cout << "Server " << i + 1 << ": " << this->_configServers[i] << std::endl;
+	// }
 }
 
 
@@ -166,13 +166,13 @@ inline void ParserConfig::_setServers() {
 				it2++;
 			}
 
-			std::cout << "Key: " << key << std::endl;
-			std::cout << "Value: " << value << std::endl;
+			// std::cout << "Key: " << key << std::endl;
+			// std::cout << "Value: " << value << std::endl;
 			if (key != "{" && key != "}")
 			{
 				try {
 					this->_parseFuncs.at(key);
-					_parseFuncs[key](value);
+					_parseFuncs[key](value, this->_webServer.getLastServer());
 				} catch (const std::out_of_range& e) {
 					throw std::runtime_error("Invalid server configuration");
 				}
@@ -183,52 +183,61 @@ inline void ParserConfig::_setServers() {
 	return ;
 }
 
-void ParserConfig::_parseListen(const std::string &value) {
+void ParserConfig::_parseListen(const std::string &value, Server &server) {
 	std::cout << "Parser Listen called:   " << "The value: "<< value << "\n\n";
+	std::cout << "Server Number: " << server << "\n\n";
     // std::string::size_type pos = value.find(':');
     // server.host = value.substr(0, pos);
     // server.port = std::stoi(value.substr(pos + 1));
 }
 
-void ParserConfig::_parseServerName(const std::string &value) {
-	std::cout << "Parser Server Name called:   " << "The value: "<< value << "\n\n";
-    // server.serverName = split(value, ' ');
+void ParserConfig::_parseServerName(const std::string &value, Server &server) {
+	std::cout << "Parser Server Name called:   " << "The value: "<< value << "\n";
+    std::cout << "Server Number: " << server << "\n\n";
+	// server.serverName = split(value, ' ');
 }
 
 
-void ParserConfig::_parseMaxSizeBody(const std::string &value) {
+void ParserConfig::_parseMaxSizeBody(const std::string &value, Server &server) {
 	std::cout << "Parser Max Size Body called:   " << "The value: "<< value << "\n\n";
+	std::cout << "Server Number: " << server << "\n\n";
 }
 
-void ParserConfig::_parseRoot(const std::string &value) {
+
+void ParserConfig::_parseRoot(const std::string &value, Server &server) {
 	std::cout << "Parser Root called:   " << "The value: "<< value << "\n\n";
-    // server.root = value;
+    std::cout << "Server Number: " << server << "\n\n";
+	// server.root = value;
 }
 
-void ParserConfig::_parseIndex(const std::string &value) {
+void ParserConfig::_parseIndex(const std::string &value, Server &server) {
 	std::cout << "Parser Index called:   " << "The value: "<< value << "\n\n";
-    // server.index.push_back(value);
+    std::cout << "Server Number: " << server << "\n\n";
+	// server.index.push_back(value);
 }
 
-void ParserConfig::_parseErrorPage(const std::string &value) {
+void ParserConfig::_parseErrorPage(const std::string &value, Server &server) {
 	std::cout << "Parser Error Page called:   " << "The value: "<< value << "\n\n";
-    // std::string::size_type pos = value.find(' ');
+    std::cout << "Server Number: " << server << "\n\n";
+	// std::string::size_type pos = value.find(' ');
     // int code = std::stoi(value.substr(0, pos));
     // std::string page = value.substr(pos + 1);
     // server.errorPages[code] = page;
 }
 
-void ParserConfig::_parseTimeOut(const std::string &value) {
+void ParserConfig::_parseTimeOut(const std::string &value, Server &server) {
 	std::cout << "Parser TimeOut called:   " << "The value: "<< value << "\n\n";
-    // ServerLocation location;
+    std::cout << "Server Number: " << server << "\n\n";
+	// ServerLocation location;
     // location.path = value;
     // // ...
     // server.locations.push_back(location);
 }
 
-void ParserConfig::_parseLocation(const std::string &value) {
+void ParserConfig::_parseLocation(const std::string &value, Server &server) {
 	std::cout << "Parser Location called:   " << "The value: "<< value << "\n\n";
-    // ServerLocation location;
+    std::cout << "Server Number: " << server << "\n\n";
+	// ServerLocation location;
     // location.path = value;
     // // ...
     // server.locations.push_back(location);

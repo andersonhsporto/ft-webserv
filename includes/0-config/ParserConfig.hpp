@@ -12,7 +12,7 @@
 class ParserConfig {
 	private:
 		// -Typedefs
-		typedef void (*_parseServerFunc)(const std::string &value);
+		typedef void (*_parseServerFunc)(const std::string &value, Server &server);
 
 	public:
 		// -Constructors
@@ -43,14 +43,14 @@ class ParserConfig {
 		inline bool		_isCurlyBracketBalanced(std::string fileContent);
 		inline void		_splitServers();
 		inline void		_setServers();
-		static void		_parseListen(const std::string &value);
-		static void		_parseServerName(const std::string &value);
-		static void		_parseMaxSizeBody(const std::string &value);
-		static void		_parseRoot(const std::string &value);
-		static void		_parseIndex(const std::string &value);
-		static void		_parseErrorPage(const std::string &value);
-		static void		_parseTimeOut(const std::string &value);
-		static void		_parseLocation(const std::string &value);
+		static void		_parseListen(const std::string &value, Server &server);
+		static void		_parseServerName(const std::string &value, Server &server);
+		static void		_parseMaxSizeBody(const std::string &value, Server &server);
+		static void		_parseRoot(const std::string &value, Server &server);
+		static void		_parseIndex(const std::string &value, Server &server);
+		static void		_parseErrorPage(const std::string &value, Server &server);
+		static void		_parseTimeOut(const std::string &value, Server &server);
+		static void		_parseLocation(const std::string &value, Server &server);
 	protected:
 };
 
