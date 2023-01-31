@@ -1,10 +1,12 @@
-#include "ParserConfig.hpp"
+#include "WebServer.hpp"
 
 int main(int argc, char *argv[]) {
+	WebServer	webserver;
 
-	ParserConfig	Parser;
+	// ParserConfig	Parser;
 	if (argc == 2)
-		Parser.parseFile(argv[1]);
+		webserver.parse(argv[1]);
+	// 	Parser.parseFile(argv[1]);
 
 	// std::cout << Parser.get_file();
 	return 0;

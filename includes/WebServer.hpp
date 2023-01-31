@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include "Server.hpp"
+#include "ParserConfig.hpp"
 
 class WebServer {
 	public:
@@ -22,9 +23,11 @@ class WebServer {
 		// -Setters
 
 		// -Methods
+		void	parse(const std::string &FilePath);
 		void	addServer();
 		Server	&getLastServer();
 	private:
+		ParserConfig			_parser;
 		std::vector<Server*>	_serverList;
 		int		total; // debug
 	protected:

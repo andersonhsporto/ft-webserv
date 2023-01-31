@@ -1,17 +1,17 @@
 #include "WebServer.hpp"
 
 // -Constructors
-WebServer::WebServer(void) {
+WebServer::WebServer(void) : _parser(ParserConfig(*this)) {
 	this->total = 0;
 	std::cout << "WebServer default constructor called\n";
 	return ;
 }
 
-WebServer::WebServer(WebServer const &rhs) {
-	std::cout << "WebServer copy constructor called\n";
-	*this = rhs;
-	return ;
-}
+// WebServer::WebServer(WebServer const &rhs) : _parser(ParserConfig(*this)) {
+// 	std::cout << "WebServer copy constructor called\n";
+// 	*this = rhs;
+// 	return ;
+// }
 
 // -Destructor
 WebServer::~WebServer(void) {
@@ -30,6 +30,10 @@ WebServer &WebServer::operator=(WebServer const &rhs) {
 // -Getters
 // -Setters
 // -Methods
+void WebServer::parse(const std::string &FilePath) {
+	this->_parser.parseFile(FilePath);
+}
+
 void WebServer::addServer() {
 	this->total++;
 	Server *add = new Server(total);

@@ -7,17 +7,19 @@
 #include <string>
 #include <vector>
 #include <stack>
-#include "WebServer.hpp"
+#include <map>
+#include <arpa/inet.h>
 
 class ParserConfig {
 	private:
 		// -Typedefs
-		typedef void (*_parseServerFunc)(const std::string &value, Server &server);
+		typedef void (*_parseServerFunc)(const std::string &value, class Server &server);
 
 	public:
 		// -Constructors
-		ParserConfig(void);
-		ParserConfig(ParserConfig const &rhs);
+		// ParserConfig(void);
+		ParserConfig(class WebServer& webserver);
+		// ParserConfig(ParserConfig const &rhs);
 
 		// -Destructor
 		~ParserConfig(void);
@@ -35,22 +37,22 @@ class ParserConfig {
 		void	parseFile(const std::string &FilePath);
 	private:
 		std::string								_file;
+		class WebServer							&_webServer;
 		std::vector<std::string>				_configServers;
-		WebServer								_webServer;
 		std::map<std::string, _parseServerFunc>	_parseFuncs;
 
 		inline void		_openFile(const std::string &FilePath);
 		inline bool		_isCurlyBracketBalanced(std::string fileContent);
 		inline void		_splitServers();
 		inline void		_setServers();
-		static void		_parseListen(const std::string &value, Server &server);
-		static void		_parseServerName(const std::string &value, Server &server);
-		static void		_parseMaxSizeBody(const std::string &value, Server &server);
-		static void		_parseRoot(const std::string &value, Server &server);
-		static void		_parseIndex(const std::string &value, Server &server);
-		static void		_parseErrorPage(const std::string &value, Server &server);
-		static void		_parseTimeOut(const std::string &value, Server &server);
-		static void		_parseLocation(const std::string &value, Server &server);
+		static void		_parseListen(const std::string &value, class Server &server);
+		static void		_parseServerName(const std::string &value, class Server &server);
+		static void		_parseMaxSizeBody(const std::string &value, class Server &server);
+		static void		_parseRoot(const std::string &value, class Server &server);
+		static void		_parseIndex(const std::string &value, class Server &server);
+		static void		_parseErrorPage(const std::string &value, class Server &server);
+		static void		_parseTimeOut(const std::string &value, class Server &server);
+		static void		_parseLocation(const std::string &value, class Server &server);
 	protected:
 };
 

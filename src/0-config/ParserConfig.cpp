@@ -1,7 +1,21 @@
 #include "ParserConfig.hpp"
+#include "WebServer.hpp"
 
 // -Constructors
-ParserConfig::ParserConfig(void) {
+// ParserConfig::ParserConfig(void) : _webserver() {
+// 	this->_parseFuncs["listen"] = &_parseListen;
+// 	this->_parseFuncs["server_name"] = &_parseServerName;
+// 	this->_parseFuncs["client_max_body_size"] = &_parseMaxSizeBody;
+// 	this->_parseFuncs["root"] = &_parseRoot;
+// 	this->_parseFuncs["index"] = &_parseIndex;
+// 	this->_parseFuncs["error_page"] = &_parseErrorPage;
+// 	this->_parseFuncs["timeout"] = &_parseTimeOut;
+// 	this->_parseFuncs["location"] = &_parseLocation;
+// 	std::cout << "ParserConfig default constructor called\n";
+// 	return ;
+// }
+
+ParserConfig::ParserConfig(WebServer &webserver) : _webServer(webserver) {
 	this->_parseFuncs["listen"] = &_parseListen;
 	this->_parseFuncs["server_name"] = &_parseServerName;
 	this->_parseFuncs["client_max_body_size"] = &_parseMaxSizeBody;
@@ -10,15 +24,15 @@ ParserConfig::ParserConfig(void) {
 	this->_parseFuncs["error_page"] = &_parseErrorPage;
 	this->_parseFuncs["timeout"] = &_parseTimeOut;
 	this->_parseFuncs["location"] = &_parseLocation;
-	std::cout << "ParserConfig default constructor called\n";
+	std::cout << "ParserConfig WebServer constructor called\n";
 	return ;
 }
 
-ParserConfig::ParserConfig(ParserConfig const &rhs) {
-	std::cout << "ParserConfig copy constructor called\n";
-	*this = rhs;
-	return ;
-}
+// ParserConfig::ParserConfig(ParserConfig const &rhs) {
+// 	std::cout << "ParserConfig copy constructor called\n";
+// 	*this = rhs;
+// 	return ;
+// }
 
 // -Destructor
 ParserConfig::~ParserConfig(void) {
@@ -186,7 +200,7 @@ inline void ParserConfig::_setServers() {
 	return ;
 }
 
-void ParserConfig::_parseListen(const std::string &value, Server &server) {
+void ParserConfig::_parseListen(const std::string &value, class Server &server) {
 	// std::cout << "Parser Listen called:   " << "The value: "<< value << "\n\n";
 	// std::cout << "Server Number: " << server << "\n\n";
 	in_addr_t	numbHost;
@@ -212,7 +226,7 @@ void ParserConfig::_parseListen(const std::string &value, Server &server) {
 	// std::cout << "Binary host: " << server.getHost() << "\nString host: " << string_ip << "\nport: " << server.getPort() << "\n";
 }
 
-void ParserConfig::_parseServerName(const std::string &value, Server &server) {
+void ParserConfig::_parseServerName(const std::string &value, class Server &server) {
 	// std::cout << "Parser Server Name called:   " << "The value: "<< value << "\n";
     // std::cout << "Server Number: " << server << "\n\n";
 	std::vector<std::string> split;
@@ -228,7 +242,7 @@ void ParserConfig::_parseServerName(const std::string &value, Server &server) {
 }
 
 
-void ParserConfig::_parseMaxSizeBody(const std::string &value, Server &server) {
+void ParserConfig::_parseMaxSizeBody(const std::string &value, class Server &server) {
 	// std::cout << "Parser Max Size Body called:   " << "The value: "<< value << "\n\n";
 	// std::cout << "Server Number: " << server << "\n\n";
 	int maxBodySize;
@@ -240,7 +254,7 @@ void ParserConfig::_parseMaxSizeBody(const std::string &value, Server &server) {
 }
 
 
-void ParserConfig::_parseRoot(const std::string &value, Server &server) {
+void ParserConfig::_parseRoot(const std::string &value, class Server &server) {
 	// std::cout << "Parser Root called:   " << "The value: "<< value << "\n\n";
     // std::cout << "Server Number: " << server << "\n\n";
 	
@@ -248,7 +262,7 @@ void ParserConfig::_parseRoot(const std::string &value, Server &server) {
 	// std::cout << "Root: " << server.getRoot() << "\n";
 }
 
-void ParserConfig::_parseIndex(const std::string &value, Server &server) {
+void ParserConfig::_parseIndex(const std::string &value, class Server &server) {
 	// std::cout << "Parser Index called:   " << "The value: "<< value << "\n\n";
     // std::cout << "Server Number: " << server << "\n\n";
 	std::vector<std::string> split;
@@ -264,7 +278,7 @@ void ParserConfig::_parseIndex(const std::string &value, Server &server) {
 	// }
 }
 
-void ParserConfig::_parseErrorPage(const std::string &value, Server &server) {
+void ParserConfig::_parseErrorPage(const std::string &value, class Server &server) {
 	// std::cout << "Parser Error Page called:   " << "The value: "<< value << "\n\n";
     // std::cout << "Server Number: " << server << "\n\n";
 	int code;
@@ -278,7 +292,7 @@ void ParserConfig::_parseErrorPage(const std::string &value, Server &server) {
 	// std::cout << "Error code:" << code << " page: " << server.getErrorpages().at(code) << "\n";
 }
 
-void ParserConfig::_parseTimeOut(const std::string &value, Server &server) {
+void ParserConfig::_parseTimeOut(const std::string &value, class Server &server) {
 	// std::cout << "Parser TimeOut called:   " << "The value: "<< value << "\n\n";
     // std::cout << "Server Number: " << server << "\n\n";
 	int timeOut;
@@ -289,7 +303,7 @@ void ParserConfig::_parseTimeOut(const std::string &value, Server &server) {
 	// std::cout << "Size: " << server.getTimeout() << "\n";
 }
 
-void ParserConfig::_parseLocation(const std::string &value, Server &server) {
+void ParserConfig::_parseLocation(const std::string &value, class Server &server) {
 	// std::cout << "Parser Location called:   " << "The value: "<< value << "\n\n";
     // std::cout << "\nServer Number: " << server << "\n";
 	server.addLocations(value);
