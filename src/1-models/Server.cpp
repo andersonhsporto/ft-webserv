@@ -113,7 +113,8 @@ void Server::addErrorPages(const int &code, const std::string &page) {
 
 void Server::addLocations(const std::string &values) {
 	this->total++;
-	ServerLocation *add = new ServerLocation(this->total);
+	ServerLocation *add = new ServerLocation(this->total, values);
+	std::cout << *add;
 	this->_locations.push_back(add);
 }
 // -Functions

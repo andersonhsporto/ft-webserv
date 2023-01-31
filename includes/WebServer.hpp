@@ -26,7 +26,7 @@ class WebServer {
 		Server	&getLastServer();
 	private:
 		std::vector<Server*>	_serverList;
-		int		total;
+		int		total; // debug
 	protected:
 
 };
