@@ -2,16 +2,9 @@
 
 // -Constructors
 WebServer::WebServer(void) : _parser(ParserConfig(*this)) {
-	this->total = 0;
 	std::cout << "WebServer default constructor called\n";
 	return ;
 }
-
-// WebServer::WebServer(WebServer const &rhs) : _parser(ParserConfig(*this)) {
-// 	std::cout << "WebServer copy constructor called\n";
-// 	*this = rhs;
-// 	return ;
-// }
 
 // -Destructor
 WebServer::~WebServer(void) {
@@ -35,8 +28,7 @@ void WebServer::parse(const std::string &FilePath) {
 }
 
 void WebServer::addServer() {
-	this->total++;
-	Server *add = new Server(total);
+	Server *add = new Server();
 	this->_serverList.push_back(add);
 }
 

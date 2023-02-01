@@ -17,9 +17,7 @@ class ParserConfig {
 
 	public:
 		// -Constructors
-		// ParserConfig(void);
 		ParserConfig(class WebServer& webserver);
-		// ParserConfig(ParserConfig const &rhs);
 
 		// -Destructor
 		~ParserConfig(void);
@@ -35,6 +33,7 @@ class ParserConfig {
 
 		// -Methods
 		void	parseFile(const std::string &FilePath);
+
 	private:
 		std::string								_file;
 		class WebServer							&_webServer;
@@ -53,7 +52,6 @@ class ParserConfig {
 		static void		_parseErrorPage(const std::string &value, class Server &server);
 		static void		_parseTimeOut(const std::string &value, class Server &server);
 		static void		_parseLocation(const std::string &value, class Server &server);
-	protected:
 };
 
 // -Functions

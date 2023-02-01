@@ -26,12 +26,10 @@ class WebServer {
 		void	parse(const std::string &FilePath);
 		void	addServer();
 		Server	&getLastServer();
+
 	private:
 		ParserConfig			_parser;
 		std::vector<Server*>	_serverList;
-		int		total; // debug
-	protected:
-
 };
 
 // -Functions

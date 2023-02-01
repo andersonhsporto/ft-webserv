@@ -11,14 +11,14 @@ ServerLocation::ServerLocation(void) {
 	return ;
 }
 
-ServerLocation::ServerLocation(int name, const std::string &values) : name(name) {
+ServerLocation::ServerLocation(const std::string &values) {
 	this->_parseFuncs["/"] = &_parsePath;
 	this->_parseFuncs["return"] = &_parseReturn;
 	this->_parseFuncs["root"] = &_parseRoot;
 	this->_parseFuncs["limit_except"] = &_parseRequest;
 	this->_parseFuncs["autoindex"] = &_parseAutoIndex;
 	this->_parseValues(values);
-	// std::cout << "ServerLocation int constructor called\n";
+	std::cout << "ServerLocation int constructor called\n";
 	return ;
 }
 
@@ -118,8 +118,6 @@ void	ServerLocation::_parseValues(const std::string &values) {
 				value = value.substr(first, last - first);
 			}
 		}
-		// std::cout << "Key: " << key << std::endl;
-		// std::cout << "Value: " << value << std::endl;
 		try {
 			this->_parseFuncs.at(key);
 			_parseFuncs[key](value, *this);
@@ -131,54 +129,45 @@ void	ServerLocation::_parseValues(const std::string &values) {
 
 void	ServerLocation::_parsePath(const std::string &value, ServerLocation &Location) {
 	Location.setPath("/" + value);
-	// std::cout << "THe Path: " << Location.getPath() << "\n";
 }
 
 void	ServerLocation::_parseReturn(const std::string &value, ServerLocation &Location) {
-	int			numbCode;
-	std::string	code;
-	std::string	address;
-	std::string::size_type pos = value.find(' ');
+	int						numbCode;
+	std::string				code;
+	std::string				address;
+	std::string::size_type	pos;
 
-
+	pos = value.find(' ');
 	code = value.substr(0, pos);
 	address = value.substr(pos + 1);
 	std::istringstream iss(code);
 	iss >> numbCode;
-
 	Location.setReturnpage(std::make_pair(numbCode,address));
-	// std::cout << "The Return Page: " << Location.getReturnpage().first << " " << Location.getReturnpage().second << "\n";
 }
 
 void	ServerLocation::_parseRoot(const std::string &value, ServerLocation &Location) {
 	Location.setRoot(value);
-	// std::cout << "The Root: " << Location.getRoot() << "\n";
 }
 
 void	ServerLocation::_parseRequest(const std::string &value, ServerLocation &Location) {
-	std::vector<std::string> split;
-	std::istringstream iss(value);
-	std::string line;
+	std::string					line;
+	std::vector<std::string>	split;
+	std::istringstream			iss(value);
 
 	while (std::getline(iss, line, ' ')) {
 		split.push_back(line);
 	}
 	Location.setRequestshttp(split);
-	// for (std::vector<std::string>::const_iterator it = Location.getRequestshttp().begin(); it != Location.getRequestshttp().end(); ++it) {
-	// 	std::cout << "Request Http: " << *it << "\n";
-	// }
 }
 
 void	ServerLocation::_parseAutoIndex(const std::string &value, ServerLocation &Location) {
 	if (value == "on")
 		Location.setAutoindex(true);
-	// std::cout << "AutoIndex is: " << std::boolalpha << Location.getAutoindex() << "\n";
 }
 
 // -Functions
 std::ostream &operator<<(std::ostream &out, ServerLocation const &in) {
-	out << "Location number: " << in.name << "\n"
-		"The Path: " << in.getPath() << "\n"
+	out << "The Path: " << in.getPath() << "\n"
 		"The Return Page: " << in.getReturnpage().first << " " << in.getReturnpage().second << "\n"
 		"The Root: " << in.getRoot() << "\n"
 		"AutoIndex is: " << std::boolalpha << in.getAutoindex() << "\n";

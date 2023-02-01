@@ -11,7 +11,6 @@ class Server {
 	public:
 		// -Constructors
 		Server(void);
-		Server(int numb);
 		Server(Server const &rhs);
 
 		// -Destructor
@@ -42,38 +41,20 @@ class Server {
 		void	setPort(int Port);
 		void	setHost(in_addr_t Host);
 
-		int	name; // debbug
-		int total; //debug
 		// -Methods
 		void	addErrorPages(const int &code, const std::string &page);
 		void	addLocations(const std::string &values);
+
 	private:
-		int					_maxBodySize;
-		int					_timeOut;
-		// listen  127.0.0.1:4242
-		int					_port;
-		in_addr_t			_host;
-
-		// server_name www.localhost localhost;
-		std::vector<std::string>	_serverName;
-
-		// TODO
-		std::string					_root;
-
-		// index index.html;
-		std::vector<std::string>	_index;
-
-		// error_page 404 /404.html;
-		// std::pair<int, std::string> errorPage; ??
-		std::map<int, std::string>	_errorPages;
-
-		// location / {
+		int								_maxBodySize;
+		int								_timeOut;
+		int								_port;
+		in_addr_t						_host;
+		std::string						_root;
+		std::vector<std::string>		_index;
+		std::vector<std::string>		_serverName;
+		std::map<int, std::string>		_errorPages;
 		std::vector<ServerLocation*>	_locations;
-
-
-
-	protected:
-
 };
 
 // -Functions
