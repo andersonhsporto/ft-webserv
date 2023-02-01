@@ -106,7 +106,6 @@ void Server::addErrorPages(const int &code, const std::string &page) {
 
 void Server::addLocations(const std::string &values) {
 	ServerLocation *add = new ServerLocation(values);
-	std::cout << *add;
 	this->_locations.push_back(add);
 }
 // -Functions

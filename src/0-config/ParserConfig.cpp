@@ -1,5 +1,6 @@
 #include "ParserConfig.hpp"
 #include "WebServer.hpp"
+#include "ParserUtils.hpp"
 
 ParserConfig::ParserConfig(WebServer &webserver) : _webServer(webserver) {
 	this->_parseFuncs["listen"] = &_parseListen;
@@ -172,77 +173,40 @@ inline void ParserConfig::_setServers() {
 }
 
 void ParserConfig::_parseListen(const std::string &value, class Server &server) {
-	int						numbPort;
-	in_addr_t				numbHost;
 	std::string				host;
 	std::string				port;
-	std::string::size_type	pos;
 
-	pos = value.find(':');
-	host = value.substr(0, pos);
-	numbHost = inet_addr(host.c_str());
-	port = value.substr(pos + 1);
-	std::istringstream iss(port);
-	iss >> numbPort;
-
-	server.setHost(numbHost);
-	server.setPort(numbPort);
+	parser::divideByDelimiter(value, host, port, ' ');
+	server.setHost(inet_addr(host.c_str()));
+	server.setPort(parser::stringToInt(port));
 }
 
 void ParserConfig::_parseServerName(const std::string &value, class Server &server) {
-	std::vector<std::string>	split;
-	std::string					line;
-	std::istringstream			iss(value);
-
-	while (std::getline(iss, line, ' ')) {
-		split.push_back(line);
-	}
-	server.setServername(split);
+	server.setServername(parser::splitStringBy(value, ' '));
 }
-
 
 void ParserConfig::_parseMaxSizeBody(const std::string &value, class Server &server) {
-	int	maxBodySize;
-
-	std::istringstream iss(value);
-	iss >> maxBodySize;
-	server.setMaxbodysize(maxBodySize);
+	server.setMaxbodysize(parser::stringToInt(value));
 }
-
 
 void ParserConfig::_parseRoot(const std::string &value, class Server &server) {
 	server.setRoot(value);
 }
 
 void ParserConfig::_parseIndex(const std::string &value, class Server &server) {
-	std::vector<std::string>	split;
-	std::string					line;
-	std::istringstream			iss(value);
-
-	while (std::getline(iss, line, ' ')) {
-		split.push_back(line);
-	}
-	server.setIndex(split);
+	server.setIndex(parser::splitStringBy(value, ' '));
 }
 
 void ParserConfig::_parseErrorPage(const std::string &value, class Server &server) {
-	int						code;
-	std::string				page;
-	std::string::size_type	pos;
+	std::string	code;
+	std::string	page;
 
-	pos = value.find(' ');
-	std::istringstream iss(value.substr(0, pos));
-	iss >> code;
-	page = value.substr(pos + 1);
-	server.addErrorPages(code, page);
+	parser::divideByDelimiter(value, code, page, ' ');
+	server.addErrorPages(parser::stringToInt(code), page);
 }
 
 void ParserConfig::_parseTimeOut(const std::string &value, class Server &server) {
-	int	timeOut;
-
-	std::istringstream iss(value);
-	iss >> timeOut;
-	server.setTimeout(timeOut);
+	server.setTimeout(parser::stringToInt(value));
 }
 
 void ParserConfig::_parseLocation(const std::string &value, class Server &server) {

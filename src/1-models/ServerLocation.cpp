@@ -1,4 +1,5 @@
 #include "ServerLocation.hpp"
+#include "ParserUtils.hpp"
 
 // -Constructors
 ServerLocation::ServerLocation(void) {
@@ -88,12 +89,8 @@ void ServerLocation::setPath(std::string Path) {
 // -Private Methods
 void	ServerLocation::_parseValues(const std::string &values) {
 	std::vector<std::string> split;
-	std::istringstream iss(values);
-	std::string line;
-	while (std::getline(iss, line, '\n')) {
-		split.push_back(line);
-	}
-	
+
+	split = parser::splitStringBy(values, '\n');
 	for (std::vector<std::string>::iterator it = split.begin(); it != split.end(); ++it) {
 		std::string &line = *it;
 		std::string key;
@@ -132,17 +129,11 @@ void	ServerLocation::_parsePath(const std::string &value, ServerLocation &Locati
 }
 
 void	ServerLocation::_parseReturn(const std::string &value, ServerLocation &Location) {
-	int						numbCode;
-	std::string				code;
-	std::string				address;
-	std::string::size_type	pos;
+	std::string	code;
+	std::string	address;
 
-	pos = value.find(' ');
-	code = value.substr(0, pos);
-	address = value.substr(pos + 1);
-	std::istringstream iss(code);
-	iss >> numbCode;
-	Location.setReturnpage(std::make_pair(numbCode,address));
+	parser::divideByDelimiter(value, code, address, ' ');
+	Location.setReturnpage(std::make_pair(parser::stringToInt(code), address));
 }
 
 void	ServerLocation::_parseRoot(const std::string &value, ServerLocation &Location) {
@@ -150,14 +141,7 @@ void	ServerLocation::_parseRoot(const std::string &value, ServerLocation &Locati
 }
 
 void	ServerLocation::_parseRequest(const std::string &value, ServerLocation &Location) {
-	std::string					line;
-	std::vector<std::string>	split;
-	std::istringstream			iss(value);
-
-	while (std::getline(iss, line, ' ')) {
-		split.push_back(line);
-	}
-	Location.setRequestshttp(split);
+	Location.setRequestshttp(parser::splitStringBy(value, ' '));
 }
 
 void	ServerLocation::_parseAutoIndex(const std::string &value, ServerLocation &Location) {

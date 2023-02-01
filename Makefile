@@ -17,7 +17,6 @@ CFLAGS	= -Wall -Wextra -std=c++98 -g #-Werror
 
 INCLUDE =	$(addprefix -I ./includes, \
 			/ \
-			/ParserConfig.hpp \
 			/0-config/ \
 			/1-models/ \
 			)
@@ -32,6 +31,7 @@ MAIN_HEADERS	= $(addprefix ./includes/, \
 
 PARSER_HEADERS	= $(addprefix 0-config/, \
 				ParserConfig.hpp \
+				ParserUtils.hpp \
 				)
 
 MODELS_HEADERS	= $(addprefix 1-models/, \
@@ -51,6 +51,7 @@ SRC		= $(addprefix ./src/, \
 
 PARSER_SRC	= $(addprefix 0-config/, \
 				ParserConfig.cpp \
+				ParserUtils.cpp \
 				)
 
 MODELS_SRC	= $(addprefix 1-models/, \
