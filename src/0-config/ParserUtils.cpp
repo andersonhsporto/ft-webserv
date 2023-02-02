@@ -28,4 +28,16 @@ namespace parser {
 		word2 = total.substr(pos + 1);
 		return ;
 	}
+
+	void trimChar(std::string &str, char toTrim) {
+		std::size_t first;
+		std::size_t last;
+
+		first = str.find_first_not_of(toTrim);
+		last = str.find_last_not_of(toTrim) + 1;
+		if (first != std::string::npos && last != std::string::npos && first < last) {
+			str.substr(first, last - first);
+		}
+		return ;
+	}
 }

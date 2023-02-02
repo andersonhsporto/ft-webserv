@@ -19,7 +19,7 @@ ServerLocation::ServerLocation(const std::string &values) {
 	this->_parseFuncs["limit_except"] = &_parseRequest;
 	this->_parseFuncs["autoindex"] = &_parseAutoIndex;
 	this->_parseValues(values);
-	std::cout << "ServerLocation int constructor called\n";
+	std::cout << "ServerLocation string constructor called\n";
 	return ;
 }
 
@@ -88,39 +88,33 @@ void ServerLocation::setPath(std::string Path) {
 // -Methods
 // -Private Methods
 void	ServerLocation::_parseValues(const std::string &values) {
-	std::vector<std::string> split;
+	std::vector<std::string>	split;
+	std::string					key;
+	std::string					value;
+	std::string					line;
+	std::istringstream			ss;
 
 	split = parser::splitStringBy(values, '\n');
 	for (std::vector<std::string>::iterator it = split.begin(); it != split.end(); ++it) {
-		std::string &line = *it;
-		std::string key;
-		std::string value;
-		std::stringstream ss(line);
-
+		line = *it;
+		ss.str(line);
 		ss >> key;
-		std::size_t first = key.find_first_not_of(" ");
-		std::size_t last = key.find_last_not_of(" ") + 1;
-		if (first != std::string::npos && last != std::string::npos && first < last) {
-			key = key.substr(first, last - first);
-		}
-		if (key.at(0) == '/' && key.length() > 1) {
+		parser::trimChar(key, ' ');
+		if (key[0] == '/' && key.length() > 1) {
 			value = key.substr(1);
 			key = "/";
 		}
 		else {
 			std::getline(ss, value);
-			first = value.find_first_not_of(" ");
-			last = value.find_last_not_of(" ") + 1;
-			if (first != std::string::npos && last != std::string::npos && first < last) {
-				value = value.substr(first, last - first);
-			}
+			parser::trimChar(value, ' ');
 		}
+
 		try {
-			this->_parseFuncs.at(key);
-			_parseFuncs[key](value, *this);
-		} catch (const std::out_of_range& e) {
+			this->_parseFuncs.at(key)(value, *this);
+		} catch (const std::out_of_range &e) {
 			throw std::runtime_error("Invalid server Location configuration");
 		}
+		ss.clear();
 	}
 }
 

@@ -40,18 +40,18 @@ class ParserConfig {
 		std::vector<std::string>				_configServers;
 		std::map<std::string, _parseServerFunc>	_parseFuncs;
 
-		inline void		_openFile(const std::string &FilePath);
-		inline bool		_isCurlyBracketBalanced(std::string fileContent);
-		inline void		_splitServers();
-		inline void		_setServers();
-		static void		_parseListen(const std::string &value, class Server &server);
-		static void		_parseServerName(const std::string &value, class Server &server);
-		static void		_parseMaxSizeBody(const std::string &value, class Server &server);
-		static void		_parseRoot(const std::string &value, class Server &server);
-		static void		_parseIndex(const std::string &value, class Server &server);
-		static void		_parseErrorPage(const std::string &value, class Server &server);
-		static void		_parseTimeOut(const std::string &value, class Server &server);
-		static void		_parseLocation(const std::string &value, class Server &server);
+		inline void			_openFile(const std::string &FilePath);
+		inline bool			_isCurlyBracketBalanced(std::string fileContent);
+		inline void			_splitServers();
+		inline void			_setServers();
+		static void			_parseListen(const std::string &value, class Server &server);
+		static void			_parseServerName(const std::string &value, class Server &server);
+		static void			_parseMaxSizeBody(const std::string &value, class Server &server);
+		static void			_parseRoot(const std::string &value, class Server &server);
+		static void			_parseIndex(const std::string &value, class Server &server);
+		static void			_parseErrorPage(const std::string &value, class Server &server);
+		static void			_parseTimeOut(const std::string &value, class Server &server);
+		static void			_parseLocation(const std::string &value, class Server &server);
 };
 
 // -Functions

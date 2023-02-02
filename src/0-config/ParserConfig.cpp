@@ -49,15 +49,17 @@ void ParserConfig::parseFile(const std::string &FilePath) {
 
 // -Private Methods
 inline void	ParserConfig::_openFile(const std::string &FilePath) {
-	std::ifstream	file;
-	std::string		fileString = "";
+	std::ifstream		file;
+	std::string			fileString;
+	std::istringstream	iss;
 
+	fileString = "";
 	file.open(FilePath.c_str());
 	if (!file.is_open()) {
 		throw std::runtime_error("Failed to open config file");
 	}
 	std::string fileContent((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-	std::istringstream iss(fileContent);
+	iss.str(fileContent);
 	for (std::string line; std::getline(iss, line); ) {
 		if (!line.empty()) {
 			fileString += line + '\n';
@@ -71,7 +73,7 @@ inline void	ParserConfig::_openFile(const std::string &FilePath) {
 }
 
 bool ParserConfig::_isCurlyBracketBalanced(std::string fileContent) {
-	std::stack<char> stack;
+	std::stack<char>	stack;
 
 	for (std::string::size_type i = 0; i < fileContent.size(); i++) {
 		if (fileContent[i] == '{') {
@@ -79,18 +81,19 @@ bool ParserConfig::_isCurlyBracketBalanced(std::string fileContent) {
 		}
 		else if (fileContent[i] == '}') {
 			if (stack.empty())
-				return false;
+				return (false);
 			stack.pop();
 		}
 	}
-	return stack.empty();
+	return (stack.empty());
 }
 
 inline void ParserConfig::_splitServers() {
-	std::stack<int> brackets;
-	std::string currentServer;
-	bool insideServer = false;
+	std::stack<int>	brackets;
+	std::string		currentServer;
+	bool			insideServer;
 
+	insideServer = false;
 	for (size_t i = 0; i < this->getFile().size(); i++) {
 		if (this->getFile()[i] == '{') {
 			currentServer += this->getFile()[i];
@@ -112,15 +115,21 @@ inline void ParserConfig::_splitServers() {
 			currentServer += this->getFile()[i];
 		}
 	}
+	return ;
 }
 
 inline void ParserConfig::_setServers() {
-	std::vector<std::string> lines;
-	
-	for (std::vector<std::string>::iterator it = this->_configServers.begin(); it != this->_configServers.end(); ++it) {
-		std::string line = *it;
-		std::istringstream iss(line);
+	std::vector<std::string>	lines;
+	std::string					key;
+	std::string					value;
+	std::string					line;
+	std::string					line2;
+	std::istringstream			iss;
+	std::istringstream			ss;
 
+	for (std::vector<std::string>::iterator it = this->_configServers.begin(); it != this->_configServers.end(); ++it) {
+		line = *it;
+		iss.str(line);
 		for (std::string subLine; std::getline(iss, subLine, '\n');) {
 			if (subLine.size() > 0 && subLine[subLine.size()-1] == ';') {
 				subLine.resize(subLine.size()-1);
@@ -128,28 +137,18 @@ inline void ParserConfig::_setServers() {
 			lines.push_back(subLine);
 		}
 		for (std::vector<std::string>::iterator it2 = lines.begin(); it2 != lines.end(); ++it2) {
-			std::string &line = *it2;
-
-			std::string key;
-			std::string value;
-			std::stringstream ss(line);
-
+			line2 = *it2;
+			ss.str(line2);
 			ss >> key;
-			std::size_t first = key.find_first_not_of(" ");
-			std::size_t last = key.find_last_not_of(" ") + 1;
-			if (first != std::string::npos && last != std::string::npos && first < last) {
-				key = key.substr(first, last - first);
+			parser::trimChar(key, ' ');
+			if (key == "}" || key == "{") {
+				if (key == "{")
+					this->_webServer.addServer();
+				ss.clear();
+				continue;
 			}
-			if (key == "{")
-				this->_webServer.addServer();
 			std::getline(ss, value);
-			first = value.find_first_not_of(" ");
-			last = value.find_last_not_of(" ") + 1;
-			if (first != std::string::npos && last != std::string::npos && first < last) {
-				if (key == "location")
-					last--;
-				value = value.substr(first, last - first);
-			}
+			parser::trimChar(value, ' ');
 			if (key == "location") {
 				while (it2 + 1 != lines.end() && (*(it2 + 1)).find("}") == std::string::npos) {
 					it2++;
@@ -157,17 +156,16 @@ inline void ParserConfig::_setServers() {
 				}
 				it2++;
 			}
-			if (key != "{" && key != "}")
-			{
-				try {
-					this->_parseFuncs.at(key);
-					_parseFuncs[key](value, this->_webServer.getLastServer());
-				} catch (const std::out_of_range& e) {
-					throw std::runtime_error("Invalid server configuration");
-				}
+			try {
+				this->_parseFuncs.at(key);
+				_parseFuncs[key](value, this->_webServer.getLastServer());
+			} catch (const std::out_of_range& e) {
+				throw std::runtime_error("Invalid server configuration");
 			}
+			ss.clear();
 		}
 		lines.clear();
+		iss.clear();
 	}
 	return ;
 }
