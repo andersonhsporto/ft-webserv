@@ -77,9 +77,9 @@ $(NAME): $(OBJ_DIR) $(OBJ_FT)
 	$(CXX) $(CXXFLAGS) $(OBJ_FILES) -o $(NAME)
 
 $(OBJ_DIR):
-	@mkdir -p obj/src
-	@mkdir -p obj/src/0-config
-	@mkdir -p obj/src/1-models
+	@mkdir -p $(OBJ_DIR)/src
+	@mkdir -p $(OBJ_DIR)/src/0-config
+	@mkdir -p $(OBJ_DIR)/src/1-models
 
 ####################################################################################################
 ########################################## Default Rules ###########################################
