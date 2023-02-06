@@ -44,6 +44,7 @@ class Server {
 		void	setHost(in_addr_t Host);
 
 		// -Methods
+		int		init();
 		void	addErrorPages(const int &code, const std::string &page);
 		void	addLocations(const std::string &values);
 		void	addCgi(const std::string &extension, const std::string &path);

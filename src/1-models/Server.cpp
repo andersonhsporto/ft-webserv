@@ -108,6 +108,32 @@ void Server::setHost(in_addr_t Host) {
 }
 
 // -Methods
+int		Server::init(sockaddr_in addr) {
+	int	server_fd;
+	int	opt;
+
+	if ((server_fd = socker(AF_INET, SOCK_STREAM, 0)) < 0 ) {
+		perror("Failed to create socket");
+		return(-1);
+	}
+
+	if (setsockopt(server_fd, SOL_SOCKET,
+			SO_REUSEADDR | SO_REUSEPORT, 1, &opt, sizeof(opt))) {
+		perror("Failed to setsockopt");
+		return(-2);
+	}
+	addr.sin_family = AF_INET;
+	addr.sin_addr.s_addr = INADDR_ANY;
+	addr.sin_port = htons(this->_port);
+
+	if (bind(server_fd, (sockaddr*)&addr, sizeof(addr)) < 0) {
+		perror("Failed to bind socket");
+		return(-3);
+	}
+	return server_fd;
+};
+
+
 void Server::addErrorPages(const int &code, const std::string &page) {
 	this->_errorPages[code] = page;
 }
