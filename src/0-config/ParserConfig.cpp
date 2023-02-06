@@ -11,6 +11,7 @@ ParserConfig::ParserConfig(WebServer &webserver) : _webServer(webserver) {
 	this->_parseFuncs["error_page"] = &_parseErrorPage;
 	this->_parseFuncs["timeout"] = &_parseTimeOut;
 	this->_parseFuncs["location"] = &_parseLocation;
+	this->_parseFuncs["cgi"] = &_parseCgi;
 	std::cout << "ParserConfig WebServer constructor called\n";
 	return ;
 }
@@ -209,6 +210,14 @@ void ParserConfig::_parseTimeOut(const std::string &value, class Server &server)
 
 void ParserConfig::_parseLocation(const std::string &value, class Server &server) {
 	server.addLocations(value);
+}
+
+void ParserConfig::_parseCgi(const std::string &value, class Server &server) {
+	std::string	extension;
+	std::string	path;
+
+	parser::divideByDelimiter(value, extension, path, ' ');
+	server.addCgi(extension, path);
 }
 
 // -Functions

@@ -26,6 +26,10 @@ Server &Server::operator=(Server const &rhs) {
 }
 
 // -Getters
+const std::map<std::string,std::string> &Server::getCgi(void) const {
+	return (this->_cgi);
+}
+
 const int &Server::getMaxbodysize(void) const {
 	return (this->_maxBodySize);
 }
@@ -63,6 +67,10 @@ const in_addr_t &Server::getHost(void) const {
 }
 
 // -Setters
+void Server::setCgi(std::map<std::string,std::string> Cgi) {
+	this->_cgi = Cgi;
+}
+
 void Server::setMaxbodysize(int Maxbodysize) {
 	this->_maxBodySize = Maxbodysize;
 }
@@ -108,6 +116,11 @@ void Server::addLocations(const std::string &values) {
 	ServerLocation *add = new ServerLocation(values);
 	this->_locations.push_back(add);
 }
+
+void Server::addCgi(const std::string &extension, const std::string &path) {
+	this->_cgi[extension] = path;
+}
+
 // -Functions
 std::ostream &operator<<(std::ostream &out, Server const &in) {
 	(void)in;

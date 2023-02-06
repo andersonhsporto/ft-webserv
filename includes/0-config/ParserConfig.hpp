@@ -52,6 +52,7 @@ class ParserConfig {
 		static void			_parseErrorPage(const std::string &value, class Server &server);
 		static void			_parseTimeOut(const std::string &value, class Server &server);
 		static void			_parseLocation(const std::string &value, class Server &server);
+		static void			_parseCgi(const std::string &value, class Server &server);
 };
 
 // -Functions
