@@ -1,7 +1,7 @@
 #include "ParserUtils.hpp"
 
 namespace parser {
-	std::vector<std::string> splitStringBy(const std::string &stringToSplit, char delimiter) {
+	std::vector<std::string> splitStringBy(const std::string &stringToSplit, const char &delimiter) {
 		std::string					line;
 		std::vector<std::string>	split;
 		std::istringstream			iss(stringToSplit);
@@ -10,6 +10,19 @@ namespace parser {
 			split.push_back(line);
 		}
 		return (split);
+	}
+
+	std::vector<std::string> splitStringBy(const std::string &stringToSplit, const std::string &delimiter) {
+		std::vector<std::string> split;
+		std::string::size_type pos = 0;
+		std::string::size_type prev = 0;
+		while ((pos = stringToSplit.find(delimiter, prev)) != std::string::npos)
+		{
+			split.push_back(stringToSplit.substr(prev, pos - prev));
+			prev = pos + delimiter.length();
+		}
+		split.push_back(stringToSplit.substr(prev));
+		return split;
 	}
 
 	int stringToInt(const std::string &word) {

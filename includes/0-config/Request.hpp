@@ -2,6 +2,8 @@
 #define REQUEST_HPP
 
 #include <iostream>
+#include <string>
+#include <map>
 
 class Request {
 	public:
@@ -16,15 +18,33 @@ class Request {
 		Request &operator=(Request const &rhs);
 
 		// -Getters
+		const std::map<std::string,std::string>	&getHeaders(void) const;
+		const size_t		&getBodylength(void) const;
+		const std::string	&getBody(void) const;
+		const std::string	&getBuffer(void) const;
+		const std::string	&getMethod(void) const;
+		const std::string	&getQuery(void) const;
+		const std::string	&getTarget(void) const;
+		const std::string	&getProtocol(void) const;
 
 		// -Setters
 
 		// -Methods
-
+		int	parseRequest(std::string &buffer);
 	private:
+		size_t								_bodyLength;
+		std::string							_body;
+		std::string							_buffer;
+		std::string							_method;
+		std::string							_query;
+		std::string							_target;
+		std::string							_protocol;
+		std::map<std::string, std::string>	_headers;
 
-	protected:
-
+		int	parseMethod(void);
+		int	parseHeader(void);
+		int	parsePreBody(void);
+		int	parseBody(void);
 };
 
 // -Functions
