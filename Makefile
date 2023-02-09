@@ -33,6 +33,7 @@ PARSER_HEADERS	= $(addprefix 0-config/, \
 				ParserConfig.hpp \
 				ParserUtils.hpp \
 				Request.hpp \
+				Response.hpp \
 				)
 
 MODELS_HEADERS	= $(addprefix 1-models/, \
@@ -54,6 +55,7 @@ PARSER_SRC	= $(addprefix 0-config/, \
 				ParserConfig.cpp \
 				ParserUtils.cpp \
 				Request.cpp \
+				Response.cpp \
 				)
 
 MODELS_SRC	= $(addprefix 1-models/, \
