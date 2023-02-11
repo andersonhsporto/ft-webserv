@@ -1,0 +1,14 @@
+HTTP/1.1 200 OK
+Content-Type: text/html
+Server: My Server
+Date: Mon, 17 Jan 2023 10:00:00 GMT
+
+<html>
+<head>
+  <title>Test Page</title>
+</head>
+<body>
+  <h1>Test Page</h1>
+  <p>This is a test page for testing the Response class.</p>
+</body>
+</html>

@@ -3,13 +3,14 @@
 
 #include <iostream>
 #include <string>
-#include <map>
+#include <unordered_map>
 
 class Request {
 	public:
 		// -Constructors
 		Request(void);
 		Request(Request const &rhs);
+		Request(std::string &rawRequest);
 
 		// -Destructor
 		~Request(void);
@@ -18,10 +19,9 @@ class Request {
 		Request &operator=(Request const &rhs);
 
 		// -Getters
-		const std::map<std::string,std::string>	&getHeaders(void) const;
+		const std::unordered_map<std::string,std::string>	&getHeaders(void) const;
 		const size_t		&getBodylength(void) const;
 		const std::string	&getBody(void) const;
-		const std::string	&getBuffer(void) const;
 		const std::string	&getMethod(void) const;
 		const std::string	&getQuery(void) const;
 		const std::string	&getTarget(void) const;
@@ -34,17 +34,16 @@ class Request {
 	private:
 		size_t								_bodyLength;
 		std::string							_body;
-		std::string							_buffer;
 		std::string							_method;
 		std::string							_query;
 		std::string							_target;
 		std::string							_protocol;
-		std::map<std::string, std::string>	_headers;
+		std::unordered_map<std::string, std::string>	_headers;
 
-		int	parseMethod(void);
-		int	parseHeader(void);
-		int	parsePreBody(void);
-		int	parseBody(void);
+		int	parseMethod(std::stringstream &ss);
+		int	parseHeader(std::stringstream &ss);
+		int	parsePreBody(std::stringstream &ss);
+		int	parseBody(std::stringstream &ss);
 };
 
 // -Functions
