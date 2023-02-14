@@ -40,37 +40,42 @@ void ParserConfig::setFile(std::string file) {
 	this->_file = file;
 }
 
+
 // -Methods
 void ParserConfig::parseFile(const std::string &FilePath) {
-	this->_openFile(FilePath);
+	std::string contentsConfig;
+	
+	contentsConfig = this->_getContentsFile(this->_openFile(FilePath));
+	if(!this->_isCurlyBracketBalanced(contentsConfig))
+		throw std::runtime_error("Curly brackets are not balanced in the file " + FilePath);
+	this->setFile(contentsConfig);
 	this->_splitServers();
 	this->_setServers();
 	return ;
 }
 
+
 // -Private Methods
-inline void	ParserConfig::_openFile(const std::string &FilePath) {
-	std::ifstream		file;
-	std::string			fileString;
+inline std::fstream	ParserConfig::_openFile(const std::string &FilePath) {
+	std::fstream		file;
 	std::istringstream	iss;
 
-	fileString = "";
-	file.open(FilePath.c_str());
+	file.open(FilePath.c_str(), std::fstream::in);
 	if (!file.is_open()) {
-		throw std::runtime_error("Failed to open config file");
+		throw std::runtime_error("Failed to open config file " + FilePath);
 	}
-	std::string fileContent((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-	iss.str(fileContent);
-	for (std::string line; std::getline(iss, line); ) {
-		if (!line.empty()) {
-			fileString += line + '\n';
-		}
-	}
+	return file;
+}
 
-	if (!this->_isCurlyBracketBalanced(fileString)) {
-		throw std::runtime_error("Curly brackets are not balanced");
+std::string ParserConfig::_getContentsFile(std::fstream file){
+	std::string			fileString;
+	std::string 		line;
+
+	fileString = "";
+	while(std::getline(file, line)){
+		fileString += line + "\n";
 	}
-	this->setFile(fileString);
+	return fileString;
 }
 
 bool ParserConfig::_isCurlyBracketBalanced(std::string fileContent) {
