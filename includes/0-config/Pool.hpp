@@ -1,7 +1,7 @@
 #ifndef POLL_HPP
 #define POLL_HPP
 
-#include "./../1-models/Socket.hpp"
+#include "Socket.hpp"
 #include <vector>
 #include <poll.h>
 
