@@ -1,6 +1,9 @@
 #include "Server.hpp"
+#include "Sockets.hpp"
+#include "Poll.hpp"
+
 // -Constructors
-Server::Server(void) {
+Server::Server(void) : _maxBodySize(1024), _timeOut(30), _port(80), _host(INADDR_ANY), _root("."), _running(false), _socket(nullptr), _poll(nullptr)  {
 	std::cout << "Server default constructor called\n";
 	return ;
 }
@@ -14,6 +17,13 @@ Server::Server(Server const &rhs) {
 // -Destructor
 Server::~Server(void) {
 	std::cout << "Server default destructor called\n";
+	if (_socket)
+        delete _socket;
+    if (_poll)
+        delete _poll;
+    for (std::vector<ServerLocation*>::iterator it = _locations.begin(); it != _locations.end(); ++it) {
+        delete *it;
+    }
 	return ;
 }
 
@@ -119,6 +129,73 @@ void Server::addLocations(const std::string &values) {
 
 void Server::addCgi(const std::string &extension, const std::string &path) {
 	this->_cgi[extension] = path;
+}
+
+void Server::start(void) {
+	Socket	socket(socket(AF_INET, SOCK_STREAM, 0));
+	Poll	poller;
+	short	ret;
+
+	if (!listener.bind(_port, _host)) {
+		// handle error
+	}
+	if (!listener.listen(SOMAXCONN)) {
+		// handle error
+	}
+	std::vector<Socket *> socketArray;
+	socketArray.push_back(&socket);
+	poller.init(socketArray);
+	poller.run();
+	ret = poller.getEventReturn(0);
+	if ((ret & POLLPRI) == POLLPRI)
+		std::cout << "(PARTE1) retorno do status do pool: POLLPRI\n";
+	if ((ret & POLLIN) == POLLIN)
+		std::cout << "(PARTE1) retorno do status do pool: POLLIN\n";
+	if ((ret & POLLOUT) == POLLOUT)
+		std::cout << "(PARTE1) retorno do status do pool: POLLOUT\n";
+	if ((ret & POLLWRBAND) == POLLWRBAND)
+		std::cout << "(PARTE1) retorno do status do pool:POLLWRBAND\n";
+	while (true) {
+		// Wait for incoming requests on the sockets using Poll
+		poller.run();
+
+		// Check for events on the listening socket
+		for (size_t i = 0; i < poller.getSize(); i++) {
+			if (poller.getEventReturn(i) & POLLIN) {
+				// Handle incoming data on the socket
+				Socket *current_socket = poller.getSocket(i);
+				if (current_socket == &socket) {
+					// Accept a new connection on the listening socket
+					Socket client_socket = socket.accept();
+					if (client_socket.getFd() == -1) {
+						std::cerr << "Failed to accept new connection" << std::endl;
+						continue;
+					}
+					// Add the new client socket to the poller
+					poller.addSocket(&client_socket, POLLIN);
+				} else {
+					// Handle incoming data on the client socket
+					Request request = current_socket->recv();
+
+					// Do something with the received request
+					Response response = this->handle_request(request);
+
+					// Send the Response object back to the client socket
+					current_socket->send(response.to_string());
+				}
+			}
+			// check for other events and handle appropriately
+			if (poller.getEventReturn(i) & POLLOUT) {
+				// handle POLLOUT event
+			}
+			if (poller.getEventReturn(i) & POLLWRBAND) {
+				// handle POLLWRBAND event
+			}
+			if (poller.getEventReturn(i) & POLLPRI) {
+				// handle POLLPRI event
+			}
+		}
+	}
 }
 
 // -Functions

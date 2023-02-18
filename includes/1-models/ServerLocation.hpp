@@ -38,7 +38,6 @@ class ServerLocation {
 		void	setReturnpage(std::pair<int,std::string> Returnpage);
 
 		// -Methods
-
 	private:
 		std::string									_path;
 		std::string									_root;
