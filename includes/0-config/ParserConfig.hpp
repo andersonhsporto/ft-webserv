@@ -39,8 +39,6 @@ class ParserConfig {
 		class WebServer							&_webServer;
 		std::vector<std::string>				_configServers;
 		std::map<std::string, _parseServerFunc>	_parseFuncs;
-		std::fstream        _openFile(const std::string &FilePath);
-        std::string         _getContentsFile(std::fstream file);
 		inline bool			_isCurlyBracketBalanced(std::string fileContent);
 		inline void			_splitServers();
 		inline void			_setServers();

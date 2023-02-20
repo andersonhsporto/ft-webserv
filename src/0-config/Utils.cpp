@@ -1,6 +1,7 @@
-#include "ParserUtils.hpp"
+#include "Utils.hpp"
+#include <fstream>
 
-namespace parser {
+namespace utils {
 	std::vector<std::string> splitStringBy(const std::string &stringToSplit, const char &delimiter) {
 		std::string					line;
 		std::vector<std::string>	split;
@@ -33,6 +34,13 @@ namespace parser {
 		return (wordInt);
 	}
 
+	std::string intToString(const int num) {
+		std::ostringstream ss;
+
+		ss << num;
+		return ss.str();
+	}
+
 	void divideByDelimiter(const std::string &total, std::string &word1, std::string &word2, char delimiter) {
 		std::string::size_type	pos;
 
@@ -52,5 +60,20 @@ namespace parser {
 			str.substr(first, last - first);
 		}
 		return ;
+	}
+
+	std::string fileToString(const std::string& filename) {
+		std::ifstream input(filename);
+		std::stringstream buffer;
+		buffer << input.rdbuf();
+		return buffer.str();
+	}
+
+	void removeSubstring(std::string& str, const std::string& substr) {
+		size_t pos = 0;
+
+		while ((pos = str.find(substr, pos)) != std::string::npos) {
+			str.erase(pos, substr.length());
+		}
 	}
 }

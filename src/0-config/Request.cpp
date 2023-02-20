@@ -1,9 +1,15 @@
 #include "Request.hpp"
-#include "ParserUtils.hpp"
+#include "Utils.hpp"
 
 // -Constructors
 Request::Request(void) {
 	std::cout << "Request default constructor called\n";
+	return ;
+}
+
+Request::Request(const std::string &rawRequest) {
+	std::cout << "Request default constructor called\n";
+	parseRequest(rawRequest);
 	return ;
 }
 
@@ -58,23 +64,25 @@ const std::string &Request::getProtocol(void) const {
 
 // -Setters
 // -Methods
-int	Request::parseRequest(std::string &buffer) {
+void Request::parseRequest(const std::string &buffer) {
 	std::stringstream	ss(buffer);
 
 	int parsed = parseMethod(ss);
 	if (parsed == -1) {
-		return (parsed);
+		// error handling
 	}
 	parsed = parseHeader(ss);
 	if (parsed == -1) {
-		return (parsed);
+		// error handling
 	}
 	parsed = parsePreBody(ss);
 	if (parsed == -1) {
-		return (parsed);
+		// error handling
 	}
 	parsed = parseBody(ss);
-	return (parsed);
+	if (parsed == -1) {
+		// error handling
+	}
 }
 
 // -Private Methods
@@ -85,7 +93,7 @@ int	Request::parseMethod(std::stringstream &ss) {
 	std::vector<std::string>	parts;
 
 	std::getline(ss, method_line, '\r');
-	parts = parser::splitStringBy(method_line, ' ');
+	parts = utils::splitStringBy(method_line, ' ');
 	if (parts.size() != 3) {
 		return (-1);
 	}
@@ -108,7 +116,7 @@ int	Request::parseHeader(std::stringstream &ss) {
 	}
 	std::string headers_str = ss.str().substr(0, pos);
 	ss.str().erase(0, pos + 4);
-	std::vector<std::string> headers = parser::splitStringBy(headers_str, "\r\n");
+	std::vector<std::string> headers = utils::splitStringBy(headers_str, "\r\n");
 	for (const std::string &header : headers) {
 		pos = header.find(':');
 		if (pos == std::string::npos) {
@@ -116,8 +124,8 @@ int	Request::parseHeader(std::stringstream &ss) {
 		}
 		std::string key = header.substr(0, pos);
 		std::string value = header.substr(pos + 2);
-		parser::trimChar(key, ' ');
-		parser::trimChar(value, ' ');
+		utils::trimChar(key, ' ');
+		utils::trimChar(value, ' ');
 		this->_headers[key] = value;
 	}
 	return (0);

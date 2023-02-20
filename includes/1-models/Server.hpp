@@ -6,8 +6,6 @@
 #include <map>
 #include <arpa/inet.h>
 #include "ServerLocation.hpp"
-#include "Request.hpp"
-#include "Response.hpp"
 
 class Server {
 	public:
@@ -52,6 +50,7 @@ class Server {
 		void	start(void);
 
 	private:
+		bool								_running;
 		int									_maxBodySize;
 		int									_timeOut;
 		int									_port;
@@ -62,7 +61,6 @@ class Server {
 		std::vector<ServerLocation*>		_locations;
 		std::map<int, std::string>			_errorPages;
 		std::map<std::string, std::string>	_cgi;
-
 };
 
 // -Functions

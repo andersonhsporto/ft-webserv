@@ -1,6 +1,6 @@
 #include "ParserConfig.hpp"
 #include "WebServer.hpp"
-#include "ParserUtils.hpp"
+#include "Utils.hpp"
 
 ParserConfig::ParserConfig(WebServer &webserver) : _webServer(webserver) {
 	this->_parseFuncs["listen"] = &_parseListen;
@@ -44,8 +44,8 @@ void ParserConfig::setFile(std::string file) {
 // -Methods
 void ParserConfig::parseFile(const std::string &FilePath) {
 	std::string contentsConfig;
-	
-	contentsConfig = this->_getContentsFile(this->_openFile(FilePath));
+
+	contentsConfig = utils::fileToString(FilePath);
 	if(!this->_isCurlyBracketBalanced(contentsConfig))
 		throw std::runtime_error("Curly brackets are not balanced in the file " + FilePath);
 	this->setFile(contentsConfig);
@@ -54,30 +54,7 @@ void ParserConfig::parseFile(const std::string &FilePath) {
 	return ;
 }
 
-
 // -Private Methods
-inline std::fstream	ParserConfig::_openFile(const std::string &FilePath) {
-	std::fstream		file;
-	std::istringstream	iss;
-
-	file.open(FilePath.c_str(), std::fstream::in);
-	if (!file.is_open()) {
-		throw std::runtime_error("Failed to open config file " + FilePath);
-	}
-	return file;
-}
-
-std::string ParserConfig::_getContentsFile(std::fstream file){
-	std::string			fileString;
-	std::string 		line;
-
-	fileString = "";
-	while(std::getline(file, line)){
-		fileString += line + "\n";
-	}
-	return fileString;
-}
-
 bool ParserConfig::_isCurlyBracketBalanced(std::string fileContent) {
 	std::stack<char>	stack;
 
@@ -146,7 +123,7 @@ inline void ParserConfig::_setServers() {
 			line2 = *it2;
 			ss.str(line2);
 			ss >> key;
-			parser::trimChar(key, ' ');
+			utils::trimChar(key, ' ');
 			if (key == "}" || key == "{") {
 				if (key == "{")
 					this->_webServer.addServer();
@@ -154,13 +131,14 @@ inline void ParserConfig::_setServers() {
 				continue;
 			}
 			std::getline(ss, value);
-			parser::trimChar(value, ' ');
+			utils::trimChar(value, ' ');
 			if (key == "location") {
 				while (it2 + 1 != lines.end() && (*(it2 + 1)).find("}") == std::string::npos) {
 					it2++;
 					value += "\n" + (*it2);
 				}
 				it2++;
+				utils::removeSubstring(value, "location ");
 			}
 			try {
 				this->_parseFuncs.at(key);
@@ -180,17 +158,17 @@ void ParserConfig::_parseListen(const std::string &value, class Server &server) 
 	std::string				host;
 	std::string				port;
 
-	parser::divideByDelimiter(value, host, port, ' ');
+	utils::divideByDelimiter(value, host, port, ' ');
 	server.setHost(inet_addr(host.c_str()));
-	server.setPort(parser::stringToInt(port));
+	server.setPort(utils::stringToInt(port));
 }
 
 void ParserConfig::_parseServerName(const std::string &value, class Server &server) {
-	server.setServername(parser::splitStringBy(value, ' '));
+	server.setServername(utils::splitStringBy(value, ' '));
 }
 
 void ParserConfig::_parseMaxSizeBody(const std::string &value, class Server &server) {
-	server.setMaxbodysize(parser::stringToInt(value));
+	server.setMaxbodysize(utils::stringToInt(value));
 }
 
 void ParserConfig::_parseRoot(const std::string &value, class Server &server) {
@@ -198,19 +176,19 @@ void ParserConfig::_parseRoot(const std::string &value, class Server &server) {
 }
 
 void ParserConfig::_parseIndex(const std::string &value, class Server &server) {
-	server.setIndex(parser::splitStringBy(value, ' '));
+	server.setIndex(utils::splitStringBy(value, ' '));
 }
 
 void ParserConfig::_parseErrorPage(const std::string &value, class Server &server) {
 	std::string	code;
 	std::string	page;
 
-	parser::divideByDelimiter(value, code, page, ' ');
-	server.addErrorPages(parser::stringToInt(code), page);
+	utils::divideByDelimiter(value, code, page, ' ');
+	server.addErrorPages(utils::stringToInt(code), page);
 }
 
 void ParserConfig::_parseTimeOut(const std::string &value, class Server &server) {
-	server.setTimeout(parser::stringToInt(value));
+	server.setTimeout(utils::stringToInt(value));
 }
 
 void ParserConfig::_parseLocation(const std::string &value, class Server &server) {
@@ -221,7 +199,7 @@ void ParserConfig::_parseCgi(const std::string &value, class Server &server) {
 	std::string	extension;
 	std::string	path;
 
-	parser::divideByDelimiter(value, extension, path, ' ');
+	utils::divideByDelimiter(value, extension, path, ' ');
 	server.addCgi(extension, path);
 }
 

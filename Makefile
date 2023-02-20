@@ -31,7 +31,7 @@ MAIN_HEADERS	= $(addprefix ./includes/, \
 
 PARSER_HEADERS	= $(addprefix 0-config/, \
 				ParserConfig.hpp \
-				ParserUtils.hpp \
+				Utils.hpp \
 				Request.hpp \
 				Response.hpp \
 				Poll.hpp \
@@ -55,7 +55,7 @@ SRC		= $(addprefix src/, \
 
 PARSER_SRC	= $(addprefix 0-config/, \
 				ParserConfig.cpp \
-				ParserUtils.cpp \
+				Utils.cpp \
 				Request.cpp \
 				Response.cpp \
 				Poll.cpp \

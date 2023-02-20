@@ -5,12 +5,13 @@
 #include <string>
 #include <unordered_map>
 
+
 class Request {
 	public:
 		// -Constructors
 		Request(void);
 		Request(Request const &rhs);
-		Request(std::string &rawRequest);
+		Request(const std::string &rawRequest);
 
 		// -Destructor
 		~Request(void);
@@ -30,14 +31,15 @@ class Request {
 		// -Setters
 
 		// -Methods
-		int	parseRequest(std::string &buffer);
+		void parseRequest(const std::string &buffer);
+
 	private:
-		size_t								_bodyLength;
-		std::string							_body;
-		std::string							_method;
-		std::string							_query;
-		std::string							_target;
-		std::string							_protocol;
+		size_t											_bodyLength;
+		std::string										_body;
+		std::string										_method;
+		std::string										_query;
+		std::string										_target;
+		std::string										_protocol;
 		std::unordered_map<std::string, std::string>	_headers;
 
 		int	parseMethod(std::stringstream &ss);

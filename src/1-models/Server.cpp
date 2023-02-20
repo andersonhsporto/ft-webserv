@@ -1,9 +1,12 @@
 #include "Server.hpp"
-#include "Sockets.hpp"
+#include "Socket.hpp"
 #include "Poll.hpp"
+#include "Request.hpp"
+#include "Response.hpp"
+#include "Utils.hpp"
 
 // -Constructors
-Server::Server(void) : _maxBodySize(1024), _timeOut(30), _port(80), _host(INADDR_ANY), _root("."), _running(false), _socket(nullptr), _poll(nullptr)  {
+Server::Server(void) : _maxBodySize(1024), _timeOut(30), _port(80), _host(INADDR_ANY), _root("."), _running(false) {
 	std::cout << "Server default constructor called\n";
 	return ;
 }
@@ -17,13 +20,9 @@ Server::Server(Server const &rhs) {
 // -Destructor
 Server::~Server(void) {
 	std::cout << "Server default destructor called\n";
-	if (_socket)
-        delete _socket;
-    if (_poll)
-        delete _poll;
-    for (std::vector<ServerLocation*>::iterator it = _locations.begin(); it != _locations.end(); ++it) {
-        delete *it;
-    }
+		for (std::vector<ServerLocation*>::iterator it = _locations.begin(); it != _locations.end(); ++it) {
+			delete *it;
+		}
 	return ;
 }
 
@@ -132,18 +131,18 @@ void Server::addCgi(const std::string &extension, const std::string &path) {
 }
 
 void Server::start(void) {
-	Socket	socket(socket(AF_INET, SOCK_STREAM, 0));
+	Socket	listener;
 	Poll	poller;
 	short	ret;
 
-	if (!listener.bind(_port, _host)) {
+	if (!listener.bind(utils::intToString(_port), _host)) {
 		// handle error
 	}
 	if (!listener.listen(SOMAXCONN)) {
 		// handle error
 	}
 	std::vector<Socket *> socketArray;
-	socketArray.push_back(&socket);
+	socketArray.push_back(&listener);
 	poller.init(socketArray);
 	poller.run();
 	ret = poller.getEventReturn(0);
@@ -164,24 +163,29 @@ void Server::start(void) {
 			if (poller.getEventReturn(i) & POLLIN) {
 				// Handle incoming data on the socket
 				Socket *current_socket = poller.getSocket(i);
-				if (current_socket == &socket) {
+
+				if (current_socket == &listener) {
 					// Accept a new connection on the listening socket
-					Socket client_socket = socket.accept();
+					Socket client_socket = listener.accept();
 					if (client_socket.getFd() == -1) {
 						std::cerr << "Failed to accept new connection" << std::endl;
 						continue;
 					}
 					// Add the new client socket to the poller
-					poller.addSocket(&client_socket, POLLIN);
+					/*
+						Tem q fazer algo assim, acho
+					*/
+					// poller.addSocket(&client_socket, POLLIN);
 				} else {
 					// Handle incoming data on the client socket
-					Request request = current_socket->recv();
+					/*
+							Fazendo
+						Request request(current_socket->recv());
+						Response response(this, request);
 
-					// Do something with the received request
-					Response response = this->handle_request(request);
-
-					// Send the Response object back to the client socket
-					current_socket->send(response.to_string());
+						// Send the Response object back to the client socket
+						current_socket->send(response.to_string());
+					*/
 				}
 			}
 			// check for other events and handle appropriately

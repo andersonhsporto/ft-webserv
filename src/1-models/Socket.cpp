@@ -67,6 +67,7 @@ bool Socket::listen(int backlog) {
 
 Socket Socket::accept(void) {
 	struct sockaddr_in clientAddr = {};
+
 	socklen_t clientAddrLen = sizeof(clientAddr);
 	int clientFD = ::accept(_fd, (struct sockaddr*)&clientAddr, &clientAddrLen);
 	if (clientFD == -1) {
