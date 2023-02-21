@@ -14,12 +14,20 @@ void Poll::init(const std::vector<Socket *> &sockets)
 	for (size_t i = 0; i < this->_size; i++)
 	{
 		this->_poolfd_list[i].fd = sockets[i]->getFd();
-		this->_poolfd_list[i].events = POLLIN | POLLPRI | POLLOUT | POLLWRBAND;
+		this->_poolfd_list[i].events = POLLIN | POLLOUT;
 	}
 }
 
 Poll::~Poll(void)
 {
+}
+
+bool Poll::checkEvent(short event) {
+	if ((event & POLLIN) == POLLIN)
+		return true;
+	if ((event & POLLOUT) == POLLOUT)
+		return true;
+	return false;
 }
 
 void	Poll::run(void)

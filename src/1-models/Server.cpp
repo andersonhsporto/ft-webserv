@@ -144,26 +144,14 @@ void Server::start(void) {
 	std::vector<Socket *> socketArray;
 	socketArray.push_back(&listener);
 	poller.init(socketArray);
-	poller.run();
-	ret = poller.getEventReturn(0);
-	if ((ret & POLLPRI) == POLLPRI)
-		std::cout << "(PARTE1) retorno do status do pool: POLLPRI\n";
-	if ((ret & POLLIN) == POLLIN)
-		std::cout << "(PARTE1) retorno do status do pool: POLLIN\n";
-	if ((ret & POLLOUT) == POLLOUT)
-		std::cout << "(PARTE1) retorno do status do pool: POLLOUT\n";
-	if ((ret & POLLWRBAND) == POLLWRBAND)
-		std::cout << "(PARTE1) retorno do status do pool:POLLWRBAND\n";
 	while (true) {
 		// Wait for incoming requests on the sockets using Poll
 		poller.run();
-
 		// Check for events on the listening socket
 		for (size_t i = 0; i < poller.getSize(); i++) {
-			if (poller.getEventReturn(i) & POLLIN) {
+			if (poller.checkEvent(poller.getEventReturn(i))) {
 				// Handle incoming data on the socket
 				Socket *current_socket = poller.getSocket(i);
-
 				if (current_socket == &listener) {
 					// Accept a new connection on the listening socket
 					Socket client_socket = listener.accept();
@@ -187,16 +175,6 @@ void Server::start(void) {
 						current_socket->send(response.to_string());
 					*/
 				}
-			}
-			// check for other events and handle appropriately
-			if (poller.getEventReturn(i) & POLLOUT) {
-				// handle POLLOUT event
-			}
-			if (poller.getEventReturn(i) & POLLWRBAND) {
-				// handle POLLWRBAND event
-			}
-			if (poller.getEventReturn(i) & POLLPRI) {
-				// handle POLLPRI event
 			}
 		}
 	}

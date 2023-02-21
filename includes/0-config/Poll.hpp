@@ -20,6 +20,7 @@ class Poll
 		short			getEventReturn(size_t index);
 		const size_t	&getSize(void) const;
 		void			init(const std::vector<Socket *> &sockets);
+		bool			checkEvent(short event);
 		void			run();
 };
 
