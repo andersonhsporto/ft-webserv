@@ -32,7 +32,7 @@ bool Poll::checkEvent(short event) {
 
 void	Poll::run(void)
 {
-	int ret = poll(this->_poolfd_list.data(), this->_size, 0);
+	int ret = poll(this->_poolfd_list.data(), this->_size, -1);
 	if (ret == -1)
 		throw std::runtime_error("poll error");
 }
