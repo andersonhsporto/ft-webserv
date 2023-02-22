@@ -8,6 +8,7 @@
 #include <arpa/inet.h>
 #include <stdexcept>
 #include <unistd.h>
+#include "Server.hpp"
 
 class Socket {
 	public:
@@ -23,9 +24,13 @@ class Socket {
 		Socket &operator=(Socket const &rhs);
 
 		// -Getters
-		const int &getFd(void) const;
+		const int  &getFd(void) const;
+		const bool &isListener(void) const;
+		Server *getServer(void) const;
 
 		// -Setters
+		void setTypeListener(bool isListener);
+		void setServer(Server *server);
 
 		// -Methods
 		bool bind(const std::string& address, uint16_t port);
@@ -39,6 +44,8 @@ class Socket {
 
 	private:
 		int	_fd;
+		bool _isListener;
+		Server *_server;
 };
 
 // -Functions

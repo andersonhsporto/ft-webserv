@@ -2,12 +2,12 @@
 #include <iostream>
 
 // -Constructors
-Socket::Socket(void) : _fd(-1){
+Socket::Socket(void) : _fd(-1), _isListener(false){
 	std::cout << "Socket default constructor called\n";
 	return ;
 }
 
-Socket::Socket(int fd) : _fd(fd) {
+Socket::Socket(int fd) : _fd(fd), _isListener(false) {
 	std::cout << "Socket fd constructor called\n";
 	return ;
 }
@@ -39,7 +39,22 @@ const int &Socket::getFd(void) const {
 	return (this->_fd);
 }
 
+const bool &Socket::isListener(void) const {
+	return this->_isListener;
+}
+
+Server *Socket::getServer(void) const{
+	return this->_server;
+}
+
 // -Setters
+void Socket::setTypeListener(bool isListener){
+	this->_isListener = isListener;
+}
+
+void Socket::setServer(Server *server){
+	this->_server = server;
+}
 // -Methods
 bool Socket::bind(const std::string& address, uint16_t port) {
 	_fd = socket(AF_INET, SOCK_STREAM, 0);

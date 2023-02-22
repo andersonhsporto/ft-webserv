@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include "Server.hpp"
+#include "Poll.hpp"
 #include "ParserConfig.hpp"
 
 class WebServer {
@@ -23,7 +24,7 @@ class WebServer {
 		// -Setters
 
 		// -Methods
-		void	parse(const std::string &FilePath);
+		void	run(const std::string &FilePath);
 		void	addServer();
 		Server	&getLastServer();
 

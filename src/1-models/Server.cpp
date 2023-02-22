@@ -1,6 +1,4 @@
 #include "Server.hpp"
-#include "Socket.hpp"
-#include "Poll.hpp"
 #include "Request.hpp"
 #include "Response.hpp"
 #include "Utils.hpp"
@@ -75,6 +73,10 @@ const in_addr_t &Server::getHost(void) const {
 	return (this->_host);
 }
 
+Socket Server::getListener(void) const{
+	return this->_listener;
+}
+
 // -Setters
 void Server::setCgi(std::map<std::string,std::string> Cgi) {
 	this->_cgi = Cgi;
@@ -131,52 +133,13 @@ void Server::addCgi(const std::string &extension, const std::string &path) {
 }
 
 void Server::start(void) {
-	Socket	listener;
-	Poll	poller;
-	short	ret;
-
-	if (!listener.bind(utils::intToString(_port), _host)) {
+	this->_listener.setTypeListener(true);
+	this->_listener.setServer(this);
+	if (!this->_listener.bind(utils::intToString(_port), _host)) {
 		// handle error
 	}
-	if (!listener.listen(SOMAXCONN)) {
+	if (!this->_listener.listen(SOMAXCONN)) {
 		// handle error
-	}
-	std::vector<Socket *> socketArray;
-	socketArray.push_back(&listener);
-	poller.init(socketArray);
-	while (true) {
-		// Wait for incoming requests on the sockets using Poll
-		poller.run();
-		// Check for events on the listening socket
-		for (size_t i = 0; i < poller.getSize(); i++) {
-			if (poller.checkEvent(poller.getEventReturn(i))) {
-				// Handle incoming data on the socket
-				Socket *current_socket = poller.getSocket(i);
-				if (current_socket == &listener) {
-					// Accept a new connection on the listening socket
-					Socket client_socket = listener.accept();
-					if (client_socket.getFd() == -1) {
-						std::cerr << "Failed to accept new connection" << std::endl;
-						continue;
-					}
-					// Add the new client socket to the poller
-					/*
-						Tem q fazer algo assim, acho
-					*/
-					// poller.addSocket(&client_socket, POLLIN);
-				} else {
-					// Handle incoming data on the client socket
-					/*
-							Fazendo
-						Request request(current_socket->recv());
-						Response response(this, request);
-
-						// Send the Response object back to the client socket
-						current_socket->send(response.to_string());
-					*/
-				}
-			}
-		}
 	}
 }
 
