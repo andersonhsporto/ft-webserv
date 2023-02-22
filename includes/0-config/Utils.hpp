@@ -14,6 +14,7 @@ namespace utils {
 	void 						trimChar(std::string &str, char toTrim);
 	std::string					fileToString(const std::string& filename);
 	void						removeSubstring(std::string& str, const std::string& substr);
+	std::string					removeComments(const std::string& str);
 };
 
 #endif

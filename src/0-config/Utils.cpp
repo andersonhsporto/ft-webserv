@@ -1,5 +1,8 @@
 #include "Utils.hpp"
 #include <fstream>
+#include <algorithm>
+#include <set>
+
 
 namespace utils {
 	std::vector<std::string> splitStringBy(const std::string &stringToSplit, const char &delimiter) {
@@ -65,6 +68,7 @@ namespace utils {
 	std::string fileToString(const std::string& filename) {
 		std::ifstream input(filename);
 		std::stringstream buffer;
+
 		buffer << input.rdbuf();
 		return buffer.str();
 	}
@@ -75,5 +79,40 @@ namespace utils {
 		while ((pos = str.find(substr, pos)) != std::string::npos) {
 			str.erase(pos, substr.length());
 		}
+	}
+
+	bool isComment(const std::string& line, const std::set<std::string>& commentPrefixes, int& multi) {
+		std::set<std::string>::const_iterator it;
+
+		for (it = commentPrefixes.begin(); it != commentPrefixes.end(); ++it) {
+			if (line.find(*it) == 0) {
+				if (*it == "/*")
+					multi = 1;
+				else if (*it == "*/")
+					multi = 0;
+				return true;
+			}
+		}
+		if (multi == 1)
+			return true;
+		return false;
+	}
+
+	std::string removeComments(const std::string& str) {
+		std::set<std::string>	commentPrefixes {"//", "/*", "*/", "#", "<!--"};
+		std::istringstream		input(str);
+		std::string				result;
+		std::string				line;
+		int						multi = 0;
+
+		while (std::getline(input, line)) {
+			if (!isComment(line, commentPrefixes, multi)) {
+				if (result.length() > 0) {
+					result += "\n";
+				}
+				result += line.substr(0, line.find_first_of(*(commentPrefixes.begin()), 0));
+			}
+		}
+		return result;
 	}
 }

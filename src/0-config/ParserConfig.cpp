@@ -45,7 +45,8 @@ void ParserConfig::setFile(std::string file) {
 void ParserConfig::parseFile(const std::string &FilePath) {
 	std::string contentsConfig;
 
-	contentsConfig = utils::fileToString(FilePath);
+	contentsConfig = utils::removeComments(utils::fileToString(FilePath));
+
 	if(!this->_isCurlyBracketBalanced(contentsConfig))
 		throw std::runtime_error("Curly brackets are not balanced in the file " + FilePath);
 	this->setFile(contentsConfig);

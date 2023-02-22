@@ -30,7 +30,7 @@ class Response {
 		size_t											_bodyLength;
 		std::string										_body;
 		std::string										_rawResponse;
-		std::unordered_map<std::string, std::string>	_status;
+		std::pair<std::string, std::string>				_status;
 		std::unordered_map<std::string, std::string>	_headers;
 		std::set<std::string>							_allowedMethods;
 

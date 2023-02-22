@@ -46,37 +46,37 @@ const std::string	&Response::getRawresponse(void) const {
 // -Methods
 // -Private Methods
 void Response::_buildResponse() {
-	// std::stringstream response_stream;
-	// /*
-	// 	Pegar Status Code
-	// 	Pegar Status Message
-	// */
-	// response_stream << "HTTP/1.1" << " " \
-	// << this->_status_code << " " \
-	// << this->_status_message << "\r\n";
+	std::stringstream response_stream;
+	/*
+		Pegar Status Code
+		Pegar Status Message
+	*/
+	response_stream << "HTTP/1.1" << " " \
+	<< this->_status.first << " " \
+	<< this->_status.second << "\r\n";
 
-	// /*
-	// 	Gerar Headers
-	// */
-	// // Add headers
-	// for (auto& header : this->getHeaders()) {
-	// 	response_stream << header.first << ": " << header.second << "\r\n";
-	// }
+	/*
+		Gerar Headers
+	*/
+	// Add headers
+	for (auto& header : this->_headers) {
+		response_stream << header.first << ": " << header.second << "\r\n";
+	}
 
-	// /*
-	// 	Gerar body
-	// */
-	// // Add content length if body is not empty
-	// if (!this->getBody().empty()) {
-	// 	response_stream << "Content-Length: " << this->getBodylength() << "\r\n";
-	// }
+	/*
+		Gerar body
+	*/
+	// Add content length if body is not empty
+	if (!this->_body.empty()) {
+		response_stream << "Content-Length: " << this->_bodyLength << "\r\n";
+	}
 
-	// // Add empty line to separate headers from body
-	// response_stream << "\r\n";
+	// Add empty line to separate headers from body
+	response_stream << "\r\n";
 
-	// // Add body
-	// response_stream << this->body;
-	// this->_rawResponse = response_stream.str();
+	// Add body
+	response_stream << this->_body;
+	this->_rawResponse = response_stream.str();
 }
 
 int Response::_handleRequest(const Server &server, const Resquest &request) {
@@ -170,8 +170,7 @@ int Response::_handleRequest(const Server &server, const Resquest &request) {
 		200 -> Code
 		OK -> Code Message
 
-		Body vem do arquivo.
-			Como definir o Content-Type ?
+		Body e o Content-Type (header) vem do arquivo.
 
 	*/
 	return (0);
