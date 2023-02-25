@@ -5,7 +5,7 @@
 #include "Utils.hpp"
 
 // -Constructors
-Server::Server(void) : _maxBodySize(1024), _timeOut(30), _port(80), _host(INADDR_ANY), _root("."), _running(false) {
+Server::Server(void) : _maxBodySize(1024), _timeOut(30), _port(0), _host(""), _root("."), _running(false) {
 	std::cout << "Server default constructor called\n";
 	return ;
 }
@@ -70,7 +70,7 @@ const int &Server::getPort(void) const {
 	return (this->_port);
 }
 
-const in_addr_t &Server::getHost(void) const {
+const std::string &Server::getHost(void) const {
 	return (this->_host);
 }
 
@@ -115,7 +115,7 @@ void Server::setPort(int Port) {
 	this->_port = Port;
 }
 
-void Server::setHost(in_addr_t Host) {
+void Server::setHost(std::string Host) {
 	this->_host = Host;
 }
 
@@ -136,12 +136,15 @@ void Server::addCgi(const std::string &extension, const std::string &path) {
 void Server::start(void) {
 	this->_listener.setTypeListener(true);
 	this->_listener.setServer(this);
-	if (!this->_listener.bind(utils::intToString(_port), _host)) {
+	if (!this->_listener.bind(_host, _port)) {
 		// handle error
+		std::cout << "falhou bind \n";
 	}
 	if (!this->_listener.listen(SOMAXCONN)) {
 		// handle error
+		std::cout << "falhou listen \n";
 	}
+	std::cout << "Foi listen e bind todo \n";
 }
 
 // -Functions
