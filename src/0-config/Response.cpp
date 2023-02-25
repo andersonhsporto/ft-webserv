@@ -1,6 +1,9 @@
 #include "Response.hpp"
+#include <fstream>
+#include "ServerLocation.hpp"
 #include "Request.hpp"
 #include "Server.hpp"
+#include "Utils.hpp"
 
 // -Constructors
 Response::Response(void) {
@@ -14,13 +17,15 @@ Response::Response(Response const &rhs) {
 	return ;
 }
 
-Response::Response(const Server &server, const Resquest &request) : _allowedMethods({"GET", "POST", "DELETE"}) {
+Response::Response(const Server &server, const Request &request) : _allowedMethods({"GET", "POST", "DELETE"}) {
 	std::cout << "Response class request constructor called\n";
-	if (_handleRequest(server, request) != -1)
-		_buildResponse();
-	/*
-		else error handling
-	*/
+	if (_handleRequest(server, request) != -1) {
+		_setResponseVariables(server, request);
+	}
+	else {
+		_setErrorResponse(server);
+	}
+	_buildResponse();
 }
 
 // -Destructor
@@ -47,57 +52,133 @@ const std::string	&Response::getRawresponse(void) const {
 // -Private Methods
 void Response::_buildResponse() {
 	std::stringstream response_stream;
-	/*
-		Pegar Status Code
-		Pegar Status Message
-	*/
+
 	response_stream << "HTTP/1.1" << " " \
 	<< this->_status.first << " " \
 	<< this->_status.second << "\r\n";
-
-	/*
-		Gerar Headers
-	*/
-	// Add headers
-	for (auto& header : this->_headers) {
-		response_stream << header.first << ": " << header.second << "\r\n";
+	for (std::unordered_map<std::string, std::string>::const_iterator it = _headers.begin(); it != _headers.end(); ++it) {
+		response_stream << it->first << ": " << it->second << "\r\n";
 	}
-
-	/*
-		Gerar body
-	*/
-	// Add content length if body is not empty
-	if (!this->_body.empty()) {
-		response_stream << "Content-Length: " << this->_bodyLength << "\r\n";
-	}
-
-	// Add empty line to separate headers from body
 	response_stream << "\r\n";
-
-	// Add body
 	response_stream << this->_body;
 	this->_rawResponse = response_stream.str();
 }
 
-int Response::_handleRequest(const Server &server, const Resquest &request) {
-	/*
+void Response::_setResponseVariables(const Server &server, const Request &request) {
+	this->_headers["Date"] = utils::getCurrentTime();
+	if (!request.getTarget().empty()) {
+		std::string root;
+		const std::vector<ServerLocation*> &locations = server.getLocations();
+		for (std::vector<ServerLocation*>::const_iterator it = locations.begin(); it != locations.end(); ++it) {
+			if ((*it)->getPath() == request.getTarget()) {
+				root = (*it)->getRoot();
+				if ((*it)->getAutoindex()) {
+					std::string	indexFile;
+					bool		found = false;
+					for (std::vector<std::string>::const_iterator it = server.getIndex().begin(); it != server.getIndex().end(); ++it) {
+						std::string path = server.getRoot() + request.getTarget() + "/" + *it;
+						std::ifstream file(path);
+						if (file.good())
+							found = true;
+					}
+					if (found) {
+						_setStatus("301");
+						this->_headers["Location"] = indexFile;
+					}
+				}
+				if ((*it)->getReturnpage().first != 0 || !(*it)->getReturnpage().second.empty()) {
+					_setStatus("302");
+					this->_headers["Location"] = (*it)->getReturnpage().second;
+				}
+				break;
+			}
+		}
+		utils::fileToString(root + request.getTarget(), this->_body);
+		if (!this->_body.empty()) {
+			this->_headers["Content-Length"] = utils::intToString(this->_body.size());
+			this->_headers["Content-Type"] = this->_getContentTypeHeader(root + request.getTarget());
+		}
+	}
+	if (!server.getServername().empty()) {
+		for (std::vector<std::string>::const_iterator it = server.getServername().begin(); it != server.getServername().end(); ++it) {
+			this->_headers["Server"].append(*it);
+			if (it != server.getServername().end() - 1) {
+				this->_headers["Server"].append(", ");
+			}
+		}
+	}
+}
 
-		ERROR CHECKING WIP
+void Response::_setErrorResponse(const Server &server) {
+	std::string errorPage;
 
+	if (server.getErrorpages().count(std::stoi(this->_status.first)) > 0) {
+		errorPage = server.getErrorpages().at(std::stoi(this->_status.first));
+	} else {
+		errorPage = "<html><head><title>" + this->_status.first + \
+		" " + this->_status.second + "</title></head><body><h1>" + \
+		this->_status.first + " " + this->_status.second + \
+		"</h1></body></html>";
+	}
+	this->_headers["Content-Type"] = "text/html";
+	this->_headers["Content-Length"] = std::to_string(errorPage.length());
+	this->_body = errorPage;
+}
+
+std::string Response::_getContentTypeHeader(const std::string& filePath) {
+	std::unordered_map<std::string, std::string> extensionMap {
+		{ "html", "text/html" },
+		{ "htm", "text/html" },
+		{ "css", "text/css" },
+		{ "js", "application/javascript" },
+		{ "json", "application/json" },
+		{ "jpg", "image/jpeg" },
+		{ "jpeg", "image/jpeg" },
+		{ "png", "image/png" },
+		{ "gif", "image/gif" }
+	};
+	std::string extension = filePath.substr(filePath.find_last_of(".") + 1);
+	std::string contentType = extensionMap[extension];
+
+	if (contentType.empty()) {
+		contentType = "application/octet-stream";
+	}
+	return (contentType);
+}
+
+void Response::_setStatus(const std::string& code) {
+	std::unordered_map<std::string, std::string> messages {
+		{ "200", "OK" },
+		{ "201", "Created" },
+		{ "203", "No Content" },
+		{ "301", "Moved Permanently" },
+		{ "302", "Found" },
+		{ "400", "Bad Request" },
+		{ "403", "Forbidden" },
+		{ "404", "Not Found" },
+		{ "405", "Method Not Allowed" },
+		{ "413", "Entity Too Large" },
+		{ "500", "Internal Server Error" },
+		{ "505", "Version Not Supported" }
+	};
+	this->_status = std::make_pair(code, messages[code]);
+}
+
+int Response::_handleRequest(const Server &server, const Request &request) {
 	// - Check Protocol
 	if (request.getProtocol()!= "HTTP/1.1") {
-		// Error Protocol not allowed
-		return;
+		_setStatus("505");
+		return (-1);
 	}
 	// - Check Method
 	if (_allowedMethods.count(request.getMethod()) == 0) {
-		// Error method not allowed
-		return;
+		_setStatus("405");
+		return (-1);
 	}
 	// - Check body Lenght
-	if (request.getBodyLength() > server.getMaxBodySize()) {
-		// Error size too large
-		return;
+	if (request.getBodylength() > server.getMaxbodysize()) {
+		_setStatus("413");
+		return (-1);
 	}
 	// - Check Location
 	const ServerLocation* location = nullptr;
@@ -108,71 +189,19 @@ int Response::_handleRequest(const Server &server, const Resquest &request) {
 		}
 	}
 	if (!location) {
-		// Error Not Found
-		return;
+		_setStatus("404");
+		return (-1);
 	}
-	// Execute any relevant CGI scripts ????????
-	if (location->getAutoIndex()) {
-		std::string	indexFile;
-		bool		found = false;
-		for (std::vector<std::string>::const_iterator it = server.getIndex().begin(); it != server.getIndex().end(); ++it) {
-			std::string path = server.getRoot() + request.getTarget() + "/" + *it;
-			std::ifstream file(path);
-			if (file.good()) {
-				outFile = path;
-				found = true;
-			}
-		}
-		if (found) {
-			response.setStatusCode(301, "Moved Permanently");
-			response.addHeader("Location", indexFile);
-			return;
-		}
+	// Execute any relevant CGI scripts
+	std::string filePath = server.getRoot() + request.getTarget();
+	std::ifstream input(filePath.c_str());
+	if (!input) {
+		_setStatus("404");
+		return (-1);
 	}
-	std::string indexFile;
-	if (findIndexFile(request, serverConfig.getRoot(), location->getIndex(), indexFile)) {
-		response.setStatusCode(301, "Moved Permanently");
-		response.addHeader("Location", indexFile);
-		return;
+	else {
+		_setStatus("200");
 	}
-	// Try to serve the requested file
-	std::string filePath = serverConfig.getRoot() + request.getTarget();
-	if (serveFile(filePath, response)) {
-		response.setStatusCode(200, "OK");
-	} else {
-		response.setStatusCode(404, "Not Found");
-	}
-	*/
-	/*
-		Making Get no errors work
-		Request
-		size_t											_bodyLength;
-		std::string										_body;
-		std::string										_method;
-		std::string										_query;
-		std::string										_target;
-		std::string										_protocol;
-
-		Server
-		int									_maxBodySize;
-		int									_timeOut;
-		int									_port;
-		in_addr_t							_host;
-		std::string							_root;
-		std::vector<std::string>			_index;
-		std::vector<std::string>			_serverName;
-		std::vector<ServerLocation*>		_locations;
-		std::map<int, std::string>			_errorPages;
-		// std::map<std::string, std::string>	_cgi;
-
-		Contruir Body
-		HTTP/1.1 -> Protocol
-		200 -> Code
-		OK -> Code Message
-
-		Body e o Content-Type (header) vem do arquivo.
-
-	*/
 	return (0);
 }
 
@@ -181,7 +210,6 @@ std::ostream &operator<<(std::ostream &out, Response const &in) {
 	(void)in;
 	return (out);
 }
-
 
 /*
 	FOR CLIENT

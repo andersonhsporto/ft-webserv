@@ -1,8 +1,10 @@
 #include "Utils.hpp"
-#include <fstream>
-#include <algorithm>
 #include <set>
-
+#include <ctime>
+#include <fstream>
+#include <sstream>
+#include <iomanip>
+#include <algorithm>
 
 namespace utils {
 	std::vector<std::string> splitStringBy(const std::string &stringToSplit, const char &delimiter) {
@@ -65,12 +67,15 @@ namespace utils {
 		return ;
 	}
 
-	std::string fileToString(const std::string& filename) {
-		std::ifstream input(filename);
+	int fileToString(const std::string& filename, std::string& fileContents) {
+		std::ifstream input(filename.c_str());
+		if (!input) {
+			return (-1);
+		}
 		std::stringstream buffer;
-
 		buffer << input.rdbuf();
-		return buffer.str();
+		fileContents = buffer.str();
+		return (1);
 	}
 
 	void removeSubstring(std::string& str, const std::string& substr) {
@@ -114,5 +119,14 @@ namespace utils {
 			}
 		}
 		return result;
+	}
+
+	std::string getCurrentTime(void) {
+		std::time_t now = std::time(nullptr);
+		std::tm tm = *std::gmtime(&now);
+
+		std::stringstream ss;
+		ss << std::put_time(&tm, "%a, %d %b %Y %H:%M:%S GMT");
+		return ss.str();
 	}
 }

@@ -12,7 +12,7 @@ ServerLocation::ServerLocation(void) {
 	return ;
 }
 
-ServerLocation::ServerLocation(const std::string &values) {
+ServerLocation::ServerLocation(const std::string &values) : _returnPage(std::make_pair(0, "")) {
 	this->_parseFuncs["/"] = &_parsePath;
 	this->_parseFuncs["return"] = &_parseReturn;
 	this->_parseFuncs["root"] = &_parseRoot;

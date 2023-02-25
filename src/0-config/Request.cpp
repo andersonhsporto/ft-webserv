@@ -1,4 +1,5 @@
 #include "Request.hpp"
+#include <sstream>
 #include "Utils.hpp"
 
 // -Constructors

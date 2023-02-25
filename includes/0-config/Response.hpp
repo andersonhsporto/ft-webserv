@@ -11,7 +11,7 @@ class Response {
 		// -Constructors
 		Response(void);
 		Response(Response const &rhs);
-		Response(const class Server &server, const class Resquest &request);
+		Response(const class Server &server, const class Request &request);
 
 		// -Destructor
 		~Response(void);
@@ -34,8 +34,12 @@ class Response {
 		std::unordered_map<std::string, std::string>	_headers;
 		std::set<std::string>							_allowedMethods;
 
-		int		_handleRequest(const class Server &server, const class Resquest &request);
-		void	_buildResponse();
+		int			_handleRequest(const class Server &server, const class Request &request);
+		void		_buildResponse();
+		void		_setResponseVariables(const class Server &server, const class Request &request);
+		void		_setStatus(const std::string& code);
+		void		_setErrorResponse(const class Server &server);
+		std::string	_getContentTypeHeader(const std::string& filePath);
 };
 
 // -Functions

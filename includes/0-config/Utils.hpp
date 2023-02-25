@@ -1,7 +1,6 @@
 #ifndef UTILS_HPP
 #define UTILS_HPP
 
-#include <sstream>
 #include <string>
 #include <vector>
 
@@ -12,9 +11,10 @@ namespace utils {
 	std::string					intToString(const int num);
 	void						divideByDelimiter(const std::string &total, std::string &word1, std::string &word2, char delimiter);
 	void 						trimChar(std::string &str, char toTrim);
-	std::string					fileToString(const std::string& filename);
+	int							fileToString(const std::string& filename, std::string& fileContents);
 	void						removeSubstring(std::string& str, const std::string& substr);
 	std::string					removeComments(const std::string& str);
+	std::string					getCurrentTime(void);
 };
 
 #endif
