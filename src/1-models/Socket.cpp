@@ -31,6 +31,8 @@ Socket &Socket::operator=(Socket const &rhs) {
 	if (this != &rhs) {
 		std::cout << "Socket copy assignment operator called\n";
 		_fd = rhs._fd;
+		_isListener = rhs._isListener;
+		_server = rhs._server;
 	}
 	return (*this);
 }
@@ -68,12 +70,14 @@ bool Socket::bind(const std::string& address, uint16_t port) {
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(port);
 	addr.sin_addr.s_addr = inet_addr(address.c_str());
+	std::cout << "Address: " << address << " Port: " << port << "\n";
 	if (::bind(_fd, (struct sockaddr*)&addr, sizeof(addr)) == -1) {
 		close();
 		return false;
 	}
 	return (true);
 }
+
 
 bool Socket::listen(int backlog) {
 	if (::listen(_fd, backlog) == -1) {

@@ -30,7 +30,7 @@ class Server {
 		const std::vector<std::string>		&getIndex(void) const;
 		const std::string					&getRoot(void) const;
 		const int							&getPort(void) const;
-		const in_addr_t						&getHost(void) const;
+		const std::string					&getHost(void) const;
 		Socket								getListener(void) const;
 
 		// -Setters
@@ -43,7 +43,7 @@ class Server {
 		void	setIndex(std::vector<std::string> Index);
 		void	setRoot(std::string Root);
 		void	setPort(int Port);
-		void	setHost(in_addr_t Host);
+		void	setHost(std::string Host);
 
 		// -Methods
 		void	addErrorPages(const int &code, const std::string &page);
@@ -57,7 +57,7 @@ class Server {
 		int									_timeOut;
 		int									_port;
 		Socket								_listener;
-		in_addr_t							_host;
+		std::string							_host;
 		std::string							_root;
 		std::vector<std::string>			_index;
 		std::vector<std::string>			_serverName;

@@ -163,8 +163,8 @@ void ParserConfig::_parseListen(const std::string &value, class Server &server) 
 	std::string				host;
 	std::string				port;
 
-	utils::divideByDelimiter(value, host, port, ' ');
-	server.setHost(inet_addr(host.c_str()));
+	utils::divideByDelimiter(value, host, port, ':');
+	server.setHost(host);
 	server.setPort(utils::stringToInt(port));
 }
 
