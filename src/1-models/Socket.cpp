@@ -1,8 +1,9 @@
 #include "Socket.hpp"
 #include <iostream>
+#include "Server.hpp"
 
 // -Constructors
-Socket::Socket(void) : _fd(-1){
+Socket::Socket(void) : _fd(-1), _isListener(false) {
 	std::cout << "Socket default constructor called\n";
 	return ;
 }
@@ -39,7 +40,24 @@ const int &Socket::getFd(void) const {
 	return (this->_fd);
 }
 
+const bool &Socket::isListener(void) const {
+	return (this->_isListener);
+}
+
+Server *Socket::getServer(void) const {
+	return (this->_server);
+}
+
 // -Setters
+void Socket::setTypeListener(bool isListener) {
+	this->_isListener = isListener;
+}
+
+void Socket::setServer(Server *server ){
+	this->_server = server;
+}
+
+
 // -Methods
 bool Socket::bind(const std::string& address, uint16_t port) {
 	_fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -67,7 +85,6 @@ bool Socket::listen(int backlog) {
 
 Socket Socket::accept(void) {
 	struct sockaddr_in clientAddr = {};
-
 	socklen_t clientAddrLen = sizeof(clientAddr);
 	int clientFD = ::accept(_fd, (struct sockaddr*)&clientAddr, &clientAddrLen);
 	if (clientFD == -1) {

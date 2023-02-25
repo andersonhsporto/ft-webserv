@@ -1,9 +1,9 @@
 #ifndef RESPONSE_HPP
 #define RESPONSE_HPP
 
-#include <iostream>
 #include <set>
 #include <string>
+#include <iostream>
 #include <unordered_map>
 
 class Response {

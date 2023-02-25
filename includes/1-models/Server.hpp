@@ -5,6 +5,7 @@
 #include <vector>
 #include <map>
 #include <arpa/inet.h>
+#include "Socket.hpp"
 #include "ServerLocation.hpp"
 
 class Server {
@@ -30,6 +31,7 @@ class Server {
 		const std::string					&getRoot(void) const;
 		const int							&getPort(void) const;
 		const in_addr_t						&getHost(void) const;
+		Socket								getListener(void) const;
 
 		// -Setters
 		void	setCgi(std::map<std::string,std::string> Cgi);
@@ -54,6 +56,7 @@ class Server {
 		int									_maxBodySize;
 		int									_timeOut;
 		int									_port;
+		Socket								_listener;
 		in_addr_t							_host;
 		std::string							_root;
 		std::vector<std::string>			_index;

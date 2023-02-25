@@ -23,7 +23,7 @@ class WebServer {
 		// -Setters
 
 		// -Methods
-		void	parse(const std::string &FilePath);
+		void	run(const std::string &FilePath);
 		void	addServer();
 		Server	&getLastServer();
 
