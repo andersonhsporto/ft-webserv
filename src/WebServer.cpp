@@ -35,6 +35,8 @@ void WebServer::run(const std::string &FilePath) {
 	Socket* ptr;
 	for(std::vector<Server *>::iterator it = this->_serverList.begin(); it != this->_serverList.end(); ++it){
 		listener = (*it)->getListener();
+		listener.setTypeListener(true);
+		listener.setServer((*it));
 		listener.bind((*it)->getHost(), (*it)->getPort());
 		listener.listen(SOMAXCONN);
 		ptr = new Socket(listener); // create a temporary copy of the listener object
@@ -48,6 +50,8 @@ void WebServer::run(const std::string &FilePath) {
 		for (size_t i = 0; i < poller.getSize(); i++) {
 			std::cout << "Olaaaaaaaaaaaa\n";
 			if (poller.checkEvent(poller.getEventReturn(i))) {
+				std::cout << "cheguei!!!\n";
+				sleep(10);
 				// Handle incoming data on the socket
 				Socket *current_socket = poller.getSocket(i);
 				if (current_socket->isListener()) {
