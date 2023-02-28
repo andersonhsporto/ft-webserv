@@ -31,9 +31,13 @@ void WebServer::run(const std::string &FilePath) {
 	std::vector<Socket *>	listSockets;
 
 	this->_parser.parseFile(FilePath);
+	Socket listener;
+	Socket* ptr;
 	for(std::vector<Server *>::iterator it = this->_serverList.begin(); it != this->_serverList.end(); ++it){
-		const Socket& listener = (*it)->getListener();
-		Socket* ptr = new Socket(listener); // create a temporary copy of the listener object
+		listener = (*it)->getListener();
+		listener.bind((*it)->getHost(), (*it)->getPort());
+		listener.listen(SOMAXCONN);
+		ptr = new Socket(listener); // create a temporary copy of the listener object
 		listSockets.push_back(ptr);
 	}
 	poller.init(listSockets);

@@ -69,7 +69,7 @@ bool Socket::bind(const std::string& address, uint16_t port) {
 	struct sockaddr_in addr = {};
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(port);
-	addr.sin_addr.s_addr = inet_addr(address.c_str());
+	addr.sin_addr.s_addr = INADDR_ANY;
 	std::cout << "Address: " << address << " Port: " << port << "\n";
 	if (::bind(_fd, (struct sockaddr*)&addr, sizeof(addr)) == -1) {
 		close();
