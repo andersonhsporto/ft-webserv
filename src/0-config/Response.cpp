@@ -93,7 +93,9 @@ void Response::_setResponseVariables(const Server &server, const Request &reques
 				break;
 			}
 		}
-		utils::fileToString(root + request.getTarget(), this->_body);
+		std::cout << "RESULTADO 1:" << server.getRoot() + request.getTarget() << "\n";
+		std::cout << "RESULTADO 2:" << root + request.getTarget() << "\n";
+		utils::fileToString(server.getRoot() + request.getTarget(), this->_body);
 		if (!this->_body.empty()) {
 			this->_headers["Content-Length"] = utils::intToString(this->_body.size());
 			this->_headers["Content-Type"] = this->_getContentTypeHeader(root + request.getTarget());
@@ -188,14 +190,22 @@ int Response::_handleRequest(const Server &server, const Request &request) {
 			break;
 		}
 	}
-	if (!location) {
-		_setStatus("404");
-		return (-1);
-	}
+
+	// if (!location) {
+	// 	std::cout << "!!!!!!!!!!!!!!!!!!!!!!\n";
+	// 	_setStatus("404");
+	// 	return (-1);
+	// }
+
 	// Execute any relevant CGI scripts
 	std::string filePath = server.getRoot() + request.getTarget();
+	std::cout << "FILE PATH: " << filePath << "\n";
+	std::cout << "ROOT: " << server.getRoot() << " TARGET: " << request.getTarget() << "\n";
 	std::ifstream input(filePath.c_str());
-	if (!input) {
+	std::string conteudo;
+	std::cout << "SAIDA: " << utils::fileToString(filePath, conteudo) << "\n";
+	std::cout << "CONTEUDO:\n" << conteudo << "\n";
+	if (conteudo.empty()) {
 		_setStatus("404");
 		return (-1);
 	}

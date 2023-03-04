@@ -116,7 +116,7 @@ ssize_t Socket::send(const void* buf, size_t len, int flags) {
 	return (::send(_fd, buf, len, flags));
 }
 
-ssize_t Socket::recv(void* buf, size_t len, int flags) {
+ssize_t Socket::recv(char* buf, size_t len, int flags) {
 	return (::recv(_fd, buf, len, flags));
 }
 

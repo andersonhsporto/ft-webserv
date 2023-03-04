@@ -44,6 +44,7 @@ void ParserConfig::setFile(std::string file) {
 // -Methods
 void ParserConfig::parseFile(const std::string &FilePath) {
 	std::string contentsConfig;
+	std::cout << "ENTRADA DE EXEMPLO: " << FilePath << "\n";
 
 	if (utils::fileToString(FilePath, contentsConfig) != -1)
 		contentsConfig = utils::removeComments(contentsConfig);
@@ -177,7 +178,9 @@ void ParserConfig::_parseMaxSizeBody(const std::string &value, class Server &ser
 }
 
 void ParserConfig::_parseRoot(const std::string &value, class Server &server) {
-	server.setRoot(value);
+	std::cout << "MEU RETORNO:" << value << "\n";
+	// utils::trimChar(value, ' ');
+	server.setRoot(value.substr(1, value.length()));
 }
 
 void ParserConfig::_parseIndex(const std::string &value, class Server &server) {

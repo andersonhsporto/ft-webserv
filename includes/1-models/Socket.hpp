@@ -37,7 +37,7 @@ class Socket {
 		Socket	accept(void);
 		void	connect(const std::string& address, uint16_t port);
 		ssize_t	send(const void* buf, size_t len, int flags = 0);
-		ssize_t	recv(void* buf, size_t len, int flags = 0);
+		ssize_t	recv(char* buf, size_t len, int flags = 0);
 		void	setsockopt(int level, int optname, const void* optval, socklen_t optlen);
 		void	close(void);
 
