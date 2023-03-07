@@ -25,6 +25,7 @@ class Response {
 		// -Setters
 
 		// -Methods
+		void execute (const class Server &server, const class Request &request);
 
 	private:
 		size_t											_bodyLength;
@@ -40,6 +41,7 @@ class Response {
 		void		_setStatus(const std::string& code);
 		void		_setErrorResponse(const class Server &server);
 		std::string	_getContentTypeHeader(const std::string& filePath);
+		void		_clearVariables(void);
 };
 
 // -Functions

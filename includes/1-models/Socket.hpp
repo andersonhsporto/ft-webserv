@@ -24,17 +24,15 @@ class Socket {
 
 		// -Getters
 		const int		&getFd(void) const;
-		const bool		&isListener(void) const;
 		class Server	*getServer(void) const;
 
 		// -Setters
-		void	setTypeListener(bool isListener);
 		void	setServer(Server *server);
 
 		// -Methods
 		bool	bind(const std::string& address, uint16_t port);
 		bool	listen(int backlog = 10);
-		Socket	accept(void);
+		int		accept(void);
 		void	connect(const std::string& address, uint16_t port);
 		ssize_t	send(const void* buf, size_t len, int flags = 0);
 		ssize_t	recv(char* buf, size_t len, int flags = 0);
@@ -43,7 +41,6 @@ class Socket {
 
 	private:
 		int				_fd;
-		bool			_isListener;
 		class Server*	_server;
 };
 

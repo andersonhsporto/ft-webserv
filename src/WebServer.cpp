@@ -32,111 +32,64 @@ WebServer &WebServer::operator=(WebServer const &rhs) {
 // -Methods
 void WebServer::run(const std::string &FilePath) {
 	Poll					poller;
-	std::vector<Socket *>	listSockets;
-	Socket listener;
-	Socket* ptr;
-	Socket *current_socket;
-	Socket client_socket;
+	Socket					*listener;
+	Socket					client_socket;
+	std::string				rawRequest;
+	const int				BUFFER_SIZE = 1024;
+	char					buffer[BUFFER_SIZE];
+	ssize_t					bytesRead;
+	Request 				request;
+	Response 				response;
+	int                     client_fd;
 
 
-	const char *message = "From Server: Hello, client!\n";
 	this->_parser.parseFile(FilePath);
 	for(std::vector<Server *>::iterator it = this->_serverList.begin(); it != this->_serverList.end(); ++it){
-		listener = (*it)->getListener();
-		listener.setTypeListener(true);
-		listener.setServer((*it));
-		listener.bind((*it)->getHost(), (*it)->getPort());
-		listener.listen(SOMAXCONN);
-		ptr = new Socket(listener); // create a temporary copy of the listener object
-		listSockets.push_back(ptr);
+		listener = new Socket();
+		listener->setServer((*it));
+		if(listener->bind((*it)->getHost(), (*it)->getPort())){
+			if(listener->listen(SOMAXCONN)){
+				poller.addSocket(listener);
+				continue;
+			}
+		}
+		throw std::runtime_error("Error creating server listener");
 	}
-	poller.init(listSockets);
+	poller.init();
+	std::cout << "number of listener Sockets: " << poller.getSize() << "\n\n";
 	while (true) {
 		// Wait for incoming requests on the sockets using Poll
 		poller.run();
-		std::cout << "quantidade de Sockets: " << poller.getSize() << "\n\n";
-		// sleep(10); 
 		// Check for events on the listening socket
 		for (size_t i = 0; i < poller.getSize(); i++) {
-			std::cout << "FD: " << poller.getSocket(i)->getFd();
-			std::cout << " cliente: " <<  (poller.getSocket(i)->isListener() ? "NAO\n" : "SIM\n");
+			std::cout << "FD: " << poller.getSocket(i)->getFd() << "\n";
 			if (poller.checkEvent(poller.getEventReturn(i))) {
 				// Handle incoming data on the socket
-				current_socket = poller.getSocket(i);
-				if (current_socket->isListener()) {
-					std::cout << "O fd acima gerou o cliente ";
-					// Accept a new connection on the listening socket
-
-					struct sockaddr_in clientAddr = {};
-					socklen_t clientAddrLen = sizeof(clientAddr);
-					Socket client_socket(::accept(current_socket->getFd(), (struct sockaddr*)&clientAddr, &clientAddrLen));
-					if (client_socket.getFd() == -1) {
-						std::cerr << "Failed to accept new connection" << std::endl;
-						continue;
-					}
-					std::cout << client_socket.getFd() << "\n";
-					client_socket.setTypeListener(false);
-					client_socket.setServer(current_socket->getServer());
-					poller.addSocket(new Socket(client_socket));
-
-
-					// const int BUFFER_SIZE = 1024;
-        			// char buffer[BUFFER_SIZE];
-					// ssize_t received_bytes = client_socket.recv(buffer, BUFFER_SIZE, 0);
-        			// if (received_bytes == -1) {
-            		// 	std::cerr << "Error receiving data: " << strerror(errno) << std::endl;
-            		// 	break;
-        			// }
-					// std::cout << "messegae: " << buffer << "\n";
-
-					// if (client_socket.send(message, strlen(message), 0) == -1) {
-            		// 	std::cerr << "Failed to send message to client" << std::endl;
-            		// 	continue;
-        			// }
-
-					std::string rawRequest;
-					const int BUFFER_SIZE = 1024;
-					char buffer[BUFFER_SIZE];
-					ssize_t bytesRead;
-					while ((bytesRead = client_socket.recv(buffer, sizeof(buffer), 0)) > 0) {
-						rawRequest.append(buffer, bytesRead);
-
-						// Check if we have received the entire request
-						if (rawRequest.find("\r\n\r\n") != std::string::npos) {
-							break;
-						}
-					}
-					// Handle incoming data on the client socket
-					Request request(rawRequest);
-					Response response(*(client_socket.getServer()), request);
-					// Send the Response object back to the client socket
-					client_socket.send(response.getRawresponse().c_str(), response.getRawresponse().size(), 0);
-					client_socket.close();
-					// Add the new client socket to the poller
-					/*
-						Tem q fazer algo assim, acho
-					*/
-					// poller.addSocket(&client_socket, POLLIN);
-				} else {
-					std::cout << "entramos na parte cliente !!!!! \n";
-					// std::string rawRequest;
-					// const int BUFFER_SIZE = 1024;
-					// char buffer[BUFFER_SIZE];
-					// ssize_t bytesRead;
-					// while ((bytesRead = current_socket->recv(buffer, sizeof(buffer), 0)) > 0) {
-					// 	rawRequest.append(buffer, bytesRead);
-
-					// 	// Check if we have received the entire request
-					// 	if (rawRequest.find("\r\n\r\n") != std::string::npos) {
-					// 		break;
-					// 	}
-					// }
-					// // Handle incoming data on the client socket
-					// Request request(rawRequest);
-					// Response response(*(current_socket->getServer()), request);
-					// // Send the Response object back to the client socket
-					// current_socket->send(response.getRawresponse().c_str(), response.getRawresponse().size(), 0);
+				listener = poller.getSocket(i);
+				// Accept a new connection on the listening socket
+				client_fd = listener->accept();
+				if (client_fd == -1) {
+					std::cerr << "Failed to accept new connection" << std::endl;
+					continue;
 				}
+				std::cout << "The FD above generated the client with the FD " << client_fd << "\n";
+				rawRequest = "";
+				bytesRead = 0;
+				//Receive customer data 
+				while ((bytesRead = ::recv(client_fd, buffer, sizeof(buffer), 0)) > 0) {
+					rawRequest.append(buffer, bytesRead);
+
+					// Check if we have received the entire request
+					if (rawRequest.find("\r\n\r\n") != std::string::npos) {
+						break;
+					}
+				}
+				// Handle incoming data on the client socket
+				request.execute(rawRequest);
+				response.execute(*(listener->getServer()), request);
+				// Send the Response object back to the client socket
+				::send(client_fd, response.getRawresponse().c_str(), response.getRawresponse().size(), 0);
+				::close(client_fd); 
 			}
 		}
 	}

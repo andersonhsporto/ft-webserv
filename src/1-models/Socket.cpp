@@ -3,7 +3,7 @@
 #include "Server.hpp"
 
 // -Constructors
-Socket::Socket(void) : _fd(-1), _isListener(false) {
+Socket::Socket(void) : _fd(-1) {
 	std::cout << "Socket default constructor called\n";
 	return ;
 }
@@ -31,7 +31,6 @@ Socket &Socket::operator=(Socket const &rhs) {
 	if (this != &rhs) {
 		std::cout << "Socket copy assignment operator called\n";
 		_fd = rhs._fd;
-		_isListener = rhs._isListener;
 		_server = rhs._server;
 	}
 	return (*this);
@@ -42,18 +41,11 @@ const int &Socket::getFd(void) const {
 	return (this->_fd);
 }
 
-const bool &Socket::isListener(void) const {
-	return (this->_isListener);
-}
-
 Server *Socket::getServer(void) const {
 	return (this->_server);
 }
 
 // -Setters
-void Socket::setTypeListener(bool isListener) {
-	this->_isListener = isListener;
-}
 
 void Socket::setServer(Server *server ){
 	this->_server = server;
@@ -87,14 +79,10 @@ bool Socket::listen(int backlog) {
 	return (true);
 }
 
-Socket Socket::accept(void) {
+int Socket::accept(void) {
 	struct sockaddr_in clientAddr = {};
 	socklen_t clientAddrLen = sizeof(clientAddr);
-	int clientFD = ::accept(_fd, (struct sockaddr*)&clientAddr, &clientAddrLen);
-	if (clientFD == -1) {
-		return Socket(-1);
-	}
-	return (Socket(clientFD));
+	return (::accept(_fd, (struct sockaddr*)&clientAddr, &clientAddrLen));
 }
 
 void Socket::connect(const std::string& address, uint16_t port) {

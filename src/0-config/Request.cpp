@@ -86,6 +86,13 @@ void Request::parseRequest(const std::string &buffer) {
 	}
 }
 
+
+void Request::execute(const std::string &rawRequest){
+	clearVariables();
+	parseRequest(rawRequest);
+	return ;
+}
+
 // -Private Methods
 int	Request::parseMethod(std::stringstream &ss) {
 	char						newline;
@@ -146,6 +153,16 @@ int	Request::parseBody(std::stringstream &ss) {
 	ss.str().erase(0, this->_bodyLength);
 
 	return (0);
+}
+
+void Request::clearVariables(void){
+	this->_bodyLength = 0;
+	this->_body = "";
+	this->_method = "";
+	this->_query = "";
+	this->_target = "";
+	this->_protocol = "";
+	this->_headers.clear();
 }
 
 // -Functions

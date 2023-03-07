@@ -49,7 +49,6 @@ class Server {
 		void	addErrorPages(const int &code, const std::string &page);
 		void	addLocations(const std::string &values);
 		void	addCgi(const std::string &extension, const std::string &path);
-		void	start(void);
 
 	private:
 		bool								_running;

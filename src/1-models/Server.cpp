@@ -133,20 +133,6 @@ void Server::addCgi(const std::string &extension, const std::string &path) {
 	this->_cgi[extension] = path;
 }
 
-void Server::start(void) {
-	this->_listener.setTypeListener(true);
-	this->_listener.setServer(this);
-	if (!this->_listener.bind(_host, _port)) {
-		// handle error
-		std::cout << "falhou bind \n";
-	}
-	if (!this->_listener.listen(SOMAXCONN)) {
-		// handle error
-		std::cout << "falhou listen \n";
-	}
-	std::cout << "Foi listen e bind todo \n";
-}
-
 // -Functions
 std::ostream &operator<<(std::ostream &out, Server const &in) {
 	(void)in;

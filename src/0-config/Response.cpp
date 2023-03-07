@@ -49,6 +49,18 @@ const std::string	&Response::getRawresponse(void) const {
 
 // -Setters
 // -Methods
+void Response::execute(const class Server &server, const class Request &request){
+	_clearVariables();
+	_allowedMethods = {"GET", "POST", "DELETE"};
+	if (_handleRequest(server, request) != -1) {
+		_setResponseVariables(server, request);
+	}
+	else {
+		_setErrorResponse(server);
+	}
+	_buildResponse();
+}
+
 // -Private Methods
 void Response::_buildResponse() {
 	std::stringstream response_stream;
@@ -93,8 +105,6 @@ void Response::_setResponseVariables(const Server &server, const Request &reques
 				break;
 			}
 		}
-		std::cout << "RESULTADO 1:" << server.getRoot() + request.getTarget() << "\n";
-		std::cout << "RESULTADO 2:" << root + request.getTarget() << "\n";
 		utils::fileToString(server.getRoot() + request.getTarget(), this->_body);
 		if (!this->_body.empty()) {
 			this->_headers["Content-Length"] = utils::intToString(this->_body.size());
@@ -199,12 +209,9 @@ int Response::_handleRequest(const Server &server, const Request &request) {
 
 	// Execute any relevant CGI scripts
 	std::string filePath = server.getRoot() + request.getTarget();
-	std::cout << "FILE PATH: " << filePath << "\n";
-	std::cout << "ROOT: " << server.getRoot() << " TARGET: " << request.getTarget() << "\n";
 	std::ifstream input(filePath.c_str());
 	std::string conteudo;
-	std::cout << "SAIDA: " << utils::fileToString(filePath, conteudo) << "\n";
-	std::cout << "CONTEUDO:\n" << conteudo << "\n";
+	utils::fileToString(filePath, conteudo);
 	if (conteudo.empty()) {
 		_setStatus("404");
 		return (-1);
@@ -213,6 +220,15 @@ int Response::_handleRequest(const Server &server, const Request &request) {
 		_setStatus("200");
 	}
 	return (0);
+}
+
+void Response::_clearVariables(void){
+	this->_bodyLength = 0;
+	this->_body = "";
+	this->_rawResponse = "";
+	this->_status = std::pair<std::string, std::string>();
+	this->_headers.clear() ;
+	this->_allowedMethods.clear();
 }
 
 // -Functions

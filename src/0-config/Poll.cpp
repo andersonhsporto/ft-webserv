@@ -6,15 +6,14 @@ Poll::Poll(void)
 	return ;
 }
 
-void Poll::init(const std::vector<Socket *> &sockets)
+void Poll::init(void)
 {
-	this->_size = sockets.size();
-	this->_sockets = sockets;
+	this->_size = this->_sockets.size();
 	this->_poolfd_list.resize(this->_size);
 
 	for (size_t i = 0; i < this->_size; i++)
 	{
-		this->_poolfd_list[i].fd = sockets[i]->getFd();
+		this->_poolfd_list[i].fd = this->_sockets[i]->getFd();
 		this->_poolfd_list[i].events = POLLIN | POLLOUT;
 	}
 }
@@ -30,6 +29,8 @@ void Poll::addSocket(Socket *newSocket){
 
 Poll::~Poll(void)
 {
+	for(size_t i = 0; i < this->_sockets.size(); i++)
+		delete this->_sockets[i];
 }
 
 bool Poll::checkEvent(short event) {
@@ -37,13 +38,12 @@ bool Poll::checkEvent(short event) {
 		return true;
 	if ((event & POLLOUT) == POLLOUT)
 		return true;
-	std::cout << "valor de retorno: " << event << "\n";
 	return false;
 }
 
 void	Poll::run(void)
 {
-	std::cout << "poll::run) lista de fd analisadas: " ;
+	std::cout << "Parsed FD list: " ;
 	for (std::vector<pollfd>::iterator it = _poolfd_list.begin(); it != _poolfd_list.end() ; ++it) {
 		std::cout << it->fd << ", ";
 	}
