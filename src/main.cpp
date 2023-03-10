@@ -1,14 +1,27 @@
 #include "WebServer.hpp"
 #include <iostream>
+#include <csignal>
 // #include <fstream>
 // #include <sstream>
 // #include <string>
 // #include "Request.hpp"
 // #include "Response.hpp"
 
+WebServer webserver;
+
+void sigIntHandlerFunc(int sig){
+	std::cout << "\nFinalizando o WebServer...\n";
+	webserver.finish();
+	exit(0);
+}
+
 int main(int argc, char *argv[]) {
 	{
-		WebServer	webserver;
+		struct sigaction sigIntHandler;
+		sigIntHandler.sa_handler = sigIntHandlerFunc;
+  		sigemptyset(&sigIntHandler.sa_mask);
+  		sigIntHandler.sa_flags = 0;
+  		sigaction(SIGINT, &sigIntHandler, NULL);
 		if (argc > 1)
 			webserver.run(argv[1]);
 	}

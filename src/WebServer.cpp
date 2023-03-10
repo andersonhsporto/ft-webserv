@@ -16,6 +16,7 @@ WebServer::WebServer(void) : _parser(ParserConfig(*this)) {
 // -Destructor
 WebServer::~WebServer(void) {
 	std::cout << "WebServer default destructor called\n";
+	this->_poller.clear();
 	return ;
 }
 
@@ -30,8 +31,14 @@ WebServer &WebServer::operator=(WebServer const &rhs) {
 // -Getters
 // -Setters
 // -Methods
+void WebServer::finish(void){
+	_poller.clear();
+	while(_serverList.size()){
+		delete _serverList[_serverList.size() - 1];
+		_serverList.pop_back();
+	}
+}
 void WebServer::run(const std::string &FilePath) {
-	Poll					poller;
 	Socket					*listener;
 	Socket					client_socket;
 	std::string				rawRequest;
@@ -49,23 +56,23 @@ void WebServer::run(const std::string &FilePath) {
 		listener->setServer((*it));
 		if(listener->bind((*it)->getHost(), (*it)->getPort())){
 			if(listener->listen(SOMAXCONN)){
-				poller.addSocket(listener);
+				this->_poller.addSocket(listener);
 				continue;
 			}
 		}
 		throw std::runtime_error("Error creating socket listener");
 	}
-	poller.init();
-	std::cout << "number of listener Sockets: " << poller.getSize() << "\n\n";
+	this->_poller.init();
+	std::cout << "number of listener Sockets: " << this->_poller.getSize() << "\n\n";
 	while (true) {
 		// Wait for incoming requests on the sockets using Poll
-		poller.run();
+		this->_poller.run();
 		// Check for events on the listening socket
-		for (size_t i = 0; i < poller.getSize(); i++) {
-			std::cout << "FD: " << poller.getSocket(i)->getFd() << "\n";
-			if (poller.checkEvent(poller.getEventReturn(i))) {
+		for (size_t i = 0; i < this->_poller.getSize(); i++) {
+			std::cout << "FD: " << this->_poller.getSocket(i)->getFd() << "\n";
+			if (this->_poller.checkEvent(this->_poller.getEventReturn(i))) {
 				// Handle incoming data on the socket
-				listener = poller.getSocket(i);
+				listener = this->_poller.getSocket(i);
 				// Accept a new connection on the listening socket
 				client_fd = listener->accept();
 				if (client_fd == -1) {

@@ -5,6 +5,7 @@
 #include <vector>
 #include "Server.hpp"
 #include "ParserConfig.hpp"
+#include "Poll.hpp"
 
 class WebServer {
 	public:
@@ -26,10 +27,12 @@ class WebServer {
 		void	run(const std::string &FilePath);
 		void	addServer();
 		Server	&getLastServer();
+		void	finish(void);
 
 	private:
 		ParserConfig			_parser;
 		std::vector<Server*>	_serverList;
+		Poll					_poller;
 };
 
 // -Functions

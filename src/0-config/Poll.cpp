@@ -67,3 +67,13 @@ short Poll::getEventReturn(size_t index)
 {
 	return (this->_poolfd_list[index].revents);
 }
+
+void Poll::clear(void){
+	for(int elements = this->_poolfd_list.size() - 1; elements >= 0; --elements){
+		std::cout << "Fechando o FD " << _poolfd_list[elements].fd << "\n";
+		::close(_poolfd_list[elements].fd);
+		delete _sockets[elements];
+		_sockets.pop_back();
+		_poolfd_list.pop_back();
+	}
+}

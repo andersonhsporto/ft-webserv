@@ -25,10 +25,7 @@ Poll::~Poll(void)
 
 void	Poll::run(void)
 {
-	int ret = poll(this->_poolfd_list, this->_size, 0);
-	if (ret == -1)
-		throw ("poll error\n");
-
+	poll(this->_poolfd_list, this->_size, 0);
 }
 
 Socket	* Poll::get_socket(size_t index)

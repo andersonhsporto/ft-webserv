@@ -23,6 +23,7 @@ class Poll
 		void 			addSocket(Socket *newSocket);
 		bool			checkEvent(short event);
 		void			run();
+		void			clear(void);
 };
 
 #endif
