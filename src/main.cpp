@@ -10,7 +10,7 @@
 WebServer webserver;
 
 void sigIntHandlerFunc(int sig){
-	std::cout << "\nFinalizando o WebServer...\n";
+	std::cout << "\nFinishing the WebServer...\n";
 	webserver.finish();
 	exit(0);
 }

@@ -69,11 +69,13 @@ short Poll::getEventReturn(size_t index)
 }
 
 void Poll::clear(void){
-	for(int elements = this->_poolfd_list.size() - 1; elements >= 0; --elements){
-		std::cout << "Fechando o FD " << _poolfd_list[elements].fd << "\n";
-		::close(_poolfd_list[elements].fd);
-		delete _sockets[elements];
-		_sockets.pop_back();
+	for(int index = this->_poolfd_list.size() - 1; index >= 0; --index){
+		std::cout << "Closing FD " << _poolfd_list[index].fd << "\n";
+		::close(_poolfd_list[index].fd);
 		_poolfd_list.pop_back();
+	}
+	for(int index = this->_sockets.size() - 1; index >= 0; --index){
+		delete _sockets[index];
+		_sockets.pop_back();
 	}
 }

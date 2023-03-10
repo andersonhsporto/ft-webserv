@@ -60,7 +60,9 @@ void WebServer::run(const std::string &FilePath) {
 				continue;
 			}
 		}
-		throw std::runtime_error("Error creating socket listener");
+		delete listener;
+		this->finish();
+		throw std::runtime_error("Error: could not create socket listener");
 	}
 	this->_poller.init();
 	std::cout << "number of listener Sockets: " << this->_poller.getSize() << "\n\n";
