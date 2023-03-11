@@ -105,11 +105,8 @@ void Response::_setResponseVariables(const Server &server, const Request &reques
 				break;
 			}
 		}
-		utils::fileToString(server.getRoot() + request.getTarget(), this->_body);
-		if (!this->_body.empty()) {
-			this->_headers["Content-Length"] = utils::intToString(this->_body.size());
-			this->_headers["Content-Type"] = this->_getContentTypeHeader(root + request.getTarget());
-		}
+		this->_headers["Content-Length"] = utils::intToString(this->_body.size());
+		this->_headers["Content-Type"] = this->_getContentTypeHeader(root + request.getTarget());
 	}
 	if (!server.getServername().empty()) {
 		for (std::vector<std::string>::const_iterator it = server.getServername().begin(); it != server.getServername().end(); ++it) {
@@ -124,6 +121,7 @@ void Response::_setResponseVariables(const Server &server, const Request &reques
 void Response::_setErrorResponse(const Server &server) {
 	std::string errorPage;
 
+	this->_headers["Date"] = utils::getCurrentTime();
 	if (server.getErrorpages().count(std::stoi(this->_status.first)) > 0) {
 		errorPage = server.getErrorpages().at(std::stoi(this->_status.first));
 	} else {
@@ -135,6 +133,14 @@ void Response::_setErrorResponse(const Server &server) {
 	this->_headers["Content-Type"] = "text/html";
 	this->_headers["Content-Length"] = std::to_string(errorPage.length());
 	this->_body = errorPage;
+	if (!server.getServername().empty()) {
+		for (std::vector<std::string>::const_iterator it = server.getServername().begin(); it != server.getServername().end(); ++it) {
+			this->_headers["Server"].append(*it);
+			if (it != server.getServername().end() - 1) {
+				this->_headers["Server"].append(", ");
+			}
+		}
+	}
 }
 
 std::string Response::_getContentTypeHeader(const std::string& filePath) {
@@ -208,12 +214,12 @@ int Response::_handleRequest(const Server &server, const Request &request) {
 	// }
 
 	// Execute any relevant CGI scripts
-	std::string filePath = server.getRoot() + request.getTarget();
-	std::ifstream input(filePath.c_str());
-	std::string conteudo;
-	utils::fileToString(filePath, conteudo);
-	if (conteudo.empty()) {
+	if (utils::fileToString(server.getRoot() + request.getTarget(), this->_body) == -1) {
 		_setStatus("404");
+		return (-1);
+	}
+	else if (this->_body.empty()) {
+		_setStatus("203");
 		return (-1);
 	}
 	else {

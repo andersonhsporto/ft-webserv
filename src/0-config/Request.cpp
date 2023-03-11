@@ -113,6 +113,10 @@ int	Request::parseMethod(std::stringstream &ss) {
 		this->_query = this->_target.substr(pos + 1);
 		this->_target.erase(pos);
 	}
+	pos = this->_target.rfind('.');
+	if (pos == std::string::npos || pos < this->_target.rfind('/')) {
+		this->_target += ".html";
+	}
 	ss.get(newline);
 	return (0);
 }
