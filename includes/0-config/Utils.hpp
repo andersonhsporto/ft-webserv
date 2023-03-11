@@ -11,7 +11,6 @@ namespace utils {
 	std::string					intToString(const int num);
 	void						divideByDelimiter(const std::string &total, std::string &word1, std::string &word2, char delimiter);
 	void 						trimChar(std::string &str, char toTrim);
-	void 						trimChar(const std::string &str, char toTrim);
 	int							fileToString(const std::string& filename, std::string& fileContents);
 	void						removeSubstring(std::string& str, const std::string& substr);
 	std::string					removeComments(const std::string& str);

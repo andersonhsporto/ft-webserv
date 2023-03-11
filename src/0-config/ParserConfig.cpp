@@ -177,7 +177,7 @@ void ParserConfig::_parseMaxSizeBody(const std::string &value, class Server &ser
 }
 
 void ParserConfig::_parseRoot(const std::string &value, class Server &server) {
-	server.setRoot(value.substr(1, value.length()));
+	server.setRoot(value);
 }
 
 void ParserConfig::_parseIndex(const std::string &value, class Server &server) {
