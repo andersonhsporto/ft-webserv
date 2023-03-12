@@ -22,8 +22,13 @@ int main(int argc, char *argv[]) {
   		sigemptyset(&sigIntHandler.sa_mask);
   		sigIntHandler.sa_flags = 0;
   		sigaction(SIGINT, &sigIntHandler, NULL);
-		if (argc > 1)
-			webserver.run(argv[1]);
+		if (argc > 1){
+			try{
+				webserver.run(argv[1]);
+			}catch(const std::exception &e){
+				std::cout << e.what();
+			}
+		}
 	}
 	// {
 // 	// 	std::cout << "\n\n\tTest Request Parser\n";
