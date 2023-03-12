@@ -25,6 +25,7 @@ class Request {
 		const std::string	&getMethod(void) const;
 		const std::string	&getQuery(void) const;
 		const std::string	&getTarget(void) const;
+		const std::string	&getExtension(void) const;
 		const std::string	&getProtocol(void) const;
 
 		// -Setters
@@ -39,6 +40,7 @@ class Request {
 		std::string										_method;
 		std::string										_query;
 		std::string										_target;
+		std::string										_extension;
 		std::string										_protocol;
 		std::unordered_map<std::string, std::string>	_headers;
 

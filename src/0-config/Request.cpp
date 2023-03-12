@@ -59,6 +59,10 @@ const std::string &Request::getTarget(void) const {
 	return (this->_target);
 }
 
+const std::string &Request::getExtension(void) const {
+	return (this->_extension);
+}
+
 const std::string &Request::getProtocol(void) const {
 	return (this->_protocol);
 }
@@ -115,7 +119,11 @@ int	Request::parseMethod(std::stringstream &ss) {
 	}
 	pos = this->_target.rfind('.');
 	if (pos == std::string::npos || pos < this->_target.rfind('/')) {
-		this->_target += ".html";
+		this->_extension = ".html";
+	}
+	else {
+		this->_extension = this->_target.substr((pos - 1) + 1);
+		this->_target.erase(pos);
 	}
 	ss.get(newline);
 	return (0);

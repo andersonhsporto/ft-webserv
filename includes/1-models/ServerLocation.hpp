@@ -2,7 +2,7 @@
 #define SERVERLOCATION_HPP
 
 #include <iostream>
-#include <vector>
+#include <set>
 #include <map>
 #include <sstream>
 
@@ -28,13 +28,13 @@ class ServerLocation {
 		const std::string					&getPath(void) const;
 		const bool							&getAutoindex(void) const;
 		const std::pair<int,std::string>	&getReturnpage(void) const;
-		const std::vector<std::string>		&getRequestshttp(void) const;
+		const std::set<std::string>		&getRequestshttp(void) const;
 
 		// -Setters
 		void	setRoot(std::string Root);
 		void	setPath(std::string Path);
 		void	setAutoindex(bool Autoindex);
-		void	setRequestshttp(std::vector<std::string> Requestshttp);
+		void	setRequestshttp(std::set<std::string> Requestshttp);
 		void	setReturnpage(std::pair<int,std::string> Returnpage);
 
 		// -Methods
@@ -43,7 +43,7 @@ class ServerLocation {
 		std::string									_path;
 		std::string									_root;
 		bool										_autoIndex;
-		std::vector<std::string>					_requestsHttp;
+		std::set<std::string>						_requestsHttp;
 		std::pair<int, std::string>					_returnPage;
 		std::map<std::string, _parseLocationFunc>	_parseFuncs;
 

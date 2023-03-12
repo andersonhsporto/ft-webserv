@@ -66,7 +66,7 @@ namespace utils {
 		}
 		return ;
 	}
-	
+
 	int fileToString(const std::string& filename, std::string& fileContents) {
 		std::ifstream input(filename.c_str());
 		if (!input) {

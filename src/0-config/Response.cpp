@@ -79,12 +79,11 @@ void Response::_buildResponse() {
 void Response::_setResponseVariables(const Server &server, const Request &request) {
 	this->_headers["Date"] = utils::getCurrentTime();
 	if (!request.getTarget().empty()) {
-		std::string root;
 		const std::vector<ServerLocation*> &locations = server.getLocations();
 		for (std::vector<ServerLocation*>::const_iterator it = locations.begin(); it != locations.end(); ++it) {
 			if ((*it)->getPath() == request.getTarget()) {
-				root = (*it)->getRoot();
 				if ((*it)->getAutoindex()) {
+					std::cout << "OLAAAAAAAAAA\n";
 					std::string	indexFile;
 					bool		found = false;
 					for (std::vector<std::string>::const_iterator it = server.getIndex().begin(); it != server.getIndex().end(); ++it) {
@@ -106,7 +105,7 @@ void Response::_setResponseVariables(const Server &server, const Request &reques
 			}
 		}
 		this->_headers["Content-Length"] = utils::intToString(this->_body.size());
-		this->_headers["Content-Type"] = this->_getContentTypeHeader(root + request.getTarget());
+		this->_headers["Content-Type"] = this->_getContentTypeHeader(request.getExtension());
 	}
 	if (!server.getServername().empty()) {
 		for (std::vector<std::string>::const_iterator it = server.getServername().begin(); it != server.getServername().end(); ++it) {
@@ -143,21 +142,19 @@ void Response::_setErrorResponse(const Server &server) {
 	}
 }
 
-std::string Response::_getContentTypeHeader(const std::string& filePath) {
+std::string Response::_getContentTypeHeader(const std::string& extension) {
 	std::unordered_map<std::string, std::string> extensionMap {
-		{ "html", "text/html" },
-		{ "htm", "text/html" },
-		{ "css", "text/css" },
-		{ "js", "application/javascript" },
-		{ "json", "application/json" },
-		{ "jpg", "image/jpeg" },
-		{ "jpeg", "image/jpeg" },
-		{ "png", "image/png" },
-		{ "gif", "image/gif" }
+		{ ".html", "text/html" },
+		{ ".htm", "text/html" },
+		{ ".css", "text/css" },
+		{ ".js", "application/javascript" },
+		{ ".json", "application/json" },
+		{ ".jpg", "image/jpeg" },
+		{ ".jpeg", "image/jpeg" },
+		{ ".png", "image/png" },
+		{ ".gif", "image/gif" }
 	};
-	std::string extension = filePath.substr(filePath.find_last_of(".") + 1);
 	std::string contentType = extensionMap[extension];
-
 	if (contentType.empty()) {
 		contentType = "application/octet-stream";
 	}
@@ -183,10 +180,35 @@ void Response::_setStatus(const std::string& code) {
 }
 
 int Response::_handleRequest(const Server &server, const Request &request) {
+	int			outRead = -1;
+	std::string	root;
+
+	root = server.getRoot();
 	// - Check Protocol
 	if (request.getProtocol()!= "HTTP/1.1") {
 		_setStatus("505");
 		return (-1);
+	}
+	// - Check Location
+	const ServerLocation* location = nullptr;
+	for (std::vector<ServerLocation*>::const_iterator it = server.getLocations().begin(); it != server.getLocations().end(); ++it) {
+		// std::cout << *(*it);
+		if ((*it)->getPath() == request.getTarget()) {
+			location = *it;
+			break;
+		}
+	}
+	if (location) {
+		// std::cout << "ACHOU LOCATION\n" << "root:" << location->getRoot() << "\n";
+		if (location->getRoot() != "")
+			root = location->getRoot();
+		if (!location->getRequestshttp().empty()) {
+			this->_allowedMethods = location->getRequestshttp();
+			// std::cout << "AQUI HTTP:\n";
+			// for(std::set<std::string>::const_iterator it = this->_allowedMethods.begin(); it != this->_allowedMethods.end(); it++) {
+			// 	std::cout << *it << "\n";
+			// }
+		}
 	}
 	// - Check Method
 	if (_allowedMethods.count(request.getMethod()) == 0) {
@@ -198,23 +220,20 @@ int Response::_handleRequest(const Server &server, const Request &request) {
 		_setStatus("413");
 		return (-1);
 	}
-	// - Check Location
-	const ServerLocation* location = nullptr;
-	for (std::vector<ServerLocation*>::const_iterator it = server.getLocations().begin(); it != server.getLocations().end(); ++it) {
-		if ((*it)->getPath() == request.getTarget()) {
-			location = *it;
-			break;
+	// Execute any relevant CGI scripts
+	if (request.getTarget() == "/") {
+		for (std::vector<std::string>::const_iterator it = server.getIndex().begin(); it != server.getIndex().end(); it++) {
+			outRead = utils::fileToString(root + "/" + *it, this->_body);
+			std::cout << "file:" << root + "/" + *it << "\n";
+			if (outRead == 1)
+				break;
 		}
 	}
-
-	// if (!location) {
-	// 	std::cout << "!!!!!!!!!!!!!!!!!!!!!!\n";
-	// 	_setStatus("404");
-	// 	return (-1);
-	// }
-
-	// Execute any relevant CGI scripts
-	if (utils::fileToString(server.getRoot() + request.getTarget(), this->_body) == -1) {
+	else {
+		outRead = utils::fileToString(root + request.getTarget() + request.getExtension(), this->_body);
+		std::cout << "file:" << root + request.getTarget() + request.getExtension() << "\n";
+	}
+	if (outRead == -1) {
 		_setStatus("404");
 		return (-1);
 	}
