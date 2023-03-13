@@ -8,7 +8,6 @@
 class Poll
 {
 	private:
-		size_t					_size;
 		std::vector<Socket *>	_sockets;
 		std::vector<pollfd>		_poolfd_list;
 
@@ -21,6 +20,7 @@ class Poll
 		const size_t	getSize(void) const;
 		void			init(void);
 		void 			addSocket(Socket *newSocket);
+		void			deleteSocket(Socket *socket);
 		bool			checkEvent(short event);
 		void			run();
 		void			clear(void);
