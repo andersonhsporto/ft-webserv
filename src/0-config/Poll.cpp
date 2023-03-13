@@ -42,8 +42,8 @@ void Poll::deleteSocket(Socket *socket){
 	for(std::vector<Socket *>::reverse_iterator it = _sockets.rbegin(); it != _sockets.rend(); ++it){
 		if((*it) == socket){
 			deletedSocket = *it;
-			delete deletedSocket;
 			_sockets.erase(std::vector<Socket *>::iterator(&(*it)));
+			delete deletedSocket;
 			break;
 		}
 	}
