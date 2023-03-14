@@ -14,7 +14,7 @@ class Response {
 		Response(const class Server &server, const class Request &request);
 
 		// -Destructor
-		~Response(void);
+		~Response();
 
 		// -Operators
 		Response &operator=(Response const &rhs);
