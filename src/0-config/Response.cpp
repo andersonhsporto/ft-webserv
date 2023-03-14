@@ -29,7 +29,7 @@ Response::Response(const Server &server, const Request &request) : _allowedMetho
 }
 
 // -Destructor
-Response::~Response(void) {
+Response::~Response() {
 	std::cout << "Response default destructor called\n";
 	return ;
 }

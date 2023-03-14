@@ -14,7 +14,7 @@ class WebServer {
 		WebServer(WebServer const &rhs);
 
 		// -Destructor
-		~WebServer(void);
+		~WebServer();
 
 		// -Operators
 		WebServer &operator=(WebServer const &rhs);

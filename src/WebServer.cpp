@@ -14,7 +14,7 @@ WebServer::WebServer(void) : _parser(ParserConfig(*this)) {
 }
 
 // -Destructor
-WebServer::~WebServer(void) {
+WebServer::~WebServer() {
 	std::cout << "WebServer default destructor called\n";
 	this->_poller.clear();
 	return ;
@@ -45,8 +45,6 @@ void WebServer::run(const std::string &FilePath) {
 	const int				BUFFER_SIZE = 1024;
 	char					buffer[BUFFER_SIZE];
 	ssize_t					bytesRead;
-	Request 				request;
-	Response 				response;
 	unsigned int			countListeners = 0;
 
 	this->_parser.parseFile(FilePath);
@@ -88,7 +86,7 @@ void WebServer::run(const std::string &FilePath) {
 				} else {
 					client_socket = this->_poller.getSocket(i);
 					std::cout << "Attending customer request with fd " << client_socket->getFd() << "\n";
-					rawRequest = "";
+					rawRequest.clear();
 					bytesRead = 0;
 					//Receive customer data 
 					while ((bytesRead = ::recv(client_socket->getFd(), buffer, sizeof(buffer), 0)) > 0) {
@@ -100,8 +98,8 @@ void WebServer::run(const std::string &FilePath) {
 						}
 					}
 					// Handle incoming data on the client socket
-					request.execute(rawRequest);
-					response.execute(*(listener->getServer()), request);
+					Request request(rawRequest);
+					Response response(*(listener->getServer()), request);
 					// Send the Response object back to the client socket
 					::send(client_socket->getFd(), response.getRawresponse().c_str(), response.getRawresponse().size(), 0);
 					::close(client_socket->getFd());
