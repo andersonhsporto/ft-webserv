@@ -51,7 +51,7 @@ void WebServer::run(const std::string &FilePath) {
 	for(std::vector<Server *>::iterator it = this->_serverList.begin(); it != this->_serverList.end(); ++it){
 		listener = new Socket();
 		listener->setServer((*it));
-		if(listener->bind((*it)->getHost(), (*it)->getPort())){
+		if(listener->bind()){
 			if(listener->listen(SOMAXCONN)){
 				this->_poller.addSocket(listener);
 				++countListeners;
@@ -74,7 +74,7 @@ void WebServer::run(const std::string &FilePath) {
 				// Handle incoming data on the socket
 				if(i < countListeners){
 					listener = this->_poller.getSocket(i);
-					std::cout << "Accepting new client connection through FD " << listener->getFd() << "\n"; 
+					std::cout << "Accepting new client connection through FD " << listener->getFd() << "\n";
 					client_socket = new Socket(listener->accept());
 					client_socket->setServer(listener->getServer());
 					if (client_socket->getFd() == -1) {
@@ -88,7 +88,7 @@ void WebServer::run(const std::string &FilePath) {
 					std::cout << "Attending customer request with fd " << client_socket->getFd() << "\n";
 					rawRequest.clear();
 					bytesRead = 0;
-					//Receive customer data 
+					//Receive customer data
 					while ((bytesRead = ::recv(client_socket->getFd(), buffer, sizeof(buffer), 0)) > 0) {
 						rawRequest.append(buffer, bytesRead);
 
@@ -104,7 +104,7 @@ void WebServer::run(const std::string &FilePath) {
 					::send(client_socket->getFd(), response.getRawresponse().c_str(), response.getRawresponse().size(), 0);
 					::close(client_socket->getFd());
 					_poller.deleteSocket(client_socket);
-				} 
+				}
 			}
 		}
 	}

@@ -7,6 +7,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <stdexcept>
+#include <netdb.h>
 #include <unistd.h>
 
 class Socket {
@@ -30,10 +31,9 @@ class Socket {
 		void	setServer(Server *server);
 
 		// -Methods
-		bool	bind(const std::string& address, uint16_t port);
+		bool	bind(void);
 		bool	listen(int backlog = 10);
 		int		accept(void);
-		void	connect(const std::string& address, uint16_t port);
 		ssize_t	send(const void* buf, size_t len, int flags = 0);
 		ssize_t	recv(char* buf, size_t len, int flags = 0);
 		void	setsockopt(int level, int optname, const void* optval, socklen_t optlen);

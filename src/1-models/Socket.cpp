@@ -53,16 +53,15 @@ void Socket::setServer(Server *server ){
 
 
 // -Methods
-bool Socket::bind(const std::string& address, uint16_t port) {
+bool Socket::bind() {
 	_fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (_fd == -1) {
 		return false;
 	}
 	struct sockaddr_in addr = {};
 	addr.sin_family = AF_INET;
-	addr.sin_port = htons(port);
-	addr.sin_addr.s_addr = INADDR_ANY;
-	std::cout << "Address: " << address << " Port: " << port << "\n";
+	addr.sin_port = htons(this->_server->getPort());
+	addr.sin_addr.s_addr = inet_addr(this->_server->getHost().c_str());
 	if (::bind(_fd, (struct sockaddr*)&addr, sizeof(addr)) == -1) {
 		close();
 		return false;
@@ -83,21 +82,6 @@ int Socket::accept(void) {
 	struct sockaddr_in clientAddr = {};
 	socklen_t clientAddrLen = sizeof(clientAddr);
 	return (::accept(_fd, (struct sockaddr*)&clientAddr, &clientAddrLen));
-}
-
-void Socket::connect(const std::string& address, uint16_t port) {
-	_fd = socket(AF_INET, SOCK_STREAM, 0);
-	if (_fd == -1) {
-		throw std::runtime_error("Failed to create socket");
-	}
-	struct sockaddr_in addr = {};
-	addr.sin_family = AF_INET;
-	addr.sin_port = htons(port);
-	addr.sin_addr.s_addr = inet_addr(address.c_str());
-	if (::connect(_fd, (struct sockaddr*)&addr, sizeof(addr)) == -1) {
-		close();
-		throw std::runtime_error("Failed to connect to server");
-	}
 }
 
 ssize_t Socket::send(const void* buf, size_t len, int flags) {
