@@ -44,7 +44,7 @@ void WebServer::run(const std::string &FilePath) {
 	std::string				rawRequest;
 	const int				BUFFER_SIZE = 1024;
 	char					buffer[BUFFER_SIZE];
-	ssize_t					bytesRead;
+	ssize_t					bytes;
 	unsigned int			countListeners = 0;
 
 	this->_parser.parseFile(FilePath);
@@ -87,21 +87,32 @@ void WebServer::run(const std::string &FilePath) {
 					client_socket = this->_poller.getSocket(i);
 					std::cout << "Attending customer request with fd " << client_socket->getFd() << "\n";
 					rawRequest.clear();
-					bytesRead = 0;
 					//Receive customer data 
-					while ((bytesRead = ::recv(client_socket->getFd(), buffer, sizeof(buffer), 0)) > 0) {
-						rawRequest.append(buffer, bytesRead);
+					while ((bytes = ::recv(client_socket->getFd(), buffer, sizeof(buffer), 0)) > 0) {
+						rawRequest.append(buffer, bytes);
 
 						// Check if we have received the entire request
 						if (rawRequest.find("\r\n\r\n") != std::string::npos) {
 							break;
 						}
 					}
+					if(bytes < 0){
+						std::cout << "Error: unable to receive data from client FD " << client_socket->getFd() << "\n";
+						continue;
+					}
 					// Handle incoming data on the client socket
 					Request request(rawRequest);
 					Response response(*(listener->getServer()), request);
 					// Send the Response object back to the client socket
-					::send(client_socket->getFd(), response.getRawresponse().c_str(), response.getRawresponse().size(), 0);
+					for(int bytesSend = 0; bytesSend < response.getRawresponse().size(); ){
+						bytes = ::send(client_socket->getFd(), response.getRawresponse().c_str(), \
+								response.getRawresponse().size(), 0);
+						if(bytes < 0){
+							std::cout << "Error: unable to send data to client FD " << client_socket->getFd() << "\n";
+							break;
+						}
+						bytesSend += bytes;
+					}
 					::close(client_socket->getFd());
 					_poller.deleteSocket(client_socket);
 				} 
