@@ -98,6 +98,8 @@ void WebServer::run(const std::string &FilePath) {
 					}
 					if(bytes < 0){
 						std::cout << "Error: unable to receive data from client FD " << client_socket->getFd() << "\n";
+						::close(client_socket->getFd());
+						_poller.deleteSocket(client_socket);
 						continue;
 					}
 					// Handle incoming data on the client socket
