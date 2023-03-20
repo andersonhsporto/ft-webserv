@@ -42,6 +42,10 @@ class Response {
 		void		_setErrorResponse(const class Server &server);
 		std::string	_getContentTypeHeader(const std::string& filePath);
 		void		_clearVariables(void);
+		int			_getMethodHTTP(const Request &request, const Server &server, std::string &root);
+		int			_postMethodHTTP(const Request &request, const Server &server, std::string &root);
+		int			_deleteMethodHTTP(const Request &request, const Server &server, std::string &root);
+		int			_applyMethodHTTP(const Request &request, const Server &server, std::string &root);
 };
 
 // -Functions
