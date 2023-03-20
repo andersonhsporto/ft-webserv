@@ -129,4 +129,20 @@ namespace utils {
 		ss << std::put_time(&tm, "%a, %d %b %Y %H:%M:%S GMT");
 		return ss.str();
 	}
+
+	bool fileExist(std::string path){
+  		struct stat buffer;
+  		return (stat(path.c_str(), &buffer) == 0);
+	}
+
+	bool insertStringIntoFile(std::string file_path, std::string str){
+		std::ofstream new_file;
+
+		new_file.open(file_path.c_str(), std::ios::binary);
+		if (!new_file.is_open())
+			return false;
+		new_file.write(str.c_str(), str.length());
+		new_file.close();
+		return true;
+	}
 }

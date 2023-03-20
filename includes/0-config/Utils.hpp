@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <sys/stat.h>
 
 namespace utils {
 	std::vector<std::string>	splitStringBy(const std::string &stringToSplit, const char &delimiter);
@@ -15,6 +16,8 @@ namespace utils {
 	void						removeSubstring(std::string& str, const std::string& substr);
 	std::string					removeComments(const std::string& str);
 	std::string					getCurrentTime(void);
+	bool						fileExist(std::string path);
+	bool						insertStringIntoFile(std::string file_path, std::string str);
 };
 
 #endif

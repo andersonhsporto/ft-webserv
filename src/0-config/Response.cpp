@@ -221,28 +221,90 @@ int Response::_handleRequest(const Server &server, const Request &request) {
 		return (-1);
 	}
 	// Execute any relevant CGI scripts
-	if (request.getTarget() == "/") {
-		for (std::vector<std::string>::const_iterator it = server.getIndex().begin(); it != server.getIndex().end(); it++) {
-			outRead = utils::fileToString(root + "/" + *it, this->_body);
-			std::cout << "file:" << root + "/" + *it << "\n";
-			if (outRead == 1)
-				break;
+	if(request.getMethod() == "GET"){
+		if (request.getTarget() == "/") {
+			for (std::vector<std::string>::const_iterator it = server.getIndex().begin(); it != server.getIndex().end(); it++) {
+				outRead = utils::fileToString(root + "/" + *it, this->_body);
+				std::cout << "file:" << root + "/" + *it << "\n";
+				if (outRead == 1)
+					break;
+			}
+		}
+		else {
+			outRead = utils::fileToString(root + request.getTarget() + request.getExtension(), this->_body);
+			std::cout << "file:" << root + request.getTarget() + request.getExtension() << "\n";
+		}
+		if (outRead == -1) {
+			_setStatus("404");
+			return (-1);
+		}
+		else if (this->_body.empty()) {
+			_setStatus("203");
+			return (-1);
+		}
+		else {
+			_setStatus("200");
 		}
 	}
-	else {
-		outRead = utils::fileToString(root + request.getTarget() + request.getExtension(), this->_body);
-		std::cout << "file:" << root + request.getTarget() + request.getExtension() << "\n";
+	else if (request.getMethod() == "POST") {
+		std::string path;
+		if(request.getTarget() == "/"){
+			for (std::vector<std::string>::const_iterator it = server.getIndex().begin(); it != server.getIndex().end(); it++) {
+				if(!(utils::fileExist(root + "/" + *it)))
+					continue;
+				path = root + "/" + *it;
+				break;
+			}
+			if(path.empty()){
+				_setStatus("404");
+				return (-1);
+			}
+			if(utils::insertStringIntoFile(path, request.getBody()))
+				_setStatus("200");
+			else
+				_setStatus("403");
+		} else {
+			path = root + request.getTarget() + request.getExtension();
+			if (!(utils::fileExist(path))){
+				_setStatus("404");
+				return (-1);
+			}
+			if(utils::insertStringIntoFile(path, request.getBody()))
+				_setStatus("200");
+			else
+				_setStatus("403");
+		}
 	}
-	if (outRead == -1) {
-		_setStatus("404");
-		return (-1);
-	}
-	else if (this->_body.empty()) {
-		_setStatus("203");
-		return (-1);
-	}
-	else {
-		_setStatus("200");
+	else if(request.getMethod() == "DELETE") {
+		std::string path;
+		if(request.getTarget() == "/"){
+			for (std::vector<std::string>::const_iterator it = server.getIndex().begin(); it != server.getIndex().end(); it++) {
+				if(!(utils::fileExist(root + "/" + *it)))
+					continue;
+				path = root + "/" + *it;
+				break;
+			}
+			if(path.empty()){
+				_setStatus("404");
+				return (-1);
+			}
+			if(std::remove(path.c_str()) == 0)
+				_setStatus("200");
+			else
+				_setStatus("403");
+		}
+		else {
+			path = root + request.getTarget() + request.getExtension();
+			if (!(utils::fileExist(path))){
+				_setStatus("404");
+				return (-1);
+			}
+			if(std::remove(path.c_str()) == 0)
+				_setStatus("200");
+			else
+				_setStatus("403");
+		}
+		
 	}
 	return (0);
 }
