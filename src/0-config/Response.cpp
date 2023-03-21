@@ -165,7 +165,7 @@ void Response::_setStatus(const std::string& code) {
 	std::unordered_map<std::string, std::string> messages {
 		{ "200", "OK" },
 		{ "201", "Created" },
-		{ "203", "No Content" },
+		{ "204", "No Content" },
 		{ "301", "Moved Permanently" },
 		{ "302", "Found" },
 		{ "400", "Bad Request" },
@@ -198,7 +198,7 @@ int	Response::_getMethodHTTP(const Request &request, const Server &server, std::
 	if (outRead == -1) 
 		_setStatus("404");
 	if (this->_body.empty())
-		_setStatus("203");
+		_setStatus("204");
 	else
 		_setStatus("200");
 	return (this->_status.first == "200" ? 0 : -1);
