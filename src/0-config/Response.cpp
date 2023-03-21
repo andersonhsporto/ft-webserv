@@ -197,7 +197,7 @@ int	Response::_getMethodHTTP(const Request &request, const Server &server, std::
 	}
 	if (outRead == -1) 
 		_setStatus("404");
-	if (this->_body.empty())
+	else if (this->_body.empty())
 		_setStatus("204");
 	else
 		_setStatus("200");
@@ -215,7 +215,7 @@ int	Response::_postMethodHTTP(const Request &request, const Server &server, std:
 		};
 		if(path.empty())
 			_setStatus("404");
-		if(utils::insertStringIntoFile(path, request.getBody()))
+		else if(utils::insertStringIntoFile(path, request.getBody()))
 			_setStatus("200");
 		else
 			_setStatus("403");
@@ -223,7 +223,7 @@ int	Response::_postMethodHTTP(const Request &request, const Server &server, std:
 		path = root + request.getTarget() + request.getExtension();
 		if (!(utils::fileExist(path)))
 			_setStatus("404");
-		if(utils::insertStringIntoFile(path, request.getBody()))
+		else if(utils::insertStringIntoFile(path, request.getBody()))
 			_setStatus("200");
 		else
 			_setStatus("403");
@@ -242,7 +242,7 @@ int	Response::_deleteMethodHTTP(const Request &request, const Server &server, st
 		}
 		if(path.empty())
 			_setStatus("404");
-		if(std::remove(path.c_str()) == 0)
+		else if(std::remove(path.c_str()) == 0)
 			_setStatus("200");
 		else
 			_setStatus("403");
@@ -251,7 +251,7 @@ int	Response::_deleteMethodHTTP(const Request &request, const Server &server, st
 		path = root + request.getTarget() + request.getExtension();
 		if (!(utils::fileExist(path)))
 			_setStatus("404");
-		if(std::remove(path.c_str()) == 0)
+		else if(std::remove(path.c_str()) == 0)
 			_setStatus("200");
 		else
 			_setStatus("403");
