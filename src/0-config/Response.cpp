@@ -195,16 +195,13 @@ int	Response::_getMethodHTTP(const Request &request, const Server &server, std::
 		outRead = utils::fileToString(root + request.getTarget() + request.getExtension(), this->_body);
 		std::cout << "file:" << root + request.getTarget() + request.getExtension() << "\n";
 	}
-	if (outRead == -1) {
+	if (outRead == -1) 
 		_setStatus("404");
-		return (-1);
-	}
-	else if (this->_body.empty()) {
+	if (this->_body.empty())
 		_setStatus("203");
-		return (-1);
-	}
-	_setStatus("200");
-	return (0);
+	else
+		_setStatus("200");
+	return (this->_status.first == "200" ? 0 : -1);
 }
 
 int	Response::_postMethodHTTP(const Request &request, const Server &server, std::string &root){
@@ -215,30 +212,23 @@ int	Response::_postMethodHTTP(const Request &request, const Server &server, std:
 				continue;
 			path = root + "/" + *it;
 			break;
-		}int			_getMethodHTTP(const Request &request, const Server &server, std::string root);
-		if(path.empty()){
+		};
+		if(path.empty())
 			_setStatus("404");
-			return (-1);
-		}
 		if(utils::insertStringIntoFile(path, request.getBody()))
 			_setStatus("200");
-		else{
+		else
 			_setStatus("403");
-			return (-1);
-		}
 	} else {
 		path = root + request.getTarget() + request.getExtension();
-		if (!(utils::fileExist(path))){
+		if (!(utils::fileExist(path)))
 			_setStatus("404");
-			return (-1);
-		}
-		if(!(utils::insertStringIntoFile(path, request.getBody()))){
+		if(utils::insertStringIntoFile(path, request.getBody()))
+			_setStatus("200");
+		else
 			_setStatus("403");
-			return (-1);
-		}
-		_setStatus("200");
 	}
-	return (0);
+	return (this->_status.first == "200" ? 0 : -1);
 }
 
 int	Response::_deleteMethodHTTP(const Request &request, const Server &server, std::string &root){
@@ -250,30 +240,23 @@ int	Response::_deleteMethodHTTP(const Request &request, const Server &server, st
 			path = root + "/" + *it;
 			break;
 		}
-		if(path.empty()){
+		if(path.empty())
 			_setStatus("404");
-			return (-1);
-		}
 		if(std::remove(path.c_str()) == 0)
 			_setStatus("200");
-		else{
+		else
 			_setStatus("403");
-			return (-1);
-		}
 	}
 	else {
 		path = root + request.getTarget() + request.getExtension();
-		if (!(utils::fileExist(path))){
+		if (!(utils::fileExist(path)))
 			_setStatus("404");
-			return (-1);
-		}
-		if(std::remove(path.c_str()) != 0){
+		if(std::remove(path.c_str()) == 0)
+			_setStatus("200");
+		else
 			_setStatus("403");
-			return (-1);
-		}
-		_setStatus("200");
 	}
-	return (0);
+	return (this->_status.first == "200" ? 0 : -1);
 }
 
 int Response::_applyMethodHTTP(const Request &request, const Server &server, std::string &root){

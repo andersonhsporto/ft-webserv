@@ -161,9 +161,15 @@ int	Request::parsePreBody(std::stringstream &ss) {
 }
 
 int	Request::parseBody(std::stringstream &ss) {
-	this->_body = ss.str().substr(0, this->_bodyLength);
-	ss.str().erase(0, this->_bodyLength);
+	bool isBody = false;
+	std::vector<std::string> lines = utils::splitStringBy(ss.str(), "\r\n");
 
+	for(std::vector<std::string>::iterator it = lines.begin(); it != lines.end(); ++it){
+		if(*it == "")
+			isBody = true;
+		if(isBody)
+			this->_body += *it;	
+	}
 	return (0);
 }
 
