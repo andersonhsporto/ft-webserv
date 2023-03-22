@@ -21,6 +21,7 @@ class Server {
 		Server &operator=(Server const &rhs);
 
 		// -Getters
+		const bool							&getAutoindex(void) const;
 		const std::map<std::string,std::string>	&getCgi(void) const;
 		const int							&getMaxbodysize(void) const;
 		const int							&getTimeout(void) const;
@@ -34,6 +35,7 @@ class Server {
 		Socket								getListener(void) const;
 
 		// -Setters
+		void	setAutoindex(bool autoindex);
 		void	setCgi(std::map<std::string,std::string> Cgi);
 		void	setMaxbodysize(int Maxbodysize);
 		void	setTimeout(int Timeout);
@@ -51,6 +53,7 @@ class Server {
 		void	addCgi(const std::string &extension, const std::string &path);
 
 	private:
+		bool								_autoindex;
 		bool								_running;
 		int									_maxBodySize;
 		int									_timeOut;

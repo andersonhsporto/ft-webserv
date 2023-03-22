@@ -5,7 +5,7 @@
 #include "Utils.hpp"
 
 // -Constructors
-Server::Server(void) : _maxBodySize(1024), _timeOut(30), _port(0), _host(""), _root("."), _running(false) {
+Server::Server(void) : _maxBodySize(1024), _timeOut(30), _port(0), _host(""), _root("."), _running(false), _autoindex(false) {
 	std::cout << "Server default constructor called\n";
 	return ;
 }
@@ -34,6 +34,10 @@ Server &Server::operator=(Server const &rhs) {
 }
 
 // -Getters
+const bool &Server::getAutoindex(void) const{
+	return this->_autoindex;
+}
+
 const std::map<std::string,std::string> &Server::getCgi(void) const {
 	return (this->_cgi);
 }
@@ -79,6 +83,10 @@ Socket Server::getListener(void) const{
 }
 
 // -Setters
+void Server::setAutoindex(bool autoindex){
+	this->_autoindex = autoindex;
+}
+
 void Server::setCgi(std::map<std::string,std::string> Cgi) {
 	this->_cgi = Cgi;
 }

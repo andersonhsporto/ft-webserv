@@ -12,6 +12,7 @@ ParserConfig::ParserConfig(WebServer &webserver) : _webServer(webserver) {
 	this->_parseFuncs["timeout"] = &_parseTimeOut;
 	this->_parseFuncs["location"] = &_parseLocation;
 	this->_parseFuncs["cgi"] = &_parseCgi;
+	this->_parseFuncs["autoindex"] = &_parseAutoindex;
 	std::cout << "ParserConfig WebServer constructor called\n";
 	return ;
 }
@@ -159,6 +160,10 @@ inline void ParserConfig::_setServers() {
 		iss.clear();
 	}
 	return ;
+}
+
+void ParserConfig::_parseAutoindex(const std::string &value, class Server &server){
+	server.setAutoindex(value.compare("on") == 0 ? true : false);
 }
 
 void ParserConfig::_parseListen(const std::string &value, class Server &server) {
