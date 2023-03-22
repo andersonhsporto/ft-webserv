@@ -180,7 +180,6 @@ void Response::_setStatus(const std::string& code) {
 }
 
 int	Response::_getMethodHTTP(const Request &request, const Server &server, std::string &root){
-	std::string path;
 	int outRead = -1;
 
 	if (request.getTarget() == "/") {

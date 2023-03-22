@@ -145,4 +145,16 @@ namespace utils {
 		new_file.close();
 		return true;
 	}
+
+	std::string pathIs(std::string path){
+		struct stat s;
+
+		if (stat(path.c_str(), &s) == 0){
+			if (s.st_mode & S_IFDIR)
+				return ("dir");
+			else if (s.st_mode & S_IFREG)
+				return ("file");
+		}
+		return ("error");
+	}
 }
