@@ -181,20 +181,17 @@ void Response::_setStatus(const std::string& code) {
 }
 
 std::string Response::_getPageFile(std::string path){
-	int outRead;
-
-	outRead = utils::fileToString(path, this->_body);
-	if (outRead == -1) 
+	if (utils::pathIs(path) == "dir" || utils::fileToString(path, this->_body) == -1) 
 		return "404";
 	else if (this->_body.empty())
 		return "204";
 	return "200";
 }
 
-
 std::string Response::_getPageAutoindex(const std::string &path, const Server &server){
 	return _autoindex.autoindexPageGenerator(path, this->_body, server);
 }
+
 int	Response::_getMethodHTTP(const Request &request, const Server &server, std::string &root){
 	std::string path = "";
 
