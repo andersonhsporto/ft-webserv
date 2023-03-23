@@ -5,6 +5,7 @@
 #include <string>
 #include <iostream>
 #include <unordered_map>
+#include "Autoindex.hpp"
 
 class Response {
 	public:
@@ -34,6 +35,7 @@ class Response {
 		std::pair<std::string, std::string>				_status;
 		std::unordered_map<std::string, std::string>	_headers;
 		std::set<std::string>							_allowedMethods;
+		Autoindex										_autoindex;
 
 		int			_handleRequest(const class Server &server, const class Request &request);
 		void		_buildResponse();
@@ -46,6 +48,8 @@ class Response {
 		int			_postMethodHTTP(const Request &request, const Server &server, std::string &root);
 		int			_deleteMethodHTTP(const Request &request, const Server &server, std::string &root);
 		int			_applyMethodHTTP(const Request &request, const Server &server, std::string &root);
+		std::string _getPageFile(std::string path);
+		std::string _getPageAutoindex(std::string &path, const Server &server);
 };
 
 // -Functions

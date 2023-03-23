@@ -169,6 +169,7 @@ void Response::_setStatus(const std::string& code) {
 		{ "301", "Moved Permanently" },
 		{ "302", "Found" },
 		{ "400", "Bad Request" },
+		{ "401", "Unauthorized" },
 		{ "403", "Forbidden" },
 		{ "404", "Not Found" },
 		{ "405", "Method Not Allowed" },
@@ -179,27 +180,50 @@ void Response::_setStatus(const std::string& code) {
 	this->_status = std::make_pair(code, messages[code]);
 }
 
+std::string Response::_getPageFile(std::string path){
+	int outRead;
+
+	outRead = utils::fileToString(path, this->_body);
+	if (outRead == -1) 
+		return "404";
+	else if (this->_body.empty())
+		return "204";
+	return "200";
+}
+
+
+std::string Response::_getPageAutoindex(std::string &path, const Server &server){
+	return _autoindex.autoindexPageGenerator(path, this->_body, server);
+}
 int	Response::_getMethodHTTP(const Request &request, const Server &server, std::string &root){
-	int outRead = -1;
+	std::string path = "";
 
 	if (request.getTarget() == "/") {
 		for (std::vector<std::string>::const_iterator it = server.getIndex().begin(); it != server.getIndex().end(); it++) {
-			outRead = utils::fileToString(root + "/" + *it, this->_body);
-			std::cout << "file:" << root + "/" + *it << "\n";
-			if (outRead == 1)
+			if(utils::fileExist(root + "/" + *it)){
+				std::cout << "file /:" << root + "/" + *it << "\n";
+				path = root + "/" + *it;
 				break;
+			}
 		}
 	}
 	else {
-		outRead = utils::fileToString(root + request.getTarget() + request.getExtension(), this->_body);
-		std::cout << "file:" << root + request.getTarget() + request.getExtension() << "\n";
+		if(utils::fileExist(root + request.getTarget() + request.getExtension())){
+			path  = root + request.getTarget() + request.getExtension();
+			std::cout << "file:" << root + request.getTarget() + request.getExtension() << "\n";
+		}
 	}
-	if (outRead == -1) 
-		_setStatus("404");
-	else if (this->_body.empty())
-		_setStatus("204");
-	else
-		_setStatus("200");
+	if (path.empty())
+		path = root + request.getTarget();
+	std::cout << "PEGASUS: " << path << "\n"; 
+	if (utils::pathIs(path) == "dir" && server.getAutoindex()){
+		std::cout << "ENTREI COMO SENDO UM DIR!!!!\n";
+		_setStatus(_autoindex.autoindexPageGenerator(path, this->_body, server));
+	}
+	else{
+		_setStatus(_getPageFile(path));
+		std::cout << "ENTREI COMO SENDO UM FILE!!!!\n";
+	}
 	return (this->_status.first == "200" ? 0 : -1);
 }
 

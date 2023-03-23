@@ -38,6 +38,7 @@ PARSER_HEADERS	= $(addprefix 0-config/, \
 				)
 
 MODELS_HEADERS	= $(addprefix 1-models/, \
+				Autoindex.hpp \
 				Server.hpp \
 				ServerLocation.hpp \
 				Socket.hpp \
@@ -62,6 +63,7 @@ PARSER_SRC	= $(addprefix 0-config/, \
 				)
 
 MODELS_SRC	= $(addprefix 1-models/, \
+				Autoindex.cpp \
 				Server.cpp \
 				ServerLocation.cpp \
 				Socket.cpp \

@@ -96,6 +96,7 @@ void WebServer::run(const std::string &FilePath) {
 							break;
 						}
 					}
+					std::cout << "RESPOSTA: \n" << rawRequest << "\n";
 					if(bytes < 0){
 						std::cout << "Error: unable to receive data from client FD " << client_socket->getFd() << "\n";
 						::close(client_socket->getFd());
