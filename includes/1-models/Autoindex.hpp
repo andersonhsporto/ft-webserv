@@ -8,12 +8,12 @@
 class Autoindex
 {
 	private:
-		std::string _linkGenerator(std::string &pathLink, std::string dirEntry, const Server &server);
+		std::string _linkGenerator(const std::string &pathLink, std::string dirEntry, const Server &server);
 
 	public:
 		Autoindex();
 		~Autoindex();
-		std::string autoindexPageGenerator(std::string &path, std::string &page, const Server &server);
+		std::string autoindexPageGenerator(const std::string &target, std::string &page, const Server &server);
 };
 
 #endif

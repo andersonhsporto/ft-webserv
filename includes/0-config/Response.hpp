@@ -49,7 +49,7 @@ class Response {
 		int			_deleteMethodHTTP(const Request &request, const Server &server, std::string &root);
 		int			_applyMethodHTTP(const Request &request, const Server &server, std::string &root);
 		std::string _getPageFile(std::string path);
-		std::string _getPageAutoindex(std::string &path, const Server &server);
+		std::string _getPageAutoindex(const std::string &path, const Server &server);
 };
 
 // -Functions

@@ -192,7 +192,7 @@ std::string Response::_getPageFile(std::string path){
 }
 
 
-std::string Response::_getPageAutoindex(std::string &path, const Server &server){
+std::string Response::_getPageAutoindex(const std::string &path, const Server &server){
 	return _autoindex.autoindexPageGenerator(path, this->_body, server);
 }
 int	Response::_getMethodHTTP(const Request &request, const Server &server, std::string &root){
@@ -215,15 +215,10 @@ int	Response::_getMethodHTTP(const Request &request, const Server &server, std::
 	}
 	if (path.empty())
 		path = root + request.getTarget();
-	std::cout << "PEGASUS: " << path << "\n"; 
-	if (utils::pathIs(path) == "dir" && server.getAutoindex()){
-		std::cout << "ENTREI COMO SENDO UM DIR!!!!\n";
-		_setStatus(_autoindex.autoindexPageGenerator(path, this->_body, server));
-	}
-	else{
+	if (utils::pathIs(path) == "dir" && server.getAutoindex())
+		_setStatus(_getPageAutoindex(request.getTarget(), server));
+	else
 		_setStatus(_getPageFile(path));
-		std::cout << "ENTREI COMO SENDO UM FILE!!!!\n";
-	}
 	return (this->_status.first == "200" ? 0 : -1);
 }
 
