@@ -180,8 +180,10 @@ void Response::_setStatus(const std::string& code) {
 	this->_status = std::make_pair(code, messages[code]);
 }
 
-std::string Response::_getPageFile(std::string path){
-	if (utils::pathIs(path) == "dir" || utils::fileToString(path, this->_body) == -1) 
+std::string Response::_getPageFile(const Request &request, const Server &server, std::string path, const bool &isRootLocation){
+	if(utils::pathIs(path) == "dir" || (request.getTarget() != "/" && !server.getAutoindex() && !isRootLocation))
+		return "401";
+	if (utils::fileToString(path, this->_body) == -1) 
 		return "404";
 	else if (this->_body.empty())
 		return "204";
@@ -192,7 +194,7 @@ std::string Response::_getPageAutoindex(const std::string &path, const Server &s
 	return _autoindex.autoindexPageGenerator(path, this->_body, server);
 }
 
-int	Response::_getMethodHTTP(const Request &request, const Server &server, std::string &root){
+int	Response::_getMethodHTTP(const Request &request, const Server &server, std::string &root, const bool &isRootLocation){
 	std::string path = "";
 
 	if (request.getTarget() == "/") {
@@ -215,7 +217,7 @@ int	Response::_getMethodHTTP(const Request &request, const Server &server, std::
 	if (utils::pathIs(path) == "dir" && server.getAutoindex())
 		_setStatus(_getPageAutoindex(request.getTarget(), server));
 	else
-		_setStatus(_getPageFile(path));
+		_setStatus(_getPageFile(request, server, path, isRootLocation));
 	return (this->_status.first == "200" ? 0 : -1);
 }
 
@@ -274,9 +276,9 @@ int	Response::_deleteMethodHTTP(const Request &request, const Server &server, st
 	return (this->_status.first == "200" ? 0 : -1);
 }
 
-int Response::_applyMethodHTTP(const Request &request, const Server &server, std::string &root){
+int Response::_applyMethodHTTP(const Request &request, const Server &server, std::string &root, const bool &isRootLocation){
 	if(request.getMethod() == "GET")
-		return _getMethodHTTP(request, server, root);
+		return _getMethodHTTP(request, server, root, isRootLocation);
 	else if (request.getMethod() == "POST")
 		return _postMethodHTTP(request, server, root);
 	else if(request.getMethod() == "DELETE")
@@ -286,9 +288,11 @@ int Response::_applyMethodHTTP(const Request &request, const Server &server, std
 
 int Response::_handleRequest(const Server &server, const Request &request) {
 	int			outRead = -1;
+	bool		isRootLocation;
 	std::string	root;
 
 	root = server.getRoot();
+	isRootLocation = false;
 	// - Check Protocol
 	if (request.getProtocol()!= "HTTP/1.1") {
 		_setStatus("505");
@@ -300,6 +304,7 @@ int Response::_handleRequest(const Server &server, const Request &request) {
 		// std::cout << *(*it);
 		if ((*it)->getPath() == request.getTarget()) {
 			location = *it;
+			isRootLocation = true;
 			break;
 		}
 	}
@@ -326,7 +331,7 @@ int Response::_handleRequest(const Server &server, const Request &request) {
 		return (-1);
 	}
 	// Execute any relevant CGI scripts
-	return (_applyMethodHTTP(request, server, root));
+	return (_applyMethodHTTP(request, server, root, isRootLocation));
 }
 
 void Response::_clearVariables(void){
@@ -345,10 +350,7 @@ std::ostream &operator<<(std::ostream &out, Response const &in) {
 }
 
 /*
-	FOR CLIENT
-#include "ParserUtils.hpp"
-
-Response::Response(const std::string &rawResponse) {
+	FOR CLIENTconst bool &isRootLocation
 	std::cout << "Response String constructor called\n";
 	parseRawResponse(rawResponse);
 }
