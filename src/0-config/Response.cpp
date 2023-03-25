@@ -174,6 +174,7 @@ void Response::_setStatus(const std::string& code) {
 		{ "404", "Not Found" },
 		{ "405", "Method Not Allowed" },
 		{ "413", "Entity Too Large" },
+		{ "422", "Unprocessable Content" },
 		{ "500", "Internal Server Error" },
 		{ "505", "Version Not Supported" }
 	};
@@ -221,7 +222,7 @@ int	Response::_getMethodHTTP(const Request &request, const Server &server, std::
 	return (this->_status.first == "200" ? 0 : -1);
 }
 
-int	Response::_postMethodHTTP(const Request &request, const Server &server, std::string &root){
+int	Response::_postMethodHTTP(const Request &request, const Server &server, std::string &root, const bool &isRootLocation){
 	std::string path;
 	if(request.getTarget() == "/"){
 		for (std::vector<std::string>::const_iterator it = server.getIndex().begin(); it != server.getIndex().end(); it++) {
@@ -237,13 +238,19 @@ int	Response::_postMethodHTTP(const Request &request, const Server &server, std:
 		else
 			_setStatus("403");
 	} else {
-		path = root + request.getTarget() + request.getExtension();
-		if (!(utils::fileExist(path)))
+		if(isRootLocation)
+			path = root + request.getTarget() + request.getExtension();
+		else if(server.getAutoindex())
+			path = root + request.getTarget();
+
+		if(path.empty() && utils::fileExist(root + request.getTarget()))
+			_setStatus("403");
+		else if (!(utils::fileExist(path)))
 			_setStatus("404");
 		else if(utils::insertStringIntoFile(path, request.getBody()))
 			_setStatus("200");
 		else
-			_setStatus("403");
+			_setStatus("422");
 	}
 	return (this->_status.first == "200" ? 0 : -1);
 }
@@ -280,10 +287,14 @@ int Response::_applyMethodHTTP(const Request &request, const Server &server, std
 	if(request.getMethod() == "GET")
 		return _getMethodHTTP(request, server, root, isRootLocation);
 	else if (request.getMethod() == "POST")
-		return _postMethodHTTP(request, server, root);
+		return _postMethodHTTP(request, server, root, isRootLocation);
 	else if(request.getMethod() == "DELETE")
 		return _deleteMethodHTTP(request, server, root);
 	return (0);
+}
+
+int Response::_calculateBodySize(const std::string &body) const {
+	return body.size();
 }
 
 int Response::_handleRequest(const Server &server, const Request &request) {
@@ -296,6 +307,10 @@ int Response::_handleRequest(const Server &server, const Request &request) {
 	// - Check Protocol
 	if (request.getProtocol()!= "HTTP/1.1") {
 		_setStatus("505");
+		return (-1);
+	}
+	if (_calculateBodySize(request.getBody()) > (server.getMaxbodysize() * 1024)){
+		_setStatus("413");
 		return (-1);
 	}
 	// - Check Location

@@ -45,11 +45,12 @@ class Response {
 		std::string	_getContentTypeHeader(const std::string& filePath);
 		void		_clearVariables(void);
 		int			_getMethodHTTP(const Request &request, const Server &server, std::string &root, const bool &isRootLocation);
-		int			_postMethodHTTP(const Request &request, const Server &server, std::string &root);
+		int			_postMethodHTTP(const Request &request, const Server &server, std::string &root, const bool &isRootLocation);
 		int			_deleteMethodHTTP(const Request &request, const Server &server, std::string &root);
 		int			_applyMethodHTTP(const Request &request, const Server &server, std::string &root, const bool &isRootLocation);
 		std::string _getPageFile(const Request &request, const Server &server, std::string path, const bool &isRootLocation);
 		std::string _getPageAutoindex(const std::string &path, const Server &server);
+		int 		_calculateBodySize(const std::string &body) const;
 };
 
 // -Functions
