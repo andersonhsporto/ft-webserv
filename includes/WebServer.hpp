@@ -6,6 +6,7 @@
 #include "Server.hpp"
 #include "ParserConfig.hpp"
 #include "Poll.hpp"
+#include "Utils.hpp"
 
 class WebServer {
 	public:
@@ -33,6 +34,10 @@ class WebServer {
 		ParserConfig			_parser;
 		std::vector<Server*>	_serverList;
 		Poll					_poller;
+
+		// -Methods
+		size_t	_sizeBody(const std::string &request);
+		size_t _findContentLenght(const std::string &request);
 };
 
 // -Functions

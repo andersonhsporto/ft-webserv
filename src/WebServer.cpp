@@ -38,6 +38,36 @@ void WebServer::finish(void){
 		_serverList.pop_back();
 	}
 }
+
+size_t	 WebServer::_sizeBody(const std::string &request) {
+	bool isBody = false;
+	std::string body;
+	std::vector<std::string> lines = utils::splitStringBy(request, "\r\n");
+
+	for(std::vector<std::string>::iterator it = lines.begin(); it != lines.end(); ++it){
+		if(!isBody && *it == "")
+			isBody = true;
+		if(isBody)
+			body += *it;
+	}
+	return (body.size());
+}
+
+size_t  WebServer::_findContentLenght(const std::string &request){
+	bool isBody = false;
+	size_t ret;
+	std::string line;
+	std::vector<std::string> lines = utils::splitStringBy(request, "\r\n");
+
+	for(std::vector<std::string>::iterator it = lines.begin(); it != lines.end(); ++it){
+		if((*it).find("Content-Length") != std::string::npos)
+			line = *it;
+	}
+	std::stringstream ss(line.empty() ? "0" : utils::splitStringBy(line, " ")[1]);
+	ss >> ret;
+	return (ret);
+}
+
 void WebServer::run(const std::string &FilePath) {
 	Socket					*listener;
 	Socket					*client_socket;
@@ -90,6 +120,8 @@ void WebServer::run(const std::string &FilePath) {
 					//Receive customer data 
 					while ((bytes = ::recv(client_socket->getFd(), buffer, sizeof(buffer), 0)) > 0) {
 						rawRequest.append(buffer, bytes);
+						if(_sizeBody(rawRequest) < _findContentLenght(rawRequest))
+							continue;
 
 						// Check if we have received the entire request
 						if (rawRequest.find("\r\n\r\n") != std::string::npos) {
