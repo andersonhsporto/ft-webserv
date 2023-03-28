@@ -136,7 +136,7 @@ void WebServer::run(const std::string &FilePath) {
 					}
 					// Handle incoming data on the client socket
 					Request request(rawRequest);
-					Response response(*(listener->getServer()), request);
+					Response response(*(client_socket->getServer()), request);
 					// Send the Response object back to the client socket
 					for(int bytesSend = 0; bytesSend < response.getRawresponse().size(); ){
 						bytes = ::send(client_socket->getFd(), response.getRawresponse().c_str(), \
