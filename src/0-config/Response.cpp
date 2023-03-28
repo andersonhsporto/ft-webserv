@@ -254,7 +254,7 @@ int	Response::_postMethodHTTP(const Request &request, const Server &server, std:
 	return (this->_status.first == "200" ? 0 : -1);
 }
 
-int	Response::_deleteMethodHTTP(const Request &request, const Server &server, std::string &root){
+int	Response::_deleteMethodHTTP(const Request &request, const Server &server, std::string &root, const bool &isRootLocation){
 	std::string path;
 	if(request.getTarget() == "/"){
 		for (std::vector<std::string>::const_iterator it = server.getIndex().begin(); it != server.getIndex().end(); it++) {
@@ -271,13 +271,19 @@ int	Response::_deleteMethodHTTP(const Request &request, const Server &server, st
 			_setStatus("403");
 	}
 	else {
-		path = root + request.getTarget() + request.getExtension();
-		if (!(utils::fileExist(path)))
+		if(isRootLocation)
+			path = root + request.getTarget() + request.getExtension();
+		else if(server.getAutoindex())
+			path = root + request.getTarget();
+		
+		if (path.empty() && utils::fileExist(root + request.getTarget()))
+			_setStatus("403");
+		else if (!(utils::fileExist(path)))
 			_setStatus("404");
 		else if(std::remove(path.c_str()) == 0)
 			_setStatus("200");
 		else
-			_setStatus("403");
+			_setStatus("422");
 	}
 	return (this->_status.first == "200" ? 0 : -1);
 }
@@ -288,7 +294,7 @@ int Response::_applyMethodHTTP(const Request &request, const Server &server, std
 	else if (request.getMethod() == "POST")
 		return _postMethodHTTP(request, server, root, isRootLocation);
 	else if(request.getMethod() == "DELETE")
-		return _deleteMethodHTTP(request, server, root);
+		return _deleteMethodHTTP(request, server, root, isRootLocation);
 	return (0);
 }
 
