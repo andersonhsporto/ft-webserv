@@ -212,10 +212,10 @@ std::string Response::_getPageAutoindex(const std::string &path, const Server &s
 int	Response::_getMethodHTTP(const Request &request, const Server &server, std::string &root, const bool &isRootLocation){
 	std::string path = "";
 
-	if (request.getTarget() == "/") {
+	if (isRootLocation) {
 		for (std::vector<std::string>::const_iterator it = server.getIndex().begin(); it != server.getIndex().end(); it++) {
 			if(utils::fileExist(root + "/" + *it)){
-				std::cout << "file /:" << root + "/" + *it << "\n";
+				std::cout << "file /:" << root + '/' + *it << "\n";
 				path = root + "/" + *it;
 				break;
 			}
@@ -335,9 +335,13 @@ int Response::_handleRequest(const Server &server, const Request &request) {
 	}
 	// - Check Location
 	const ServerLocation* location = nullptr;
+	std::string slashLocation;
+	std::string slashRequest;
 	for (std::vector<ServerLocation*>::const_iterator it = server.getLocations().begin(); it != server.getLocations().end(); ++it) {
 		// std::cout << *(*it);
-		if ((*it)->getPath() == request.getTarget()) {
+		slashLocation = (*it)->getPath()[(*it)->getPath().size() - 1] != '/' && request.getTarget()[request.getTarget().size() - 1] == '/' ? "/": "";
+		slashRequest = (*it)->getPath()[(*it)->getPath().size() - 1] == '/' && request.getTarget()[request.getTarget().size() - 1] != '/' ? "/": "";
+		if (((*it)->getPath() + slashLocation) == (request.getTarget() + slashRequest)) {
 			location = *it;
 			isRootLocation = true;
 			break;
