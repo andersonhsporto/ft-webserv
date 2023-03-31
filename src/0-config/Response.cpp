@@ -238,7 +238,7 @@ int	Response::_getMethodHTTP(const Request &request, const Server &server, std::
 
 int	Response::_postMethodHTTP(const Request &request, const Server &server, std::string &root, const bool &isRootLocation){
 	std::string path;
-	if(request.getTarget() == "/"){
+	if(isRootLocation){
 		for (std::vector<std::string>::const_iterator it = server.getIndex().begin(); it != server.getIndex().end(); it++) {
 			if(!(utils::fileExist(root + "/" + *it)))
 				continue;
@@ -271,7 +271,7 @@ int	Response::_postMethodHTTP(const Request &request, const Server &server, std:
 
 int	Response::_deleteMethodHTTP(const Request &request, const Server &server, std::string &root, const bool &isRootLocation){
 	std::string path;
-	if(request.getTarget() == "/"){
+	if(isRootLocation){
 		for (std::vector<std::string>::const_iterator it = server.getIndex().begin(); it != server.getIndex().end(); it++) {
 			if(!(utils::fileExist(root + "/" + *it)))
 				continue;
