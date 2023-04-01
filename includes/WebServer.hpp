@@ -34,6 +34,7 @@ class WebServer {
 		ParserConfig			_parser;
 		std::vector<Server*>	_serverList;
 		Poll					_poller;
+		std::string				_rawRequest;
 
 		// -Methods
 		size_t	_sizeBody(const std::string &request);

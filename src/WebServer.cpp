@@ -16,7 +16,7 @@ WebServer::WebServer(void) : _parser(ParserConfig(*this)) {
 // -Destructor
 WebServer::~WebServer() {
 	std::cout << "WebServer default destructor called\n";
-	this->_poller.clear();
+	this->finish();
 	return ;
 }
 
@@ -32,6 +32,7 @@ WebServer &WebServer::operator=(WebServer const &rhs) {
 // -Setters
 // -Methods
 void WebServer::finish(void){
+	this->_rawRequest.clear();
 	_poller.clear();
 	while(_serverList.size()){
 		delete _serverList[_serverList.size() - 1];
@@ -71,7 +72,6 @@ size_t  WebServer::_findContentLenght(const std::string &request){
 void WebServer::run(const std::string &FilePath) {
 	Socket					*listener;
 	Socket					*client_socket;
-	std::string				rawRequest;
 	const int				BUFFER_SIZE = 1024;
 	char					buffer[BUFFER_SIZE];
 	ssize_t					bytes;
@@ -116,15 +116,15 @@ void WebServer::run(const std::string &FilePath) {
 				} else {
 					client_socket = this->_poller.getSocket(i);
 					std::cout << "Attending customer request with fd " << client_socket->getFd() << "\n";
-					rawRequest.clear();
+					this->_rawRequest.clear();
 					//Receive customer data 
 					while ((bytes = ::recv(client_socket->getFd(), buffer, sizeof(buffer), 0)) > 0) {
-						rawRequest.append(buffer, bytes);
-						if(_sizeBody(rawRequest) < _findContentLenght(rawRequest))
+						this->_rawRequest.append(buffer, bytes);
+						if(_sizeBody(this->_rawRequest) < _findContentLenght(this->_rawRequest))
 							continue;
 
 						// Check if we have received the entire request
-						if (rawRequest.find("\r\n\r\n") != std::string::npos) {
+						if (this->_rawRequest.find("\r\n\r\n") != std::string::npos) {
 							break;
 						}
 					}
@@ -135,7 +135,7 @@ void WebServer::run(const std::string &FilePath) {
 						continue;
 					}
 					// Handle incoming data on the client socket
-					Request request(rawRequest);
+					Request request(this->_rawRequest);
 					Response response(*(client_socket->getServer()), request);
 					// Send the Response object back to the client socket
 					for(int bytesSend = 0; bytesSend < response.getRawresponse().size(); ){
