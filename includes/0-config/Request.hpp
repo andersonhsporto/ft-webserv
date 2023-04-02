@@ -31,7 +31,6 @@ class Request {
 		// -Setters
 
 		// -Methods
-		void execute(const std::string &rawRequest);
 		void parseRequest(const std::string &buffer);
 
 	private:
@@ -48,7 +47,6 @@ class Request {
 		int	parseHeader(std::stringstream &ss);
 		int	parsePreBody(std::stringstream &ss);
 		int	parseBody(std::stringstream &ss);
-		void clearVariables(void);
 };
 
 // -Functions

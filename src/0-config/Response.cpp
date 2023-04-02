@@ -49,18 +49,6 @@ const std::string	&Response::getRawresponse(void) const {
 
 // -Setters
 // -Methods
-void Response::execute(const class Server &server, const class Request &request){
-	_clearVariables();
-	_allowedMethods = {"GET", "POST", "DELETE"};
-	if (_handleRequest(server, request) != -1) {
-		_setResponseVariables(server, request);
-	}
-	else {
-		_setErrorResponse(server);
-	}
-	_buildResponse();
-}
-
 // -Private Methods
 void Response::_buildResponse() {
 	std::stringstream response_stream;
@@ -365,15 +353,6 @@ int Response::_handleRequest(const Server &server, const Request &request) {
 	}
 	// Execute any relevant CGI scripts
 	return (_applyMethodHTTP(request, server, root, isRootLocation));
-}
-
-void Response::_clearVariables(void){
-	this->_bodyLength = 0;
-	this->_body = "";
-	this->_rawResponse = "";
-	this->_status = std::pair<std::string, std::string>();
-	this->_headers.clear() ;
-	this->_allowedMethods.clear();
 }
 
 // -Functions
