@@ -72,7 +72,7 @@ void	Poll::run(void)
 	std::cout << "\n";
 	int ret = poll(this->_poolfd_list.data(), this->getSize(), -1);
 	if (ret == -1)
-		throw std::runtime_error("poll error");
+		throw std::runtime_error("ERROR: poll error\n");
 }
 
 const size_t Poll::getSize(void) const
