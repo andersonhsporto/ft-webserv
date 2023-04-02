@@ -127,7 +127,6 @@ inline void ParserConfig::_setServers() {
 		}
 		for (std::vector<std::string>::iterator it2 = lines.begin(); it2 != lines.end(); ++it2) {
 			line2 = *it2;
-			// std::cout << "Line:" << *it2 << "\n\t\tNEXT\n";
 			ss.str(line2);
 			ss >> key;
 			utils::trimChar(key, ' ');
@@ -147,7 +146,6 @@ inline void ParserConfig::_setServers() {
 				utils::removeSubstring(value, "location ");
 				utils::removeSubstring(value, " {");
 			}
-			// std::cout << "Value:" << value << "\n\tNext\n";
 			try {
 				this->_parseFuncs.at(key);
 				_parseFuncs[key](value, this->_webServer.getLastServer());

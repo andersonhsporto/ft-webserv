@@ -4,8 +4,6 @@
 #include "Response.hpp"
 #include <cstdlib>
 #include <cstring>
-// #include <vector>
-// #include <cerrno>
 
 // -Constructors
 WebServer::WebServer(void) : _parser(ParserConfig(*this)) {

@@ -96,9 +96,6 @@ void	ServerLocation::_parseValues(const std::string &values) {
 	std::istringstream			ss;
 
 	split = utils::splitStringBy(values, '\n');
-	// for (std::vector<std::string>::iterator it = split.begin(); it != split.end(); ++it) {
-	// 	std::cout << *it << "\n";
-	// }
 	for (std::vector<std::string>::iterator it = split.begin(); it != split.end(); ++it) {
 		line = *it;
 		ss.str(line);
@@ -113,7 +110,6 @@ void	ServerLocation::_parseValues(const std::string &values) {
 			utils::trimChar(value, ' ');
 		}
 		try {
-			// std::cout << "Key:" << key << "\nValue:" << value << "\n";
 			this->_parseFuncs.at(key)(value, *this);
 		} catch (const std::out_of_range &e) {
 			throw std::runtime_error("Invalid server Location configuration");

@@ -338,7 +338,6 @@ int Response::_handleRequest(const Server &server, const Request &request) {
 	std::string slashLocation;
 	std::string slashRequest;
 	for (std::vector<ServerLocation*>::const_iterator it = server.getLocations().begin(); it != server.getLocations().end(); ++it) {
-		// std::cout << *(*it);
 		slashLocation = (*it)->getPath()[(*it)->getPath().size() - 1] != '/' && request.getTarget()[request.getTarget().size() - 1] == '/' ? "/": "";
 		slashRequest = (*it)->getPath()[(*it)->getPath().size() - 1] == '/' && request.getTarget()[request.getTarget().size() - 1] != '/' ? "/": "";
 		if (((*it)->getPath() + slashLocation) == (request.getTarget() + slashRequest)) {
@@ -348,15 +347,10 @@ int Response::_handleRequest(const Server &server, const Request &request) {
 		}
 	}
 	if (location) {
-		// std::cout << "ACHOU LOCATION\n" << "root:" << location->getRoot() << "\n";
 		if (location->getRoot() != "")
 			root = location->getRoot();
 		if (!location->getRequestshttp().empty()) {
 			this->_allowedMethods = location->getRequestshttp();
-			// std::cout << "AQUI HTTP:\n";
-			// for(std::set<std::string>::const_iterator it = this->_allowedMethods.begin(); it != this->_allowedMethods.end(); it++) {
-			// 	std::cout << *it << "\n";
-			// }
 		}
 	}
 	// - Check Method
@@ -387,71 +381,3 @@ std::ostream &operator<<(std::ostream &out, Response const &in) {
 	(void)in;
 	return (out);
 }
-
-/*
-	FOR CLIENTconst bool &isRootLocation
-	std::cout << "Response String constructor called\n";
-	parseRawResponse(rawResponse);
-}
-
-const std::unordered_map<std::string,std::string> &Response::getHeaders(void) const {
-	return (this->_headers);
-}
-
-const int &Response::getStatuscode(void) const {
-	return (this->_statusCode);
-}
-
-const std::string &Response::getVersion(void) const {
-	return (this->_version);
-}
-
-const std::string &Response::getStatusmessage(void) const {
-	return (this->_statusMessage);
-}
-
-const std::string &Response::getBody(void) const {
-	return (this->_body);
-}
-
-// -Private Methods
-void Response::parseRawResponse(const std::string &rawResponse) {
-	std::stringstream	ss(rawResponse);
-	std::string			line;
-	std::string			key;
-	std::string			value;
-
-	// Parse the first line to get status code, version and status message
-	if (std::getline(ss, line)) {
-		std::stringstream firstLine(line);
-		firstLine >> this->_version >> this->_statusCode >> this->_statusMessage;
-	}
-
-	// Parse headers
-	while (std::getline(ss, line) && line != "\r") {
-		auto separatorPos = line.find(':');
-		key = line.substr(0, separatorPos);
-		value = line.substr(separatorPos + 2, line.size() - separatorPos - 3);
-		parser::trimChar(key, ' ');
-		parser::trimChar(value, ' ');
-		this->_headers[key] = value;
-	}
-
-	// Get the body
-	while (std::getline(ss, line)) {
-		this->_body += line + "\n";
-	}
-}
-// -Functions
-std::ostream &operator<<(std::ostream &out, Response const &in) {
-		out << "_statusCode: " << in.getStatuscode() << "\n"
-		<< "_version: " << in.getVersion() << "\n"
-		<< "_statusMessage: " << in.getStatusmessage() << "\n"
-		<< "_body:\n" << in.getBody() << "\n"
-		<< "_header:\n";
-	for (std::unordered_map<std::string, std::string>::const_iterator it = in.getHeaders().begin(); it != in.getHeaders().end(); ++it) {
-		out << it->first << " " << it->second << "\n";
-	}
-	return (out);
-}
-*/
