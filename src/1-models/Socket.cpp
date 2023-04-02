@@ -84,14 +84,6 @@ int Socket::accept(void) {
 	return (::accept(_fd, (struct sockaddr*)&clientAddr, &clientAddrLen));
 }
 
-ssize_t Socket::send(const void* buf, size_t len, int flags) {
-	return (::send(_fd, buf, len, flags));
-}
-
-ssize_t Socket::recv(char* buf, size_t len, int flags) {
-	return (::recv(_fd, buf, len, flags));
-}
-
 void Socket::setsockopt(int level, int optname, const void* optval, socklen_t optlen) {
 	if (::setsockopt(_fd, level, optname, optval, optlen) == -1) {
 		throw std::runtime_error("Failed to set socket option");

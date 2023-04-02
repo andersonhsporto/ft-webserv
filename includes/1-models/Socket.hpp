@@ -34,8 +34,6 @@ class Socket {
 		bool	bind(void);
 		bool	listen(int backlog = 10);
 		int		accept(void);
-		ssize_t	send(const void* buf, size_t len, int flags = 0);
-		ssize_t	recv(char* buf, size_t len, int flags = 0);
 		void	setsockopt(int level, int optname, const void* optval, socklen_t optlen);
 		void	close(void);
 
