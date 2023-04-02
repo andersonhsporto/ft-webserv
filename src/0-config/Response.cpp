@@ -71,7 +71,6 @@ void Response::_setResponseVariables(const Server &server, const Request &reques
 		for (std::vector<ServerLocation*>::const_iterator it = locations.begin(); it != locations.end(); ++it) {
 			if ((*it)->getPath() == request.getTarget()) {
 				if ((*it)->getAutoindex()) {
-					std::cout << "OLAAAAAAAAAA\n";
 					std::string	indexFile;
 					bool		found = false;
 					for (std::vector<std::string>::const_iterator it = server.getIndex().begin(); it != server.getIndex().end(); ++it) {
@@ -203,7 +202,6 @@ int	Response::_getMethodHTTP(const Request &request, const Server &server, std::
 	if (isRootLocation) {
 		for (std::vector<std::string>::const_iterator it = server.getIndex().begin(); it != server.getIndex().end(); it++) {
 			if(utils::fileExist(root + "/" + *it)){
-				std::cout << "file /:" << root + '/' + *it << "\n";
 				path = root + "/" + *it;
 				break;
 			}
@@ -212,7 +210,6 @@ int	Response::_getMethodHTTP(const Request &request, const Server &server, std::
 	else {
 		if(utils::fileExist(root + request.getTarget() + request.getExtension())){
 			path  = root + request.getTarget() + request.getExtension();
-			std::cout << "file:" << root + request.getTarget() + request.getExtension() << "\n";
 		}
 	}
 	if (path.empty())
