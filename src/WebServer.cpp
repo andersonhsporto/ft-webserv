@@ -122,7 +122,7 @@ void WebServer::run(const std::string &FilePath) {
 							continue;
 
 						// Check if we have received the entire request
-						if (this->_rawRequest.find("\r\n\r\n") != std::string::npos) {
+						if (this->_rawRequest.find("\r\n\r\n") != std::string::npos || bytes == 0) {
 							break;
 						}
 					}
