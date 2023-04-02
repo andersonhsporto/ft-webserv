@@ -48,12 +48,11 @@ void ParserConfig::parseFile(const std::string &FilePath) {
 
 	if (utils::fileToString(FilePath, contentsConfig) != -1)
 		contentsConfig = utils::removeComments(contentsConfig);
-	/*else
-		Error oppening file
-	*/
+	else
+		throw std::runtime_error("ERROR: Unable to access " + FilePath + " file\n");
 
 	if(!this->_isCurlyBracketBalanced(contentsConfig))
-		throw std::runtime_error("Curly brackets are not balanced in the file " + FilePath);
+		throw std::runtime_error("ERROR: Curly brackets are not balanced in the file " + FilePath + "\n");
 	this->setFile(contentsConfig);
 	this->_splitServers();
 	this->_setServers();
