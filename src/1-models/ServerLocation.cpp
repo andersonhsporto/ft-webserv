@@ -86,7 +86,6 @@ void ServerLocation::setPath(std::string Path) {
 	this->_path = Path;
 }
 
-// -Methods
 // -Private Methods
 void	ServerLocation::_parseValues(const std::string &values) {
 	std::vector<std::string>	split;

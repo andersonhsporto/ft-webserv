@@ -43,10 +43,10 @@ class Request {
 		std::string										_protocol;
 		std::map<std::string, std::string>	_headers;
 
-		int	parseMethod(std::stringstream &ss);
-		int	parseHeader(std::stringstream &ss);
-		int	parsePreBody(void);
-		int	parseBody(std::stringstream &ss);
+		void	parseMethod(std::stringstream &ss);
+		void	parseHeader(std::stringstream &ss);
+		void	parsePreBody(void);
+		void	parseBody(std::stringstream &ss);
 };
 
 // -Functions

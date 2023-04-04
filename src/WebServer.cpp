@@ -26,8 +26,6 @@ WebServer &WebServer::operator=(WebServer const &rhs) {
 	return (*this);
 }
 
-// -Getters
-// -Setters
 // -Methods
 void WebServer::finish(void){
 	this->_rawRequest.clear();

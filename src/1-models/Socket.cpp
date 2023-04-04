@@ -46,11 +46,9 @@ Server *Socket::getServer(void) const {
 }
 
 // -Setters
-
 void Socket::setServer(Server *server ){
 	this->_server = server;
 }
-
 
 // -Methods
 bool Socket::bind() {

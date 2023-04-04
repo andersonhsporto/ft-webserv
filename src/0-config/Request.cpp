@@ -73,31 +73,18 @@ const std::string &Request::getProtocol(void) const {
 	return (this->_protocol);
 }
 
-// -Setters
 // -Methods
 void Request::parseRequest(const std::string &buffer) {
 	std::stringstream	ss(buffer);
 
-	int parsed = parseMethod(ss);
-	if (parsed == -1) {
-		// error handling
-	}
-	parsed = parseHeader(ss);
-	if (parsed == -1) {
-		// error handling
-	}
-	parsed = parsePreBody();
-	if (parsed == -1) {
-		// error handling
-	}
-	parsed = parseBody(ss);
-	if (parsed == -1) {
-		// error handling
-	}
+	parseMethod(ss);
+	parseHeader(ss);
+	parsePreBody();
+	parseBody(ss);
 }
 
 // -Private Methods
-int	Request::parseMethod(std::stringstream &ss) {
+void Request::parseMethod(std::stringstream &ss) {
 	char						newline;
 	size_t						pos;
 	std::string					method_line;
@@ -105,9 +92,6 @@ int	Request::parseMethod(std::stringstream &ss) {
 
 	std::getline(ss, method_line, '\r');
 	parts = utils::splitStringBy(method_line, ' ');
-	if (parts.size() != 3) {
-		return (-1);
-	}
 	this->_method = parts[0];
 	this->_target = parts[1];
 	this->_protocol = parts[2];
@@ -125,43 +109,34 @@ int	Request::parseMethod(std::stringstream &ss) {
 		this->_target.erase(pos);
 	}
 	ss.get(newline);
-	return (0);
 }
 
-int	Request::parseHeader(std::stringstream &ss) {
+void Request::parseHeader(std::stringstream &ss) {
 	size_t pos = ss.str().find("\r\n\r\n");
-	if (pos == std::string::npos) {
-		return (-1);
-	}
 	std::string headers_str = ss.str().substr(0, pos);
 	ss.str().erase(0, pos + 4);
 	std::vector<std::string> headers = utils::splitStringBy(headers_str, "\r\n");
 	for (size_t i = 0; i < headers.size(); ++i) {
 		const std::string &header = headers[i];
 		pos = header.find(':');
-		if (pos == std::string::npos) {
-			return (-1);
-		}
 		std::string key = header.substr(0, pos);
 		std::string value = header.substr(pos + 2);
 		utils::trimChar(key, ' ');
 		utils::trimChar(value, ' ');
 		this->_headers[key] = value;
 	}
-	return (0);
 }
 
-int	Request::parsePreBody(void) {
+void Request::parsePreBody(void) {
 	this->_bodyLength = 0;
 	std::map<std::string, std::string>::iterator it = this->_headers.find("Content-Length");
 	if (it != this->_headers.end()) {
 		std::istringstream iss(it->second);
 		iss >> this->_bodyLength;
 	}
-	return (0);
 }
 
-int	Request::parseBody(std::stringstream &ss) {
+void Request::parseBody(std::stringstream &ss) {
 	bool isBody = false;
 	std::vector<std::string> lines = utils::splitStringBy(ss.str(), "\r\n");
 
@@ -171,7 +146,6 @@ int	Request::parseBody(std::stringstream &ss) {
 		if(isBody)
 			this->_body += *it;
 	}
-	return (0);
 }
 
 // -Functions

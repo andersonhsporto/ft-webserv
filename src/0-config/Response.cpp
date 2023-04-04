@@ -50,8 +50,6 @@ const std::string	&Response::getRawresponse(void) const {
 	return (this->_rawResponse);
 }
 
-// -Setters
-// -Methods
 // -Private Methods
 void Response::_buildResponse() {
 	std::stringstream response_stream;
@@ -333,7 +331,6 @@ int Response::_handleRequest(const Server &server, const Request &request) {
 		_setStatus("413");
 		return (-1);
 	}
-	// Execute any relevant CGI scripts
 	return (_applyMethodHTTP(request, server, root, isRootLocation));
 }
 
