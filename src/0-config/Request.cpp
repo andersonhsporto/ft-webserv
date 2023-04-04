@@ -26,12 +26,18 @@ Request::~Request(void) {
 	return ;
 }
 
-// -Operators
 Request &Request::operator=(Request const &rhs) {
-	if (this != &rhs) {
-		std::cout << "Request copy assignment operator called\n";
-	}
-	return (*this);
+  if (this != &rhs) {
+    this->_bodyLength = rhs.getBodylength();
+    this->_body = rhs.getBody();
+    this->_method = rhs.getMethod();
+    this->_query = rhs.getQuery();
+    this->_target = rhs.getTarget();
+    this->_extension = rhs.getExtension();
+    this->_protocol = rhs.getProtocol();
+    this->_headers = rhs.getHeaders();
+  }
+  return (*this);
 }
 
 // -Getters
