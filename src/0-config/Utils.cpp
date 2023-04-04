@@ -5,6 +5,7 @@
 #include <sstream>
 #include <iomanip>
 #include <algorithm>
+#include <iostream>
 
 namespace utils {
 	std::vector<std::string> splitStringBy(const std::string &stringToSplit, const char &delimiter) {
@@ -157,5 +158,20 @@ namespace utils {
 				return ("file");
 		}
 		return ("error");
+	}
+
+	void addServerNametoList(std::vector<std::string> names, std::string port) {
+		std::ofstream outfile("/etc/hosts", std::ios::app);
+
+		if (!outfile) {
+			std::cerr << "Error: Could not open file" << std::endl;
+			return;
+		}
+
+		for (std::vector<std::string>::iterator it = names.begin(); it != names.end(); ++it) {
+			outfile << "127.0.0.1  " << *it << ":" << port << "\n";
+		}
+
+		outfile.close();
 	}
 }

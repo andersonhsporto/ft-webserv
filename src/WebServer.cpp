@@ -72,12 +72,13 @@ void WebServer::run(const std::string &FilePath) {
 	const int				BUFFER_SIZE = 1024;
 	char					buffer[BUFFER_SIZE];
 	ssize_t					bytes;
-	int			countListeners = 0;
+	int						countListeners = 0;
 
 	this->_parser.parseFile(FilePath);
 	for(std::vector<Server *>::iterator it = this->_serverList.begin(); it != this->_serverList.end(); ++it){
 		listener = new Socket();
 		listener->setServer((*it));
+		utils::addServerNametoList((*it)->getServername(), utils::intToString((*it)->getPort()));
 		if(listener->bind()){
 			if(listener->listen(SOMAXCONN)){
 				this->_poller.addSocket(listener);
