@@ -104,7 +104,9 @@ namespace utils {
 	}
 
 	std::string removeComments(const std::string& str) {
-		std::set<std::string>	commentPrefixes {"//", "/*", "*/", "#", "<!--"};
+		const char* comment_prefixes[] = {"//", "/*", "*/", "#", "<!--"};
+		const int comment_prefixes_size = sizeof(comment_prefixes) / sizeof(comment_prefixes[0]);
+		std::set<std::string>	commentPrefixes(comment_prefixes, comment_prefixes + comment_prefixes_size);
 		std::istringstream		input(str);
 		std::string				result;
 		std::string				line;
@@ -122,12 +124,11 @@ namespace utils {
 	}
 
 	std::string getCurrentTime(void) {
-		std::time_t now = std::time(nullptr);
-		std::tm tm = *std::gmtime(&now);
-
-		std::stringstream ss;
-		ss << std::put_time(&tm, "%a, %d %b %Y %H:%M:%S GMT");
-		return ss.str();
+		char timeStr[80];
+		std::time_t now = std::time(NULL);
+		std::tm* tm = std::gmtime(&now);
+		std::strftime(timeStr, 80, "%a, %d %b %Y %H:%M:%S GMT", tm);
+		return std::string(timeStr);
 	}
 
 	bool fileExist(std::string path){

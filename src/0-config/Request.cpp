@@ -41,7 +41,7 @@ Request &Request::operator=(Request const &rhs) {
 }
 
 // -Getters
-const std::unordered_map<std::string,std::string> &Request::getHeaders(void) const {
+const std::map<std::string,std::string> &Request::getHeaders(void) const {
 	return (this->_headers);
 }
 
@@ -86,7 +86,7 @@ void Request::parseRequest(const std::string &buffer) {
 	if (parsed == -1) {
 		// error handling
 	}
-	parsed = parsePreBody(ss);
+	parsed = parsePreBody();
 	if (parsed == -1) {
 		// error handling
 	}
@@ -136,7 +136,8 @@ int	Request::parseHeader(std::stringstream &ss) {
 	std::string headers_str = ss.str().substr(0, pos);
 	ss.str().erase(0, pos + 4);
 	std::vector<std::string> headers = utils::splitStringBy(headers_str, "\r\n");
-	for (const std::string &header : headers) {
+	for (size_t i = 0; i < headers.size(); ++i) {
+		const std::string &header = headers[i];
 		pos = header.find(':');
 		if (pos == std::string::npos) {
 			return (-1);
@@ -150,11 +151,12 @@ int	Request::parseHeader(std::stringstream &ss) {
 	return (0);
 }
 
-int	Request::parsePreBody(std::stringstream &ss) {
+int	Request::parsePreBody(void) {
 	this->_bodyLength = 0;
-	std::unordered_map<std::string, std::string>::iterator it = this->_headers.find("Content-Length");
+	std::map<std::string, std::string>::iterator it = this->_headers.find("Content-Length");
 	if (it != this->_headers.end()) {
-		this->_bodyLength = std::stoul(it->second);
+		std::istringstream iss(it->second);
+		iss >> this->_bodyLength;
 	}
 	return (0);
 }
@@ -167,7 +169,7 @@ int	Request::parseBody(std::stringstream &ss) {
 		if(*it == "")
 			isBody = true;
 		if(isBody)
-			this->_body += *it;	
+			this->_body += *it;
 	}
 	return (0);
 }
@@ -179,7 +181,7 @@ std::ostream &operator<<(std::ostream &out, Request const &in) {
 		<< "_protocol: " << in.getProtocol() << "\n"
 		<< "_body: " << in.getBody() << "\n"
 		<< "_header:\n";
-	for (std::unordered_map<std::string, std::string>::const_iterator it = in.getHeaders().begin(); it != in.getHeaders().end(); ++it) {
+	for (std::map<std::string, std::string>::const_iterator it = in.getHeaders().begin(); it != in.getHeaders().end(); ++it) {
 		out << it->first << " " << it->second << "\n";
 	}
 	return (out);

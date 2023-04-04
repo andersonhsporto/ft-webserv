@@ -2,6 +2,7 @@
 #define WEBSERVER_HPP
 
 #include <iostream>
+#include <cstdlib>
 #include <vector>
 #include "Server.hpp"
 #include "ParserConfig.hpp"

@@ -5,8 +5,7 @@
 #include <vector>
 #include <poll.h>
 
-class Poll
-{
+class Poll {
 	private:
 		std::vector<Socket *>	_sockets;
 		std::vector<pollfd>		_poolfd_list;
@@ -17,7 +16,7 @@ class Poll
 
 		Socket			*getSocket(size_t index);
 		short			getEventReturn(size_t index);
-		const size_t	getSize(void) const;
+		size_t			getSize(void) const;
 		void			init(void);
 		void 			addSocket(Socket *newSocket);
 		void			deleteSocket(Socket *socket);

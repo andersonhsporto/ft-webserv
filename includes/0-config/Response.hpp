@@ -4,7 +4,7 @@
 #include <set>
 #include <string>
 #include <iostream>
-#include <unordered_map>
+#include <map>
 #include "Autoindex.hpp"
 
 class Response {
@@ -32,7 +32,7 @@ class Response {
 		std::string										_body;
 		std::string										_rawResponse;
 		std::pair<std::string, std::string>				_status;
-		std::unordered_map<std::string, std::string>	_headers;
+		std::map<std::string, std::string>	_headers;
 		std::set<std::string>							_allowedMethods;
 		Autoindex										_autoindex;
 

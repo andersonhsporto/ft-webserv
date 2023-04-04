@@ -19,6 +19,6 @@ namespace utils {
 	bool						fileExist(std::string path);
 	bool						insertStringIntoFile(std::string file_path, std::string str);
 	std::string					pathIs(std::string path);
-};
+}
 
 #endif

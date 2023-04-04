@@ -17,8 +17,11 @@ Response::Response(Response const &rhs) {
 	return ;
 }
 
-Response::Response(const Server &server, const Request &request) : _allowedMethods({"GET", "POST", "DELETE"}) {
+Response::Response(const Server &server, const Request &request) {
 	std::cout << "Response class request constructor called\n";
+	const char* allowedMethods[] = { "GET", "POST", "DELETE" };
+	this->_allowedMethods = std::set<std::string>(allowedMethods, allowedMethods + 3);
+
 	if (_handleRequest(server, request) != -1) {
 		_setResponseVariables(server, request);
 	}
@@ -56,7 +59,7 @@ void Response::_buildResponse() {
 	response_stream << "HTTP/1.1" << " " \
 	<< this->_status.first << " " \
 	<< this->_status.second << "\r\n";
-	for (std::unordered_map<std::string, std::string>::const_iterator it = _headers.begin(); it != _headers.end(); ++it) {
+	for (std::map<std::string, std::string>::const_iterator it = _headers.begin(); it != _headers.end(); ++it) {
 		response_stream << it->first << ": " << it->second << "\r\n";
 	}
 	response_stream << "\r\n";
@@ -70,20 +73,6 @@ void Response::_setResponseVariables(const Server &server, const Request &reques
 		const std::vector<ServerLocation*> &locations = server.getLocations();
 		for (std::vector<ServerLocation*>::const_iterator it = locations.begin(); it != locations.end(); ++it) {
 			if ((*it)->getPath() == request.getTarget()) {
-				if ((*it)->getAutoindex()) {
-					std::string	indexFile;
-					bool		found = false;
-					for (std::vector<std::string>::const_iterator it = server.getIndex().begin(); it != server.getIndex().end(); ++it) {
-						std::string path = server.getRoot() + request.getTarget() + "/" + *it;
-						std::ifstream file(path);
-						if (file.good())
-							found = true;
-					}
-					if (found) {
-						_setStatus("301");
-						this->_headers["Location"] = indexFile;
-					}
-				}
 				if ((*it)->getReturnpage().first != 0 || !(*it)->getReturnpage().second.empty()) {
 					_setStatus("302");
 					this->_headers["Location"] = (*it)->getReturnpage().second;
@@ -125,14 +114,14 @@ void Response::_setErrorResponse(const Server &server) {
 	std::string errorPage;
 
 	this->_headers["Date"] = utils::getCurrentTime();
-	if (server.getErrorpages().count(std::stoi(this->_status.first)) > 0) {
-		if(utils::fileToString(server.getErrorpages().at(std::stoi(this->_status.first)), errorPage) == -1)
-			errorPage = server.getErrorpages().at(std::stoi(this->_status.first));
+	if (server.getErrorpages().count(utils::stringToInt(this->_status.first)) > 0) {
+		if(utils::fileToString(server.getErrorpages().at(utils::stringToInt(this->_status.first)), errorPage) == -1)
+			errorPage = server.getErrorpages().at(utils::stringToInt(this->_status.first));
 	} else {
 		errorPage = _buildErrorPage(this->_status.first, this->_status.second);
 	}
 	this->_headers["Content-Type"] = "text/html";
-	this->_headers["Content-Length"] = std::to_string(errorPage.length());
+	this->_headers["Content-Length"] = utils::intToString(errorPage.length());
 	this->_body = errorPage;
 	if (!server.getServername().empty()) {
 		for (std::vector<std::string>::const_iterator it = server.getServername().begin(); it != server.getServername().end(); ++it) {
@@ -145,17 +134,15 @@ void Response::_setErrorResponse(const Server &server) {
 }
 
 std::string Response::_getContentTypeHeader(const std::string& extension) {
-	std::unordered_map<std::string, std::string> extensionMap {
-		{ ".html", "text/html" },
-		{ ".htm", "text/html" },
-		{ ".css", "text/css" },
-		{ ".js", "application/javascript" },
-		{ ".json", "application/json" },
-		{ ".jpg", "image/jpeg" },
-		{ ".jpeg", "image/jpeg" },
-		{ ".png", "image/png" },
-		{ ".gif", "image/gif" }
-	};
+	std::map<std::string, std::string> extensionMap;
+	extensionMap[".html"] = "text/html";
+	extensionMap[".css"] = "text/css";
+	extensionMap[".js"] = "application/javascript";
+	extensionMap[".json"] = "application/json";
+	extensionMap[".jpg"] = "image/jpeg";
+	extensionMap[".jpeg"] = "image/jpeg";
+	extensionMap[".png"] = "image/png";
+	extensionMap[".gif"] = "image/gif";
 	std::string contentType = extensionMap[extension];
 	if (contentType.empty()) {
 		contentType = "application/octet-stream";
@@ -164,28 +151,27 @@ std::string Response::_getContentTypeHeader(const std::string& extension) {
 }
 
 void Response::_setStatus(const std::string& code) {
-	std::unordered_map<std::string, std::string> messages {
-		{ "200", "OK" },
-		{ "201", "Created" },
-		{ "204", "No Content" },
-		{ "301", "Moved Permanently" },
-		{ "302", "Found" },
-		{ "400", "Bad Request" },
-		{ "403", "Forbidden" },
-		{ "404", "Not Found" },
-		{ "405", "Method Not Allowed" },
-		{ "413", "Entity Too Large" },
-		{ "422", "Unprocessable Content" },
-		{ "500", "Internal Server Error" },
-		{ "505", "Version Not Supported" }
-	};
+	std::map<std::string, std::string> messages;
+	messages["200"] = "OK";
+	messages["201"] = "Created";
+	messages["204"] = "No Content";
+	messages["301"] = "Moved Permanently";
+	messages["302"] = "Found";
+	messages["400"] = "Bad Request";
+	messages["403"] = "Forbidden";
+	messages["404"] = "Not Found";
+	messages["405"] = "Method Not Allowed";
+	messages["413"] = "Entity Too Large";
+	messages["422"] = "Unprocessable Content";
+	messages["500"] = "Internal Server Error";
+	messages["505"] = "Version Not Supported";
 	this->_status = std::make_pair(code, messages[code]);
 }
 
 std::string Response::_getPageFile(const Request &request, const Server &server, std::string path, const bool &isRootLocation){
 	if(utils::pathIs(path) == "dir" || (request.getTarget() != "/" && !server.getAutoindex() && !isRootLocation))
 		return "403";
-	if (utils::fileToString(path, this->_body) == -1) 
+	if (utils::fileToString(path, this->_body) == -1)
 		return "404";
 	else if (this->_body.empty())
 		return "204";
@@ -275,7 +261,7 @@ int	Response::_deleteMethodHTTP(const Request &request, const Server &server, st
 			path = root + request.getTarget() + request.getExtension();
 		else if(server.getAutoindex())
 			path = root + request.getTarget();
-		
+
 		if (path.empty() && utils::fileExist(root + request.getTarget()))
 			_setStatus("403");
 		else if (!(utils::fileExist(path)))
@@ -303,7 +289,6 @@ int Response::_calculateBodySize(const std::string &body) const {
 }
 
 int Response::_handleRequest(const Server &server, const Request &request) {
-	int			outRead = -1;
 	bool		isRootLocation;
 	std::string	root;
 
@@ -319,7 +304,7 @@ int Response::_handleRequest(const Server &server, const Request &request) {
 		return (-1);
 	}
 	// - Check Location
-	const ServerLocation* location = nullptr;
+	const ServerLocation* location = NULL;
 	std::string slashLocation;
 	std::string slashRequest;
 	for (std::vector<ServerLocation*>::const_iterator it = server.getLocations().begin(); it != server.getLocations().end(); ++it) {
@@ -344,7 +329,7 @@ int Response::_handleRequest(const Server &server, const Request &request) {
 		return (-1);
 	}
 	// - Check body Lenght
-	if (request.getBodylength() > server.getMaxbodysize()) {
+	if ((int)request.getBodylength() > server.getMaxbodysize()) {
 		_setStatus("413");
 		return (-1);
 	}

@@ -5,7 +5,7 @@
 #include "Utils.hpp"
 
 // -Constructors
-Server::Server(void) : _maxBodySize(1024), _timeOut(30), _port(0), _host(""), _root("."), _running(false), _autoindex(false) {
+Server::Server(void) : _maxBodySize(1024), _timeOut(30), _port(0), _autoindex(false),  _running(false), _host(""), _root(".") {
 	std::cout << "Server default constructor called\n";
 	return ;
 }

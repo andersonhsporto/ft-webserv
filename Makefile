@@ -1,110 +1,45 @@
-####################################################################################################
-######################################### Program Name #############################################
-####################################################################################################
-
-NAME	= webserv
-
-####################################################################################################
-######################################### Compiler #################################################
-####################################################################################################
-
+NAME		= webserv
+RM			= rm -rf
 CXX			= c++
-CXXFLAGS	+= -Wall -Wextra -Werror -std=c++98 -pedantic-errors -g
+CXXFLAGS	= -Wall -Wextra -Werror -std=c++98 -pedantic-errors -g
+INC_DIR		= ./includes
+SRC_DIR		= ./src
+OBJ_DIR		= ./obj
 
-####################################################################################################
-##################################### Include Folders ##############################################
-####################################################################################################
-
-INCLUDE =	$(addprefix -I ./includes, \
-			/ \
-			/0-config/ \
-			/1-models/ \
+SRCS		= $(addprefix $(SRC_DIR)/, \
+				main.cpp WebServer.cpp \
+				0-config/ParserConfig.cpp \
+				0-config/Utils.cpp \
+				0-config/Request.cpp \
+				0-config/Response.cpp \
+				0-config/Poll.cpp \
+				1-models/Autoindex.cpp \
+				1-models/Server.cpp \
+				1-models/ServerLocation.cpp \
+				1-models/Socket.cpp \
 			)
 
-####################################################################################################
-######################################### Headers files ############################################
-####################################################################################################
+OBJS		= $(SRCS:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
+DEPS		= $(OBJS:.o=.d)
 
-MAIN_HEADERS	= $(addprefix ./includes/, \
-					WebServer.hpp $(PARSER_HEADERS) $(MODELS_HEADERS) \
-				)
-
-PARSER_HEADERS	= $(addprefix 0-config/, \
-				ParserConfig.hpp \
-				Utils.hpp \
-				Request.hpp \
-				Response.hpp \
-				Poll.hpp \
-				)
-
-MODELS_HEADERS	= $(addprefix 1-models/, \
-				Autoindex.hpp \
-				Server.hpp \
-				ServerLocation.hpp \
-				Socket.hpp \
-				)
-
-
-####################################################################################################
-########################################## Source files ############################################
-####################################################################################################
-
-SRC		= $(addprefix src/, \
-          	main.cpp WebServer.cpp \
-          	$(PARSER_SRC) $(MODELS_SRC) \
-		  	)
-
-PARSER_SRC	= $(addprefix 0-config/, \
-				ParserConfig.cpp \
-				Utils.cpp \
-				Request.cpp \
-				Response.cpp \
-				Poll.cpp \
-				)
-
-MODELS_SRC	= $(addprefix 1-models/, \
-				Autoindex.cpp \
-				Server.cpp \
-				ServerLocation.cpp \
-				Socket.cpp \
-				)
-
-####################################################################################################
-########################################## Objects files ###########################################
-####################################################################################################
-
-
-%_ft.o: %.cpp $(MAIN_HEADERS)
-	$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $(<:%.cpp=$(OBJ_DIR)%_ft.o)
-
-OBJ_DIR = obj/
-OBJ_FT	= $(SRC:%.cpp=%_ft.o)
-OBJ_FILES	= $(addprefix $(OBJ_DIR),$(OBJ_FT))
+INC_DIRS	= $(shell find $(INC_DIR) -type d)
+INC_FLAGS	= $(addprefix -I,$(INC_DIRS))
 
 all: $(NAME)
 
-$(NAME): $(OBJ_DIR) $(OBJ_FT)
-	$(CXX) $(CXXFLAGS) $(OBJ_FILES) -o $(NAME)
+$(NAME): $(OBJS)
+	$(CXX) $(CXXFLAGS) $(INC_FLAGS) $^ -o $@
 
-$(OBJ_DIR):
-	@mkdir -p $(OBJ_DIR)/src
-	@mkdir -p $(OBJ_DIR)/src/0-config
-	@mkdir -p $(OBJ_DIR)/src/1-models
-
-####################################################################################################
-########################################## Default Rules ###########################################
-####################################################################################################
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) $(INC_FLAGS) -c $< -o $@
 
 clean:
-	rm -rf $(OBJ_DIR)
+	$(RM) $(OBJ_DIR)
 
 fclean: clean
-	rm -rf $(NAME)
+	$(RM) $(NAME)
 
 re: fclean all
 
 .PHONY: all clean fclean re
-
-####################################################################################################
-####################################################################################################
-####################################################################################################

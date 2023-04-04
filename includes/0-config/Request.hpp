@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <string>
-#include <unordered_map>
+#include <map>
 
 class Request {
 	public:
@@ -19,7 +19,7 @@ class Request {
 		Request &operator=(Request const &rhs);
 
 		// -Getters
-		const std::unordered_map<std::string,std::string>	&getHeaders(void) const;
+		const std::map<std::string,std::string>	&getHeaders(void) const;
 		const size_t		&getBodylength(void) const;
 		const std::string	&getBody(void) const;
 		const std::string	&getMethod(void) const;
@@ -41,11 +41,11 @@ class Request {
 		std::string										_target;
 		std::string										_extension;
 		std::string										_protocol;
-		std::unordered_map<std::string, std::string>	_headers;
+		std::map<std::string, std::string>	_headers;
 
 		int	parseMethod(std::stringstream &ss);
 		int	parseHeader(std::stringstream &ss);
-		int	parsePreBody(std::stringstream &ss);
+		int	parsePreBody(void);
 		int	parseBody(std::stringstream &ss);
 };
 

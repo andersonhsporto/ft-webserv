@@ -5,7 +5,7 @@ Autoindex::Autoindex(void) {return ;}
 
 Autoindex::~Autoindex(void) {return ;}
 
-std::string Autoindex::autoindexPageGenerator(const std::string &target, std::string &page, const Server &serve){
+std::string Autoindex::autoindexPageGenerator(const std::string &target, std::string &page, const Server &serve) {
   std::string path = serve.getRoot() + target;
   DIR *dir = opendir(path.c_str());
   if (dir == NULL){

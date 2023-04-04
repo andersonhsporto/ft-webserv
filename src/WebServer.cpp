@@ -53,7 +53,6 @@ size_t	 WebServer::_sizeBody(const std::string &request) {
 }
 
 size_t  WebServer::_findContentLenght(const std::string &request){
-	bool isBody = false;
 	size_t ret;
 	std::string line;
 	std::vector<std::string> lines = utils::splitStringBy(request, "\r\n");
@@ -73,7 +72,7 @@ void WebServer::run(const std::string &FilePath) {
 	const int				BUFFER_SIZE = 1024;
 	char					buffer[BUFFER_SIZE];
 	ssize_t					bytes;
-	unsigned int			countListeners = 0;
+	int			countListeners = 0;
 
 	this->_parser.parseFile(FilePath);
 	for(std::vector<Server *>::iterator it = this->_serverList.begin(); it != this->_serverList.end(); ++it){
@@ -100,7 +99,7 @@ void WebServer::run(const std::string &FilePath) {
 			std::cout << "FD: " << this->_poller.getSocket(i)->getFd() << "\n";
 			if (this->_poller.checkEvent(this->_poller.getEventReturn(i))) {
 				// Handle incoming data on the socket
-				if(i < countListeners){
+				if(i < countListeners) {
 					listener = this->_poller.getSocket(i);
 					std::cout << "Accepting new client connection through FD " << listener->getFd() << "\n";
 					client_socket = new Socket(listener->accept());
@@ -111,11 +110,12 @@ void WebServer::run(const std::string &FilePath) {
 					}
 					this->_poller.addSocket(client_socket);
 					std::cout << "The FD above generated the client with the FD " << client_socket->getFd() << "\n";
-				} else {
+				}
+				else {
 					client_socket = this->_poller.getSocket(i);
 					std::cout << "Attending customer request with fd " << client_socket->getFd() << "\n";
 					this->_rawRequest.clear();
-					//Receive customer data 
+					//Receive customer data
 					while ((bytes = ::recv(client_socket->getFd(), buffer, sizeof(buffer), 0)) > 0) {
 						this->_rawRequest.append(buffer, bytes);
 						if(_sizeBody(this->_rawRequest) < _findContentLenght(this->_rawRequest))
@@ -136,7 +136,7 @@ void WebServer::run(const std::string &FilePath) {
 					Request request(this->_rawRequest);
 					Response response(*(client_socket->getServer()), request);
 					// Send the Response object back to the client socket
-					for(int bytesSend = 0; bytesSend < response.getRawresponse().size(); ){
+					for(long unsigned int bytesSend = 0; bytesSend < response.getRawresponse().size(); ) {
 						bytes = ::send(client_socket->getFd(), response.getRawresponse().c_str(), \
 								response.getRawresponse().size(), 0);
 						if(bytes <= 0){

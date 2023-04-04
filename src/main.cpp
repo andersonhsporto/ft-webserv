@@ -4,7 +4,8 @@
 
 WebServer webserver;
 
-void sigIntHandlerFunc(int sig){
+void sigIntHandlerFunc(int sig) {
+	(void)sig;
 	std::cout << "\nFinishing the WebServer...\n";
 	webserver.finish();
 	exit(0);

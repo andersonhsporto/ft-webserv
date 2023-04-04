@@ -1,20 +1,16 @@
 #include "Poll.hpp"
 #include <iostream>
 
-Poll::Poll(void)
-{
+Poll::Poll(void) {
 	return ;
 }
 
-void Poll::init(void)
-{
+void Poll::init(void) {
 	int size;
 
 	size = this->_sockets.size();
 	this->_poolfd_list.resize(size);
-
-	for (size_t i = 0; i < size; i++)
-	{
+	for (int i = 0; i < size; i++) {
 		this->_poolfd_list[i].fd = this->_sockets[i]->getFd();
 		this->_poolfd_list[i].events = POLLIN | POLLOUT;
 	}
@@ -30,7 +26,7 @@ void Poll::addSocket(Socket *newSocket){
 	this->_poolfd_list.push_back(newPollFD);
 }
 
-void Poll::deleteSocket(Socket *socket){
+void Poll::deleteSocket(Socket *socket) {
 	Socket *deletedSocket;
 	for(std::vector<pollfd>::reverse_iterator it = _poolfd_list.rbegin(); it != _poolfd_list.rend(); ++it){
 		if(it->fd == socket->getFd()){
@@ -49,8 +45,7 @@ void Poll::deleteSocket(Socket *socket){
 	}
 }
 
-Poll::~Poll(void)
-{
+Poll::~Poll(void) {
 	for(size_t i = 0; i < this->_sockets.size(); i++)
 		delete this->_sockets[i];
 }
@@ -63,8 +58,7 @@ bool Poll::checkEvent(short event) {
 	return false;
 }
 
-void	Poll::run(void)
-{
+void	Poll::run(void) {
 	std::cout << "Parsed FD list: " ;
 	for (std::vector<pollfd>::iterator it = _poolfd_list.begin(); it != _poolfd_list.end() ; ++it) {
 		std::cout << it->fd << ", ";
@@ -75,13 +69,11 @@ void	Poll::run(void)
 		throw std::runtime_error("ERROR: poll error\n");
 }
 
-const size_t Poll::getSize(void) const
-{
+size_t Poll::getSize(void) const {
 	return (this->_poolfd_list.size());
 }
 
-Socket *Poll::getSocket(size_t index)
-{
+Socket *Poll::getSocket(size_t index) {
 	return (this->_sockets[index]);
 }
 
