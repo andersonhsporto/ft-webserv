@@ -160,7 +160,7 @@ namespace utils {
 		return ("error");
 	}
 
-	void addServerNametoList(std::vector<std::string> names, std::string port) {
+	void addServerNametoList(std::vector<std::string> names) {
 		std::ofstream outfile("/etc/hosts", std::ios::app);
 
 		if (!outfile) {
@@ -169,7 +169,7 @@ namespace utils {
 		}
 
 		for (std::vector<std::string>::iterator it = names.begin(); it != names.end(); ++it) {
-			outfile << "127.0.0.1  " << *it << ":" << port << "\n";
+			outfile << "127.0.0.1  " << *it << "\n";
 		}
 
 		outfile.close();

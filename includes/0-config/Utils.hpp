@@ -19,7 +19,7 @@ namespace utils {
 	bool						fileExist(std::string path);
 	bool						insertStringIntoFile(std::string file_path, std::string str);
 	std::string					pathIs(std::string path);
-	void						addServerNametoList(std::vector<std::string> names, std::string port);
+	void						addServerNametoList(std::vector<std::string> names);
 }
 
 #endif

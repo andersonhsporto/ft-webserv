@@ -76,7 +76,7 @@ void WebServer::run(const std::string &FilePath) {
 	for(std::vector<Server *>::iterator it = this->_serverList.begin(); it != this->_serverList.end(); ++it){
 		listener = new Socket();
 		listener->setServer((*it));
-		utils::addServerNametoList((*it)->getServername(), utils::intToString((*it)->getPort()));
+		utils::addServerNametoList((*it)->getServername());
 		if(listener->bind()){
 			if(listener->listen(SOMAXCONN)){
 				this->_poller.addSocket(listener);
