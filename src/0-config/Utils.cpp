@@ -161,17 +161,22 @@ namespace utils {
 	}
 
 	void addServerNametoList(std::vector<std::string> names) {
+		std::string contents;
+		std::string loopback = "127.0.0.1  "; 
 		std::ofstream outfile("/etc/hosts", std::ios::app);
 
 		if (!outfile) {
-			std::cerr << "Error: Could not open file" << std::endl;
+			std::cerr << "Error: Could not open file /etc/hosts" << std::endl;
 			return;
 		}
-
-		for (std::vector<std::string>::iterator it = names.begin(); it != names.end(); ++it) {
-			outfile << "127.0.0.1  " << *it << "\n";
+		if (utils::fileToString("/etc/hosts", contents) == -1) {
+			std::cerr << "Error: could not capture contents of /etc/hosts file" << std::endl;
+			return;
 		}
-
+		for (std::vector<std::string>::iterator it = names.begin(); it != names.end(); ++it) {
+			if(contents.find(loopback + *it) == std::string::npos)
+				outfile << loopback << *it << "\n";
+		}
 		outfile.close();
 	}
 }
