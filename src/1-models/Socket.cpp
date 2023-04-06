@@ -1,6 +1,7 @@
 #include "Socket.hpp"
 #include <iostream>
 #include "Server.hpp"
+#include <fcntl.h>
 
 // -Constructors
 Socket::Socket(void) : _fd(-1) {
@@ -9,6 +10,8 @@ Socket::Socket(void) : _fd(-1) {
 }
 
 Socket::Socket(int fd) : _fd(fd) {
+	if (fcntl(_fd, F_SETFL, O_NONBLOCK) < 0)
+		throw std::runtime_error("ERROR(2): unable to set socket to non-blocking\n");
 	std::cout << "Socket fd constructor called\n";
 	return ;
 }
@@ -56,6 +59,8 @@ bool Socket::bind() {
 	if (_fd == -1) {
 		return false;
 	}
+	if (fcntl(_fd, F_SETFL, O_NONBLOCK) < 0)
+		throw std::runtime_error("ERROR(1): unable to set socket to non-blocking\n");
 	struct sockaddr_in addr = {};
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(this->_server->getPort());
