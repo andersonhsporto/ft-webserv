@@ -55,10 +55,13 @@ void Socket::setServer(Server *server ){
 
 // -Methods
 bool Socket::bind() {
+	int ok = 1;
 	_fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (_fd == -1) {
 		return false;
 	}
+	if(::setsockopt(_fd, SOL_SOCKET, SO_REUSEADDR, &ok, sizeof(int)) < 0)
+		throw std::runtime_error("ERROR(1): Could not set socket options\n");
 	if (fcntl(_fd, F_SETFL, O_NONBLOCK) < 0)
 		throw std::runtime_error("ERROR(1): unable to set socket to non-blocking\n");
 	struct sockaddr_in addr = {};
