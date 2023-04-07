@@ -297,6 +297,7 @@ int Response::_handleRequest(const Server &server, const Request &request) {
 		_setStatus("505");
 		return (-1);
 	}
+	// - Check body Lenght
 	if (_calculateBodySize(request.getBody()) > (server.getMaxbodysize() * 1024)){
 		_setStatus("413");
 		return (-1);
@@ -324,11 +325,6 @@ int Response::_handleRequest(const Server &server, const Request &request) {
 	// - Check Method
 	if (_allowedMethods.count(request.getMethod()) == 0) {
 		_setStatus("405");
-		return (-1);
-	}
-	// - Check body Lenght
-	if ((int)request.getBodylength() > server.getMaxbodysize()) {
-		_setStatus("413");
 		return (-1);
 	}
 	return (_applyMethodHTTP(request, server, root, isRootLocation));
