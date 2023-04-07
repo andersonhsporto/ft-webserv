@@ -117,7 +117,7 @@ void WebServer::run(const std::string &FilePath) {
 					//Receive customer data
 					while ((bytes = ::recv(client_socket->getFd(), buffer, sizeof(buffer), 0)) > 0) {
 						this->_rawRequest.append(buffer, bytes);
-						if(_rawRequest.find("100-continue"))
+						if(_rawRequest.find("Expect: 100-continue"))
 							sleep(2);
 						if(_sizeBody(this->_rawRequest) < _findContentLenght(this->_rawRequest))
 							continue;
