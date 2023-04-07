@@ -5,23 +5,12 @@ Poll::Poll(void) {
 	return ;
 }
 
-void Poll::init(void) {
-	int size;
-
-	size = this->_sockets.size();
-	this->_poolfd_list.resize(size);
-	for (int i = 0; i < size; i++) {
-		this->_poolfd_list[i].fd = this->_sockets[i]->getFd();
-		this->_poolfd_list[i].events = POLLIN | POLLOUT;
-	}
-}
-
 void Poll::addSocket(Socket *newSocket){
 	pollfd newPollFD;
 
 	this->_sockets.push_back(newSocket);
 	newPollFD.fd = newSocket->getFd();
-	newPollFD.events = POLLIN | POLLOUT;
+	newPollFD.events = POLLIN;
 	newPollFD.revents = 0;
 	this->_poolfd_list.push_back(newPollFD);
 }
@@ -53,8 +42,6 @@ Poll::~Poll(void) {
 bool Poll::checkEvent(short event) {
 	if ((event & POLLIN) == POLLIN)
 		return true;
-	if ((event & POLLOUT) == POLLOUT)
-		return true;
 	return false;
 }
 
@@ -80,6 +67,10 @@ Socket *Poll::getSocket(size_t index) {
 short Poll::getEventReturn(size_t index)
 {
 	return (this->_poolfd_list[index].revents);
+}
+void Poll::resetEventReturn(size_t index)
+{
+	this->_poolfd_list[index].revents = 0;
 }
 
 void Poll::clear(void){

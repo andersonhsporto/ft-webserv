@@ -88,7 +88,6 @@ void WebServer::run(const std::string &FilePath) {
 		this->finish();
 		throw std::runtime_error("ERROR: could not create socket listener\n");
 	}
-	this->_poller.init();
 	std::cout << "number of listener Sockets: " << this->_poller.getSize() << "\n\n";
 	while (true) {
 		// Wait for incoming requests on the sockets using Poll
@@ -103,6 +102,7 @@ void WebServer::run(const std::string &FilePath) {
 					std::cout << "Accepting new client connection through FD " << listener->getFd() << "\n";
 					client_socket = new Socket(listener->accept());
 					client_socket->setServer(listener->getServer());
+					this->_poller.resetEventReturn(i);
 					if (client_socket->getFd() == -1) {
 						std::cerr << "Failed to accept new connection" << std::endl;
 						continue;
@@ -117,6 +117,8 @@ void WebServer::run(const std::string &FilePath) {
 					//Receive customer data
 					while ((bytes = ::recv(client_socket->getFd(), buffer, sizeof(buffer), 0)) > 0) {
 						this->_rawRequest.append(buffer, bytes);
+						if(_rawRequest.find("100-continue"))
+							sleep(2);
 						if(_sizeBody(this->_rawRequest) < _findContentLenght(this->_rawRequest))
 							continue;
 
@@ -127,6 +129,11 @@ void WebServer::run(const std::string &FilePath) {
 					}
 					if(bytes < 0){
 						std::cout << "Error: unable to receive data from client FD " << client_socket->getFd() << "\n";
+						::close(client_socket->getFd());
+						_poller.deleteSocket(client_socket);
+						continue;
+					}
+					if(this->_rawRequest.empty()){
 						::close(client_socket->getFd());
 						_poller.deleteSocket(client_socket);
 						continue;

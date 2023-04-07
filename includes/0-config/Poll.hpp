@@ -16,8 +16,8 @@ class Poll {
 
 		Socket			*getSocket(size_t index);
 		short			getEventReturn(size_t index);
+		void			resetEventReturn(size_t index);
 		size_t			getSize(void) const;
-		void			init(void);
 		void 			addSocket(Socket *newSocket);
 		void			deleteSocket(Socket *socket);
 		bool			checkEvent(short event);
