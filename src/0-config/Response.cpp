@@ -326,11 +326,6 @@ int Response::_handleRequest(const Server &server, const Request &request) {
 		_setStatus("405");
 		return (-1);
 	}
-	// - Check body Lenght
-	if ((int)request.getBodylength() > server.getMaxbodysize()) {
-		_setStatus("413");
-		return (-1);
-	}
 	return (_applyMethodHTTP(request, server, root, isRootLocation));
 }
 

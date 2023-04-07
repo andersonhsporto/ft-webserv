@@ -76,7 +76,7 @@ void WebServer::run(const std::string &FilePath) {
 	for(std::vector<Server *>::iterator it = this->_serverList.begin(); it != this->_serverList.end(); ++it){
 		listener = new Socket();
 		listener->setServer((*it));
-		utils::addServerNametoList((*it)->getServername());
+		// utils::addServerNametoList((*it)->getServername());
 		if(listener->bind()){
 			if(listener->listen(SOMAXCONN)){
 				this->_poller.addSocket(listener);
@@ -115,21 +115,38 @@ void WebServer::run(const std::string &FilePath) {
 					std::cout << "Attending customer request with fd " << client_socket->getFd() << "\n";
 					this->_rawRequest.clear();
 					//Receive customer data
-					while ((bytes = ::recv(client_socket->getFd(), buffer, sizeof(buffer), 0)) > 0) {
+					while (true) {
+						bytes = ::recv(client_socket->getFd(), buffer, sizeof(buffer), 0);
+						if (bytes == -1) {
+							std::cerr << "Error: unable to receive data from client FD " << client_socket->getFd() << ", error code: " << errno << ", error message: " << strerror(errno) << "\n";
+							break;
+						}
+						else if (bytes == 0) {
+							std::cout << "Connection closed by client FD " << client_socket->getFd() << "\n";
+							break;
+						}
+
 						this->_rawRequest.append(buffer, bytes);
 						if(_sizeBody(this->_rawRequest) < _findContentLenght(this->_rawRequest))
 							continue;
 
 						// Check if we have received the entire request
-						if (this->_rawRequest.find("\r\n\r\n") != std::string::npos || bytes == 0) {
+						if (this->_rawRequest.find("\r\n\r\n") != std::string::npos) {
+							// std::cout << "\t\t\tRAW RQUEST:\n" << this->_rawRequest << "\n\n\n\n\n";
+							// sleep(5);
 							break;
 						}
 					}
-					if(bytes < 0){
-						std::cout << "Error: unable to receive data from client FD " << client_socket->getFd() << "\n";
-						::close(client_socket->getFd());
-						_poller.deleteSocket(client_socket);
-						continue;
+					if (bytes < 0) {
+						// if (errno == EWOULDBLOCK || errno == EAGAIN) {
+						// 	// std::cout << "\t\t\t\tAQUIIIIIIIIII\\n\n\n";
+						// 	continue; // try again later
+						// } else {
+							std::cout << "Error: unable to receive data from client FD " << client_socket->getFd() << "\n";
+							::close(client_socket->getFd());
+							_poller.deleteSocket(client_socket);
+							break;
+						// }
 					}
 					// Handle incoming data on the client socket
 					Request request(this->_rawRequest);
