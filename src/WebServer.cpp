@@ -133,7 +133,7 @@ void WebServer::run(const std::string &FilePath) {
 						_poller.deleteSocket(client_socket);
 						continue;
 					}
-					if(!_rawRequest.empty()){
+					if(!this->_rawRequest.empty()){
 						// Handle incoming data on the client socket
 						Request request(this->_rawRequest);
 						Response response(*(client_socket->getServer()), request);
