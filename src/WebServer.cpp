@@ -133,23 +133,20 @@ void WebServer::run(const std::string &FilePath) {
 						_poller.deleteSocket(client_socket);
 						continue;
 					}
-					if(this->_rawRequest.empty()){
-						::close(client_socket->getFd());
-						_poller.deleteSocket(client_socket);
-						continue;
-					}
-					// Handle incoming data on the client socket
-					Request request(this->_rawRequest);
-					Response response(*(client_socket->getServer()), request);
-					// Send the Response object back to the client socket
-					for(int bytesSend = 0; (long unsigned int)bytesSend < response.getRawresponse().size(); ) {
-						bytes = ::send(client_socket->getFd(), response.getRawresponse().c_str(), \
-								response.getRawresponse().size(), 0);
-						if(bytes <= 0){
-							std::cout << "Error: unable to send data to client FD " << client_socket->getFd() << "\n";
-							break;
+					if(!_rawRequest.empty()){
+						// Handle incoming data on the client socket
+						Request request(this->_rawRequest);
+						Response response(*(client_socket->getServer()), request);
+						// Send the Response object back to the client socket
+						for(int bytesSend = 0; (long unsigned int)bytesSend < response.getRawresponse().size(); ) {
+							bytes = ::send(client_socket->getFd(), response.getRawresponse().c_str(), \
+									response.getRawresponse().size(), 0);
+							if(bytes <= 0){
+								std::cout << "Error: unable to send data to client FD " << client_socket->getFd() << "\n";
+								break;
+							}
+							bytesSend += bytes;
 						}
-						bytesSend += bytes;
 					}
 					::close(client_socket->getFd());
 					_poller.deleteSocket(client_socket);
