@@ -168,7 +168,7 @@ void Response::_setStatus(const std::string& code) {
 
 std::string Response::_getPageFile(const Request &request, const Server &server, std::string path, const bool &isRootLocation){
 	if(utils::pathIs(path) == "dir" || (request.getTarget() != "/" && !server.getAutoindex() && !isRootLocation))
-		return "403";
+		return "404";
 	if (utils::fileToString(path, this->_body) == -1)
 		return "404";
 	else if (this->_body.empty())
