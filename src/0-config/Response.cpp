@@ -4,6 +4,7 @@
 #include "Request.hpp"
 #include "Server.hpp"
 #include "Utils.hpp"
+#include "1-models/CgiHandler.hpp"
 
 // -Constructors
 Response::Response(void) {
@@ -327,7 +328,20 @@ int Response::_handleRequest(const Server &server, const Request &request) {
 		_setStatus("405");
 		return (-1);
 	}
-	return (_applyMethodHTTP(request, server, root, isRootLocation));
+    // Execute any relevant CGI scripts
+    if (!server.getCgi().empty()) {
+        CgiHandler cgiHandler(server, request);
+        std::string response = cgiHandler.startCgiHandler();
+
+        if (response.empty())
+            return (_applyMethodHTTP(request, server, root, isRootLocation));
+        else {
+            this->_body = response;
+            cgiHandler.printMessage();
+            return (0);
+        }
+    }
+    return (_applyMethodHTTP(request, server, root, isRootLocation));
 }
 
 // -Functions

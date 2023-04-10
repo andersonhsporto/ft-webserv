@@ -7,6 +7,7 @@ ParserConfig::ParserConfig(WebServer &webserver) : _webServer(webserver) {
 	this->_parseFuncs["server_name"] = &_parseServerName;
 	this->_parseFuncs["client_max_body_size"] = &_parseMaxSizeBody;
 	this->_parseFuncs["root"] = &_parseRoot;
+    this->_parseFuncs["cgi_folder"] = &_parseCGIFolder;
 	this->_parseFuncs["index"] = &_parseIndex;
 	this->_parseFuncs["error_page"] = &_parseErrorPage;
 	this->_parseFuncs["timeout"] = &_parseTimeOut;
@@ -182,6 +183,10 @@ void ParserConfig::_parseMaxSizeBody(const std::string &value, class Server &ser
 
 void ParserConfig::_parseRoot(const std::string &value, class Server &server) {
 	server.setRoot(value);
+}
+
+void ParserConfig::_parseCGIFolder(const std::string &value, class Server &server) {
+    server.setCGIFolder(value);
 }
 
 void ParserConfig::_parseIndex(const std::string &value, class Server &server) {

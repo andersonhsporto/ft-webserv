@@ -30,6 +30,7 @@ class Server {
 		const std::vector<std::string>		&getServername(void) const;
 		const std::vector<std::string>		&getIndex(void) const;
 		const std::string					&getRoot(void) const;
+        const std::string                   &getCGIFolder(void) const;
 		const int							&getPort(void) const;
 		const std::string					&getHost(void) const;
 		Socket								getListener(void) const;
@@ -44,6 +45,7 @@ class Server {
 		void	setServername(std::vector<std::string> Servername);
 		void	setIndex(std::vector<std::string> Index);
 		void	setRoot(std::string Root);
+        void    setCGIFolder(std::string CGIFolder);
 		void	setPort(int Port);
 		void	setHost(std::string Host);
 
@@ -61,6 +63,7 @@ class Server {
 		Socket								_listener;
 		std::string							_host;
 		std::string							_root;
+        std::string                         _CGIFolder;
 		std::vector<std::string>			_index;
 		std::vector<std::string>			_serverName;
 		std::vector<ServerLocation*>		_locations;
