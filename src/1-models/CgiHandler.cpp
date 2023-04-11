@@ -53,6 +53,7 @@ std::string CgiHandler::_handleBinaryScript(std::string &response) {
     write(fdInput, _request.getBody().c_str(), _request.getBody().size());
     lseek(fdInput, 0, SEEK_SET);
 
+
     pid = fork();
     if (pid == -1) {
         std::cout << RED << "Error: unable to fork" << RESET << std::endl;
@@ -66,6 +67,26 @@ std::string CgiHandler::_handleBinaryScript(std::string &response) {
         execve(_typeHelper.getCgiFolder().c_str(), args, _envArray);
         write(STDOUT_FILENO, "Content-Type: text/html\r\n\r Status: 500 Internal Server Error\r\n\r)", 65);
     } else {
+        clock_t start = clock();
+        while (true) {
+            double total = (double) (clock() - start) / CLOCKS_PER_SEC;
+            int status;
+            if (total > SECONDS) {
+                // Verifica se o processo filho entrou em loop infinito
+                if (waitpid(pid, &status, WNOHANG) == 0) {
+                    kill(pid, SIGSEGV);
+                    return ("508");
+                }
+                // Verifica se o processo filho retornou um erro
+                if (WEXITSTATUS(status) != 0) {
+                    kill(pid, SIGSEGV);
+                    return ("500");
+                }
+                kill(pid, SIGSEGV);
+                break;
+            }
+        }
+
         char buffer[2048] = {0};
         waitpid(pid, NULL, 0);
         lseek(fdOutput, 0, SEEK_SET);
@@ -121,20 +142,19 @@ std::string CgiHandler::_handlePythonScript(std::string &response) {
         std::cout << RED << "Error: unable to execve" << RESET << std::endl;
         write(STDOUT_FILENO, "Content-Type: text/html\r\n\r Status: 500 Internal Server Error\r\n\r\n", 64);
     } else {
-        std::cout << "in parent process" << std::endl;
         clock_t start = clock();
         while (true) {
             double total = (double) (clock() - start) / CLOCKS_PER_SEC;
             int status;
             if (total > SECONDS) {
+                // Verifica se o processo filho entrou em loop infinito
                 if (waitpid(pid, &status, WNOHANG) == 0) {
                     kill(pid, SIGSEGV);
-                    response = "Error: Timeout Loop Infinito";
                     return ("508");
                 }
+                // Verifica se o processo filho retornou um erro
                 if (WEXITSTATUS(status) != 0) {
                     kill(pid, SIGSEGV);
-                    response =  "Internal Server Error";
                     return ("500");
                 }
                 kill(pid, SIGSEGV);
@@ -159,7 +179,8 @@ std::string CgiHandler::_handlePythonScript(std::string &response) {
     close(fdOutput);
     fclose(fileInput);
     fclose(fileOutput);
-    return (newBody);
+    response = newBody;
+    return ("200");
 }
 
 std::string CgiHandler::toString(std::string::size_type i) {
@@ -193,9 +214,7 @@ void CgiHandler::_initEnvironmentVariables() {
     _env["PATH_INFO"] = _typeHelper.getPath();
     _env["PATH_TRANSLATED"] = _typeHelper.getCgiFolder();
     _env["REMOTEaddr"] = _typeHelper.getPort();
-
-    _env["QUERY_STRING"] = _request.getQuery(); // TODO get query string fro raw request
-
+    _env["QUERY_STRING"] = _request.getQuery();
     _env["REQUEST_URI"] = _request.getTarget() + _request.getQuery();
     _env["REQUEST_METHOD"] = _request.getMethod();
     _env["SERVER_PORT"] = _typeHelper.getPort();
@@ -206,7 +225,6 @@ void CgiHandler::_initEnvironmentVariables() {
 
     _env["REMOTE_IDENT"] = ""; // TODO
     _env["REMOTE_USER"] = ""; // TODO
-//  _env["SERVER_NAME"] = _server.getServername()[0]; // TODO
 }
 
 char **CgiHandler::_getEnvironmentVariables() {

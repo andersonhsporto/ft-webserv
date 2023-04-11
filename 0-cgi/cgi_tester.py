@@ -3,14 +3,16 @@ import sys
 
 import os
 
-# printing environment variables
-while True:
-    print("true")
+# # printing environment variables
+# while True:
+#     print("true")
 
 
 print(os.environ)
 
 print("stdin: ", sys.stdin.read())
+
+print(os.environ['QUERY_STRING'])
 
 # get post body
 

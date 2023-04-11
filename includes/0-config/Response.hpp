@@ -23,10 +23,6 @@ class Response {
 		// -Getters
 		const std::string	&getRawresponse(void) const;
 
-		// -Setters
-
-		// -Methods
-
 	private:
 		size_t											_bodyLength;
 		std::string										_body;
