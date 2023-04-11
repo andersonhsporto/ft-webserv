@@ -17,6 +17,7 @@
 #define GREEN "\033[1;32m"
 #define RED "\033[0;31m"
 #define RESET "\033[0m"
+#define SECONDS 5
 
 class CgiHandler {
 public:
@@ -28,7 +29,7 @@ public:
 
     CgiHandler &operator=(CgiHandler const &rhs);
 
-    std::string startCgiHandler();
+    std::string startCgiHandler(std::string &response);
 
     void printMessage();
 
@@ -51,9 +52,9 @@ private:
 
     bool _isPythonScript();
 
-    std::string _handlePythonScript();
+    std::string _handlePythonScript(std::string &response);
 
-    std::string _handleBinaryScript();
+    std::string _handleBinaryScript(std::string &response);
 
 
 };

@@ -1,3 +1,20 @@
+import cgi, cgitb
+import sys
+
+import os
+
+# printing environment variables
+while True:
+    print("true")
+
+
+print(os.environ)
+
+print("stdin: ", sys.stdin.read())
+
+# get post body
+
+
 print("Content-Type: text/html")    # Informa ao servidor que o conteúdo será HTML
 print()                              # Imprime uma linha em branco para separar o cabeçalho do corpo
 
@@ -41,5 +58,11 @@ html = """
 </html>
 """
 
+
+
+
 # Imprime o conteúdo HTML na página
 print(html)
+
+
+

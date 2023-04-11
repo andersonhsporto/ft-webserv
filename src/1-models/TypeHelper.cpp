@@ -47,3 +47,7 @@ std::string TypeHelper::toString(std::string::size_type i) {
     ss << i;
     return ss.str();
 }
+
+const std::string &TypeHelper::getBody() const {
+    return _body;
+}

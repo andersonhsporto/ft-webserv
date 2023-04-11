@@ -3,22 +3,22 @@
 #include "Utils.hpp"
 
 // -Constructors
-ServerLocation::ServerLocation(void) {
+ServerLocation::ServerLocation(void) : _cgiLock(false), _returnPage(std::make_pair(0, "")) {
 	this->_parseFuncs["/"] = &_parsePath;
 	this->_parseFuncs["return"] = &_parseReturn;
 	this->_parseFuncs["root"] = &_parseRoot;
 	this->_parseFuncs["limit_except"] = &_parseRequest;
-	this->_parseFuncs["autoindex"] = &_parseAutoIndex;
+	this->_parseFuncs["cgi_lock"] = &_parseCgiLock;
 	std::cout << "ServerLocation default constructor called\n";
 	return ;
 }
 
-ServerLocation::ServerLocation(const std::string &values) : _returnPage(std::make_pair(0, "")) {
+ServerLocation::ServerLocation(const std::string &values) : _cgiLock(false), _returnPage(std::make_pair(0, "")){
 	this->_parseFuncs["/"] = &_parsePath;
 	this->_parseFuncs["return"] = &_parseReturn;
 	this->_parseFuncs["root"] = &_parseRoot;
 	this->_parseFuncs["limit_except"] = &_parseRequest;
-	this->_parseFuncs["autoindex"] = &_parseAutoIndex;
+	this->_parseFuncs["cgi_lock"] = &_parseCgiLock;
 	this->_parseValues(values);
 	std::cout << "ServerLocation string constructor called\n";
 	return ;
@@ -45,8 +45,8 @@ ServerLocation &ServerLocation::operator=(ServerLocation const &rhs) {
 }
 
 // -Getters
-const bool &ServerLocation::getAutoindex(void) const {
-	return (this->_autoIndex);
+const bool &ServerLocation::getCgiLock(void) const {
+    return (this->_cgiLock);
 }
 
 const std::set<std::string> &ServerLocation::getRequestshttp(void) const {
@@ -66,8 +66,8 @@ const std::string &ServerLocation::getPath(void) const {
 }
 
 // -Setters
-void ServerLocation::setAutoindex(bool Autoindex) {
-	this->_autoIndex = Autoindex;
+void ServerLocation::setCgiLock(bool cgiLock) {
+    this->_cgiLock = cgiLock;
 }
 
 void ServerLocation::setRequestshttp(std::set<std::string> Requestshttp) {
@@ -142,9 +142,9 @@ void	ServerLocation::_parseRequest(const std::string &value, ServerLocation &Loc
 	Location.setRequestshttp(validHttp);
 }
 
-void	ServerLocation::_parseAutoIndex(const std::string &value, ServerLocation &Location) {
-	if (value == "on")
-		Location.setAutoindex(true);
+void	ServerLocation::_parseCgiLock(const std::string &value, ServerLocation &Location) {
+    (void)value;
+    Location.setCgiLock(true);
 }
 
 // -Functions
@@ -152,7 +152,7 @@ std::ostream &operator<<(std::ostream &out, ServerLocation const &in) {
 	out << "The Path: " << in.getPath() << "\n"
 		"The Return Page: " << in.getReturnpage().first << " " << in.getReturnpage().second << "\n"
 		"The Root: " << in.getRoot() << "\n"
-		"AutoIndex is: " << std::boolalpha << in.getAutoindex() << "\n";
+		"AutoIndex is: " << std::boolalpha << in.getCgiLock() << "\n";
 	for (std::set<std::string>::const_iterator it = in.getRequestshttp().begin(); it != in.getRequestshttp().end(); ++it) {
 		out << "Request Http: " << *it << "\n";
 	}

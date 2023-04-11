@@ -26,14 +26,14 @@ class ServerLocation {
 		// -Getters
 		const std::string					&getRoot(void) const;
 		const std::string					&getPath(void) const;
-		const bool							&getAutoindex(void) const;
+		const bool							&getCgiLock(void) const;
 		const std::pair<int,std::string>	&getReturnpage(void) const;
 		const std::set<std::string>		&getRequestshttp(void) const;
 
 		// -Setters
 		void	setRoot(std::string Root);
 		void	setPath(std::string Path);
-		void	setAutoindex(bool Autoindex);
+		void	setCgiLock(bool cgiLock);
 		void	setRequestshttp(std::set<std::string> Requestshttp);
 		void	setReturnpage(std::pair<int,std::string> Returnpage);
 
@@ -42,7 +42,7 @@ class ServerLocation {
 	private:
 		std::string									_path;
 		std::string									_root;
-		bool										_autoIndex;
+		bool										_cgiLock;
 		std::set<std::string>						_requestsHttp;
 		std::pair<int, std::string>					_returnPage;
 		std::map<std::string, _parseLocationFunc>	_parseFuncs;
@@ -52,7 +52,7 @@ class ServerLocation {
 		static void	_parseReturn(const std::string &value, ServerLocation &Location);
 		static void	_parseRoot(const std::string &value, ServerLocation &Location);
 		static void	_parseRequest(const std::string &value, ServerLocation &Location);
-		static void	_parseAutoIndex(const std::string &value, ServerLocation &Location);
+		static void	_parseCgiLock(const std::string &value, ServerLocation &Location);
 };
 
 // -Functions

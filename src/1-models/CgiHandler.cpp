@@ -27,18 +27,18 @@ CgiHandler &CgiHandler::operator=(const CgiHandler &rhs) {
     return *this;
 }
 
-std::string CgiHandler::startCgiHandler() {
+std::string CgiHandler::startCgiHandler(std::string &response) {
     if (_isPythonScript()) {
-        return _handlePythonScript();
+        return _handlePythonScript(response);
     }
-    return _handleBinaryScript();
+    return _handleBinaryScript(response);
 }
 
 bool CgiHandler::_isPythonScript() {
     return (_typeHelper.getCgi().begin()->first == ".py");
 }
 
-std::string CgiHandler::_handleBinaryScript() {
+std::string CgiHandler::_handleBinaryScript(std::string &response) {
     pid_t pid;
     std::string newBody;
     int saveStdin = dup(STDIN_FILENO);
@@ -86,11 +86,11 @@ std::string CgiHandler::_handleBinaryScript() {
     close(fdOutput);
     fclose(fileInput);
     fclose(fileOutput);
-
-    return (newBody);
+    response = newBody;
+    return ("200");
 }
 
-std::string CgiHandler::_handlePythonScript() {
+std::string CgiHandler::_handlePythonScript(std::string &response) {
     pid_t pid;
     std::string newBody;
     int saveStdin = dup(STDIN_FILENO);
@@ -124,13 +124,31 @@ std::string CgiHandler::_handlePythonScript() {
         std::cout << RED << "Error: unable to execve" << RESET << std::endl;
         write(STDOUT_FILENO, "Content-Type: text/html\r\n\r Status: 500 Internal Server Error\r\n\r\n", 64);
     } else {
+        std::cout << "in parent process" << std::endl;
+        clock_t start = clock();
+        while (true) {
+            double total = (double) (clock() - start) / CLOCKS_PER_SEC;
+            int status;
+            if (total > SECONDS) {
+                if (waitpid(pid, &status, WNOHANG) == 0) {
+                    kill(pid, SIGSEGV);
+                    response = "Loop Infinito";
+                    return ("508");
+                }
+                if (WEXITSTATUS(status) != 0) {
+                    kill(pid, SIGSEGV);
+                    return "exit status != 0";
+                }
+                kill(pid, SIGSEGV);
+                break;
+            }
+        }
+
         char buffer[2048] = {0};
         waitpid(pid, NULL, 0);
         lseek(fdOutput, 0, SEEK_SET);
-
         while (read(fdOutput, buffer, 2047) > 0) {
             newBody += buffer;
-            std::cout << GREEN << buffer << RESET << std::endl;
             memset(buffer, 0, 2048);
         }
     }
@@ -143,7 +161,6 @@ std::string CgiHandler::_handlePythonScript() {
     close(fdOutput);
     fclose(fileInput);
     fclose(fileOutput);
-
     return (newBody);
 }
 
@@ -178,7 +195,9 @@ void CgiHandler::_initEnvironmentVariables() {
     _env["PATH_INFO"] = _typeHelper.getPath();
     _env["PATH_TRANSLATED"] = _typeHelper.getCgiFolder();
     _env["REMOTEaddr"] = _typeHelper.getPort();
-    _env["QUERY_STRING"] = _request.getQuery();
+
+    _env["QUERY_STRING"] = _request.getQuery(); // TODO get query string fro raw request
+
     _env["REQUEST_URI"] = _request.getTarget() + _request.getQuery();
     _env["REQUEST_METHOD"] = _request.getMethod();
     _env["SERVER_PORT"] = _typeHelper.getPort();

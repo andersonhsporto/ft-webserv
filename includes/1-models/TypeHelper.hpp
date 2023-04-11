@@ -26,6 +26,8 @@ public:
     const std::string &getCgiFolder() const;
     const std::map<std::string, std::string> &getCgi() const;
 
+    const std::string &getBody() const;
+
 private:
 
     std::string toString(std::string::size_type i);
@@ -35,6 +37,7 @@ private:
     std::string _cgiPath;
     std::string _cgiFolder;
     std::map<std::string, std::string>	_cgi;
+    std::string _body;
 };
 
 #endif //FT_WEBSERVER_SRC_1_MODELS_TYPEHELPER_HPP_
