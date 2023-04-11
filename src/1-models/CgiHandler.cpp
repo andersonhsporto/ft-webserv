@@ -58,14 +58,12 @@ std::string CgiHandler::_handleBinaryScript(std::string &response) {
         std::cout << RED << "Error: unable to fork" << RESET << std::endl;
         return ("");
     } else if (!pid) {
-        std::cout << "in child process" << std::endl;
         dup2(fdInput, STDIN_FILENO);
         dup2(fdOutput, STDOUT_FILENO);
 
         char *args[] = {NULL};
 
         execve(_typeHelper.getCgiFolder().c_str(), args, _envArray);
-        std::cout << RED << "Error: unable to execve" << RESET << std::endl;
         write(STDOUT_FILENO, "Content-Type: text/html\r\n\r Status: 500 Internal Server Error\r\n\r)", 65);
     } else {
         char buffer[2048] = {0};
@@ -110,7 +108,6 @@ std::string CgiHandler::_handlePythonScript(std::string &response) {
         std::cout << RED << "Error: unable to fork" << RESET << std::endl;
         return ("");
     } else if (!pid) {
-        std::cout << "in child process" << std::endl;
         dup2(fdInput, STDIN_FILENO);
         dup2(fdOutput, STDOUT_FILENO);
 
@@ -132,12 +129,13 @@ std::string CgiHandler::_handlePythonScript(std::string &response) {
             if (total > SECONDS) {
                 if (waitpid(pid, &status, WNOHANG) == 0) {
                     kill(pid, SIGSEGV);
-                    response = "Loop Infinito";
+                    response = "Error: Timeout Loop Infinito";
                     return ("508");
                 }
                 if (WEXITSTATUS(status) != 0) {
                     kill(pid, SIGSEGV);
-                    return "exit status != 0";
+                    response =  "Internal Server Error";
+                    return ("500");
                 }
                 kill(pid, SIGSEGV);
                 break;

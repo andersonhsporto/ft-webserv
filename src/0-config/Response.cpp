@@ -324,22 +324,17 @@ int Response::_handleRequest(const Server &server, const Request &request) {
 			this->_allowedMethods = location->getRequestshttp();
 		}
 	}
-	// - Check Method
+
 	if (_allowedMethods.count(request.getMethod()) == 0) {
 		_setStatus("405");
 		return (-1);
 	}
     if (location && (!server.getCgi().empty() && location->getCgiLock())) {
         CgiHandler cgiHandler(server, request);
-        std::string response;
 
-        if (response.empty())
-            return (0);
-        else {
-            _setStatus(cgiHandler.startCgiHandler(this->_body));
-            cgiHandler.printMessage();
-            return (0);
-        }
+        _setStatus(cgiHandler.startCgiHandler(this->_body));
+        cgiHandler.printMessage();
+        return (this->_status.first == "200" ? 0 : -1);
     }
     return (_applyMethodHTTP(request, server, root, isRootLocation));
 }
