@@ -317,6 +317,16 @@ int Response::_handleRequest(const Server &server, const Request &request) {
 			break;
 		}
 	}
+
+    // Verifica se existe cgi configurado para a rota
+    if (location && (!server.getCgi().empty() && location->getCgiLock())) {
+        CgiHandler cgiHandler(server, request);
+
+        _setStatus(cgiHandler.startCgiHandler(this->_body));
+        cgiHandler.printMessage();
+        return (this->_status.first == "200" ? 0 : -1);
+    }
+
 	if (location) {
 		if (location->getRoot() != "")
 			root = location->getRoot();
@@ -329,13 +339,6 @@ int Response::_handleRequest(const Server &server, const Request &request) {
 		_setStatus("405");
 		return (-1);
 	}
-    if (location && (!server.getCgi().empty() && location->getCgiLock())) {
-        CgiHandler cgiHandler(server, request);
-
-        _setStatus(cgiHandler.startCgiHandler(this->_body));
-        cgiHandler.printMessage();
-        return (this->_status.first == "200" ? 0 : -1);
-    }
     return (_applyMethodHTTP(request, server, root, isRootLocation));
 }
 
