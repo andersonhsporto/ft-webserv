@@ -4,6 +4,7 @@
 #include "Request.hpp"
 #include "Server.hpp"
 #include "Utils.hpp"
+#include "1-models/CgiHandler.hpp"
 
 // -Constructors
 Response::Response(void) {
@@ -163,6 +164,7 @@ void Response::_setStatus(const std::string& code) {
 	messages["422"] = "Unprocessable Content";
 	messages["500"] = "Internal Server Error";
 	messages["505"] = "Version Not Supported";
+    messages["508"] = "Loop Detected";
 	this->_status = std::make_pair(code, messages[code]);
 }
 
@@ -322,12 +324,19 @@ int Response::_handleRequest(const Server &server, const Request &request) {
 			this->_allowedMethods = location->getRequestshttp();
 		}
 	}
-	// - Check Method
+
 	if (_allowedMethods.count(request.getMethod()) == 0) {
 		_setStatus("405");
 		return (-1);
 	}
-	return (_applyMethodHTTP(request, server, root, isRootLocation));
+    if (location && (!server.getCgi().empty() && location->getCgiLock())) {
+        CgiHandler cgiHandler(server, request);
+
+        _setStatus(cgiHandler.startCgiHandler(this->_body));
+        cgiHandler.printMessage();
+        return (this->_status.first == "200" ? 0 : -1);
+    }
+    return (_applyMethodHTTP(request, server, root, isRootLocation));
 }
 
 // -Functions

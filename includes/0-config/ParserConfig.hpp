@@ -46,6 +46,7 @@ class ParserConfig {
 		static void			_parseServerName(const std::string &value, class Server &server);
 		static void			_parseMaxSizeBody(const std::string &value, class Server &server);
 		static void			_parseRoot(const std::string &value, class Server &server);
+        static void         _parseCGIFolder(const std::string &value, class Server &server);
 		static void			_parseIndex(const std::string &value, class Server &server);
 		static void			_parseErrorPage(const std::string &value, class Server &server);
 		static void			_parseTimeOut(const std::string &value, class Server &server);

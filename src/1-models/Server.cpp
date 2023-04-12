@@ -70,6 +70,10 @@ const std::string &Server::getRoot(void) const {
 	return (this->_root);
 }
 
+const std::string &Server::getCGIFolder() const {
+    return (this->_CGIFolder);
+}
+
 const int &Server::getPort(void) const {
 	return (this->_port);
 }
@@ -117,6 +121,10 @@ void Server::setIndex(std::vector<std::string> Index) {
 
 void Server::setRoot(std::string Root) {
 	this->_root = Root;
+}
+
+void Server::setCGIFolder(std::string CGIFolder) {
+    this->_CGIFolder = CGIFolder;
 }
 
 void Server::setPort(int Port) {

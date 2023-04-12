@@ -17,6 +17,8 @@ SRCS		= $(addprefix $(SRC_DIR)/, \
 				1-models/Server.cpp \
 				1-models/ServerLocation.cpp \
 				1-models/Socket.cpp \
+				1-models/CgiHandler.cpp \
+				1-models/TypeHelper.cpp \
 			)
 
 OBJS		= $(SRCS:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
