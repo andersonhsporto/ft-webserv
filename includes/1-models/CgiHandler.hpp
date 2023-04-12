@@ -33,6 +33,8 @@ public:
 
     void printMessage();
 
+    void _closeAll(int fdInput, int fdOutput, int saveStdin, int saveStdout, FILE *fileInput, FILE *fileOutput);
+
 private:
     CgiHandler();
 

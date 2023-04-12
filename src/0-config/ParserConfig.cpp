@@ -14,13 +14,12 @@ ParserConfig::ParserConfig(WebServer &webserver) : _webServer(webserver) {
 	this->_parseFuncs["location"] = &_parseLocation;
 	this->_parseFuncs["cgi"] = &_parseCgi;
 	this->_parseFuncs["autoindex"] = &_parseAutoindex;
-	std::cout << "ParserConfig WebServer constructor called\n";
+	std::cout << "Parsing config file\n";
 	return ;
 }
 
 // -Destructor
 ParserConfig::~ParserConfig(void) {
-	std::cout << "ParserConfig default destructor called\n";
 	return ;
 }
 
