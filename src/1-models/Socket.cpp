@@ -5,7 +5,7 @@
 
 // -Constructors
 Socket::Socket(void) : _fd(-1) {
-	std::cout << "Socket default constructor called\n";
+	std::cout << "Starting socket..." << std::endl;
 	return ;
 }
 
@@ -24,7 +24,8 @@ Socket::Socket(Socket const &rhs) {
 
 // -Destructor
 Socket::~Socket(void) {
-	std::cout << "Socket default destructor called\n";
+    if (_fd != -1)
+	    std::cout << "Closing socket fd: " << _fd << std::endl;
 	close();
 	return ;
 }

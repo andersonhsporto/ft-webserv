@@ -7,13 +7,13 @@
 
 // -Constructors
 WebServer::WebServer(void) : _parser(ParserConfig(*this)) {
-	std::cout << "WebServer default constructor called\n";
+	std::cout << "Starting WebServer\n";
 	return ;
 }
 
 // -Destructor
 WebServer::~WebServer() {
-	std::cout << "WebServer default destructor called\n";
+	std::cout << "WebServer default destructor called bye bye\n";
 	this->finish();
 	return ;
 }
@@ -127,7 +127,6 @@ void WebServer::run(const std::string &FilePath) {
 							break;
 						}
 					}
-                    std::cout << "raw request: " << this->_rawRequest << std::endl;
 					if(bytes < 0){
 						std::cout << "Error: unable to receive data from client FD " << client_socket->getFd() << "\n";
 						::close(client_socket->getFd());

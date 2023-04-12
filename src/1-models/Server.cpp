@@ -6,19 +6,18 @@
 
 // -Constructors
 Server::Server(void) : _maxBodySize(1024), _timeOut(30), _port(0), _autoindex(false),  _running(false), _host(""), _root(".") {
-	std::cout << "Server default constructor called\n";
+	std::cout << "Starting server..." << std::endl;
 	return ;
 }
 
 Server::Server(Server const &rhs) {
-	std::cout << "Server copy constructor called\n";
 	*this = rhs;
 	return ;
 }
 
 // -Destructor
 Server::~Server(void) {
-	std::cout << "Server default destructor called\n";
+    std::cout << "Closing server named: " << _serverName[0] << std::endl;
 		for (std::vector<ServerLocation*>::iterator it = _locations.begin(); it != _locations.end(); ++it) {
 			delete *it;
 		}

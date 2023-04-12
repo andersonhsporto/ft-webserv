@@ -38,6 +38,17 @@ bool CgiHandler::_isPythonScript() {
     return (_typeHelper.getCgi().begin()->first == ".py");
 }
 
+void CgiHandler::_closeAll(int fdInput, int fdOutput, int saveStdin, int saveStdout, FILE *fileInput, FILE *fileOutput) {
+    dup2(saveStdin, STDIN_FILENO);
+    dup2(saveStdout, STDOUT_FILENO);
+    close(saveStdin);
+    close(saveStdout);
+    close(fdInput);
+    close(fdOutput);
+    fclose(fileInput);
+    fclose(fileOutput);
+}
+
 std::string CgiHandler::_handleBinaryScript(std::string &response) {
     pid_t pid;
     std::string newBody;
@@ -74,26 +85,24 @@ std::string CgiHandler::_handleBinaryScript(std::string &response) {
             if (total > SECONDS) {
                 // Verifica se o processo filho entrou em loop infinito
                 if (waitpid(pid, &status, WNOHANG) == 0) {
+                    _closeAll(fdInput, fdOutput, saveStdin, saveStdout, fileInput, fileOutput);
                     kill(pid, SIGSEGV);
                     return ("508");
                 }
                 // Verifica se o processo filho retornou um erro
                 if (WEXITSTATUS(status) != 0) {
+                    _closeAll(fdInput, fdOutput, saveStdin, saveStdout, fileInput, fileOutput);
                     kill(pid, SIGSEGV);
                     return ("500");
                 }
+
                 kill(pid, SIGSEGV);
                 break;
             }
-        }
-
-        char buffer[2048] = {0};
-        waitpid(pid, NULL, 0);
-        lseek(fdOutput, 0, SEEK_SET);
-
-        while (read(fdOutput, buffer, 2047) > 0) {
-            newBody += buffer;
-            memset(buffer, 0, 2048);
+            // verifica se o processo filho terminou antes dos 5 segundos
+            if (waitpid(pid, &status, WNOHANG) == pid) {
+                break;
+            }
         }
     }
 
@@ -108,6 +117,9 @@ std::string CgiHandler::_handleBinaryScript(std::string &response) {
     response = newBody;
     return ("200");
 }
+
+
+
 
 std::string CgiHandler::_handlePythonScript(std::string &response) {
     pid_t pid;
@@ -149,15 +161,22 @@ std::string CgiHandler::_handlePythonScript(std::string &response) {
             if (total > SECONDS) {
                 // Verifica se o processo filho entrou em loop infinito
                 if (waitpid(pid, &status, WNOHANG) == 0) {
+                    _closeAll(fdInput, fdOutput, saveStdin, saveStdout, fileInput, fileOutput);
                     kill(pid, SIGSEGV);
                     return ("508");
                 }
                 // Verifica se o processo filho retornou um erro
                 if (WEXITSTATUS(status) != 0) {
+                    _closeAll(fdInput, fdOutput, saveStdin, saveStdout, fileInput, fileOutput);
                     kill(pid, SIGSEGV);
                     return ("500");
                 }
+
                 kill(pid, SIGSEGV);
+                break;
+            }
+            // verifica se o processo filho terminou antes dos 5 segundos
+            if (waitpid(pid, &status, WNOHANG) == pid) {
                 break;
             }
         }
@@ -199,6 +218,7 @@ std::string _getContentTypeHeader(const std::string &extension) {
     extensionMap[".jpeg"] = "image/jpeg";
     extensionMap[".png"] = "image/png";
     extensionMap[".gif"] = "image/gif";
+    extensionMap[""] = "application/x-www-form-urlencoded";
     std::string contentType = extensionMap[extension];
     if (contentType.empty()) {
         contentType = "application/octet-stream";
@@ -222,9 +242,10 @@ void CgiHandler::_initEnvironmentVariables() {
     _env["GATEWAY_INTERFACE"] = "CGI/1.1";
     _env["REDIRECT_STATUS"] = "200";
     _env["SERVER_NAME"] = "ft_webserver | 1.O";
-
-    _env["REMOTE_IDENT"] = ""; // TODO
-    _env["REMOTE_USER"] = ""; // TODO
+    _env["SERVER_SOFTWARE"] = "ft_webserver | 1.O";
+    _env["REMOTE_IDENT"] = "";
+    _env["REMOTE_USER"] = "";
+    _env["content"] = _request.getBody();
 }
 
 char **CgiHandler::_getEnvironmentVariables() {

@@ -9,7 +9,6 @@ ServerLocation::ServerLocation(void) : _cgiLock(false), _returnPage(std::make_pa
 	this->_parseFuncs["root"] = &_parseRoot;
 	this->_parseFuncs["limit_except"] = &_parseRequest;
 	this->_parseFuncs["cgi_lock"] = &_parseCgiLock;
-	std::cout << "ServerLocation default constructor called\n";
 	return ;
 }
 
@@ -20,7 +19,6 @@ ServerLocation::ServerLocation(const std::string &values) : _cgiLock(false), _re
 	this->_parseFuncs["limit_except"] = &_parseRequest;
 	this->_parseFuncs["cgi_lock"] = &_parseCgiLock;
 	this->_parseValues(values);
-	std::cout << "ServerLocation string constructor called\n";
 	return ;
 }
 
@@ -32,7 +30,6 @@ ServerLocation::ServerLocation(ServerLocation const &rhs) {
 
 // -Destructor
 ServerLocation::~ServerLocation(void) {
-	std::cout << "ServerLocation default destructor called\n";
 	return ;
 }
 
