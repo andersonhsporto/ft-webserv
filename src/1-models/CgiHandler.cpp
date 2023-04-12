@@ -104,6 +104,14 @@ std::string CgiHandler::_handleBinaryScript(std::string &response) {
                 break;
             }
         }
+
+        char buffer[2048] = {0};
+        waitpid(pid, NULL, 0);
+        lseek(fdOutput, 0, SEEK_SET);
+        while (read(fdOutput, buffer, 2047) > 0) {
+            newBody += buffer;
+            memset(buffer, 0, 2048);
+        }
     }
 
     dup2(saveStdin, STDIN_FILENO);
