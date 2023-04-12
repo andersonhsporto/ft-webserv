@@ -291,3 +291,4 @@ char **CgiHandler::_getEnvironmentVariables() {
 void CgiHandler::printMessage() {
     std::cout << GREEN << "Calling CGI" << RESET << std::endl;
 }
+

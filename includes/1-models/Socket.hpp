@@ -46,3 +46,4 @@ class Socket {
 std::ostream &operator<<(std::ostream &out, Socket const &in);
 
 #endif
+

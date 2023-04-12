@@ -1,6 +1,6 @@
 NAME		= webserv
 RM			= rm -rf
-CXX			= c++
+CXX			= g++
 CXXFLAGS	= -Wall -Wextra -Werror -std=c++98 -pedantic-errors -g
 INC_DIR		= ./includes
 SRC_DIR		= ./src

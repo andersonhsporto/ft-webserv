@@ -59,7 +59,6 @@ class Server {
 		int									_timeOut;
 		int									_port;
 		bool								_autoindex;
-		bool								_running;
 		Socket								_listener;
 		std::string							_host;
 		std::string							_root;
