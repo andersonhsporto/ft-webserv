@@ -134,9 +134,6 @@ std::string CgiHandler::_handleBinaryScript(std::string &response) {
     return ("200");
 }
 
-
-
-
 std::string CgiHandler::_handlePythonScript(std::string &response) {
     pid_t pid;
     std::string newBody;
