@@ -52,16 +52,22 @@ void CgiHandler::_closeAll(int fdInput, int fdOutput, int saveStdin, int saveStd
 std::string CgiHandler::_handleBinaryScript(std::string &response) {
     pid_t pid;
     std::string newBody;
+
+    // salva o file descriptor do stdin e do stdout
     int saveStdin = dup(STDIN_FILENO);
     int saveStdout = dup(STDOUT_FILENO);
 
+    // cria um arquivo temporario para o input e outro para o output
     FILE *fileInput = tmpfile();
     FILE *fileOutput = tmpfile();
 
+    // pega o file descriptor do arquivo temporario
     long fdInput = fileno(fileInput);
     long fdOutput = fileno(fileOutput);
 
+    // escreve o body da request no arquivo temporario
     write(fdInput, _request.getBody().c_str(), _request.getBody().size());
+    // volta o ponteiro para o inicio do arquivo
     lseek(fdInput, 0, SEEK_SET);
 
 
@@ -70,11 +76,13 @@ std::string CgiHandler::_handleBinaryScript(std::string &response) {
         std::cout << RED << "Error: unable to fork" << RESET << std::endl;
         return ("");
     } else if (!pid) {
+        // redireciona o input e o output para os arquivos temporarios
         dup2(fdInput, STDIN_FILENO);
         dup2(fdOutput, STDOUT_FILENO);
 
         char *args[] = {NULL};
 
+        // executa o binario
         execve(_typeHelper.getCgiFolder().c_str(), args, _envArray);
         write(STDOUT_FILENO, "Content-Type: text/html\r\n\r Status: 500 Internal Server Error\r\n\r)", 65);
     } else {
@@ -135,20 +143,26 @@ std::string CgiHandler::_handlePythonScript(std::string &response) {
     int saveStdin = dup(STDIN_FILENO);
     int saveStdout = dup(STDOUT_FILENO);
 
+    // cria um arquivo temporario para o input e outro para o output
     FILE *fileInput = tmpfile();
     FILE *fileOutput = tmpfile();
 
+    // pega o file descriptor do arquivo temporario
     long fdInput = fileno(fileInput);
     long fdOutput = fileno(fileOutput);
 
+    // escreve o body da request no arquivo temporario
     write(fdInput, _request.getBody().c_str(), _request.getBody().size());
+    // volta o ponteiro para o inicio do arquivo
     lseek(fdInput, 0, SEEK_SET);
 
+    // cria um processo filho
     pid = fork();
     if (pid == -1) {
         std::cout << RED << "Error: unable to fork" << RESET << std::endl;
         return ("");
     } else if (!pid) {
+        // redireciona o input e o output para os arquivos temporarios
         dup2(fdInput, STDIN_FILENO);
         dup2(fdOutput, STDOUT_FILENO);
 
@@ -158,10 +172,12 @@ std::string CgiHandler::_handlePythonScript(std::string &response) {
                 NULL
         };
 
+        // executa o script python
         execve("/usr/bin/python3", args, _envArray);
         std::cout << RED << "Error: unable to execve" << RESET << std::endl;
         write(STDOUT_FILENO, "Content-Type: text/html\r\n\r Status: 500 Internal Server Error\r\n\r\n", 64);
     } else {
+        // espera 5 segundos para o processo filho terminar
         clock_t start = clock();
         while (true) {
             double total = (double) (clock() - start) / CLOCKS_PER_SEC;
@@ -189,21 +205,27 @@ std::string CgiHandler::_handlePythonScript(std::string &response) {
             }
         }
 
+        // le o arquivo temporario e coloca no body da response
         char buffer[2048] = {0};
+        // espera o processo filho terminar
         waitpid(pid, NULL, 0);
         lseek(fdOutput, 0, SEEK_SET);
+
+        // le o arquivo temporario e coloca no body da response
         while (read(fdOutput, buffer, 2047) > 0) {
             newBody += buffer;
             memset(buffer, 0, 2048);
         }
     }
 
+    // restaura o input e o output para o terminal
     dup2(saveStdin, STDIN_FILENO);
     dup2(saveStdout, STDOUT_FILENO);
     close(saveStdin);
     close(saveStdout);
     close(fdInput);
     close(fdOutput);
+    // fecha os arquivos temporarios
     fclose(fileInput);
     fclose(fileOutput);
     response = newBody;
