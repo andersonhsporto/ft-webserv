@@ -30,7 +30,7 @@ The configuration file is a simple text file that contains the configuration for
 
 ### Syntax
 
-The configuration file is ispired by the nginx configuration file syntax.
+The configuration file is inspired by the nginx configuration file syntax.
 Each block starts with a line containing the name of the block, followed by a colon, 
 and then a list of arguments. The arguments are separated by spaces. The block ends when a new block starts.
 
