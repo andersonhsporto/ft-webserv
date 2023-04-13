@@ -71,22 +71,21 @@ The location block contains the configuration for a location.
   <tr>
     <td>
       <a href="https://github.com/andersonhsporto">
-        <img src="https://avatars.githubusercontent.com/u/47704550?v=4" width="100px" alt="Anderson Porto avatar"/><br>
+        <img src="https://avatars.githubusercontent.com/u/47704550?v=4" width="140px" alt="Anderson Porto avatar"/><br>
         <sub><b>Anderson Porto</b></sub>
       </a>
     </td>
     <td>
       <a href="https://github.com/DaviPrograme">
-        <img src="https://avatars.githubusercontent.com/u/56012877?v=4" width="100px" alt="Davi Moreira avatar"/><br>
+        <img src="https://avatars.githubusercontent.com/u/56012877?v=4" width="140px" alt="Davi Moreira avatar"/><br>
         <sub><b>Davi Moreira</b></sub>
       </a>
     </td>
     <td>
       <a href="https://github.com/GitFlaviobc">
-        <img src="https://avatars.githubusercontent.com/u/46327033?v=4" width="100px" alt="Flavio Bonini Campos  avatar"/><br>
-        <sub><b> Flavio Bonini Campos </b></sub>
+        <img src="https://avatars.githubusercontent.com/u/46327033?v=4" width="140px" alt="Flavio Bonini Campos  avatar"/><br>
+        <sub><b>Flavio Bonini Campos</b></sub>
       </a>
     </td>
   </tr>
 </table>
-</p>
