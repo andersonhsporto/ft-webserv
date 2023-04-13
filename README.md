@@ -66,6 +66,7 @@ The location block contains the configuration for a location.
 
 #### Contributors
 
+<p align="center">
 <table>
   <tr>
     <td>
@@ -88,3 +89,4 @@ The location block contains the configuration for a location.
     </td>
   </tr>
 </table>
+</p>
