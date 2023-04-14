@@ -87,9 +87,9 @@ std::string CgiHandler::_handleBinaryScript(std::string &response) {
         write(STDOUT_FILENO, "Content-Type: text/html\r\n\r Status: 500 Internal Server Error\r\n\r)", 65);
     } else {
         clock_t start = clock();
+        int status;
         while (true) {
             double total = (double) (clock() - start) / CLOCKS_PER_SEC;
-            int status;
             if (total > SECONDS) {
                 // Verifica se o processo filho entrou em loop infinito
                 if (waitpid(pid, &status, WNOHANG) == 0) {
@@ -97,13 +97,6 @@ std::string CgiHandler::_handleBinaryScript(std::string &response) {
                     kill(pid, SIGSEGV);
                     return ("508");
                 }
-                // Verifica se o processo filho retornou um erro
-                if (WEXITSTATUS(status) != 0) {
-                    _closeAll(fdInput, fdOutput, saveStdin, saveStdout, fileInput, fileOutput);
-                    kill(pid, SIGSEGV);
-                    return ("500");
-                }
-
                 kill(pid, SIGSEGV);
                 break;
             }
@@ -111,6 +104,12 @@ std::string CgiHandler::_handleBinaryScript(std::string &response) {
             if (waitpid(pid, &status, WNOHANG) == pid) {
                 break;
             }
+        }
+        // Verifica se o processo filho retornou um erro
+        if (WEXITSTATUS(status) != 0) {
+            _closeAll(fdInput, fdOutput, saveStdin, saveStdout, fileInput, fileOutput);
+            kill(pid, SIGSEGV);
+            return ("500");
         }
 
         char buffer[2048] = {0};
@@ -176,9 +175,9 @@ std::string CgiHandler::_handlePythonScript(std::string &response) {
     } else {
         // espera 5 segundos para o processo filho terminar
         clock_t start = clock();
+        int status;
         while (true) {
             double total = (double) (clock() - start) / CLOCKS_PER_SEC;
-            int status;
             if (total > SECONDS) {
                 // Verifica se o processo filho entrou em loop infinito
                 if (waitpid(pid, &status, WNOHANG) == 0) {
@@ -186,13 +185,6 @@ std::string CgiHandler::_handlePythonScript(std::string &response) {
                     kill(pid, SIGSEGV);
                     return ("508");
                 }
-                // Verifica se o processo filho retornou um erro
-                if (WEXITSTATUS(status) != 0) {
-                    _closeAll(fdInput, fdOutput, saveStdin, saveStdout, fileInput, fileOutput);
-                    kill(pid, SIGSEGV);
-                    return ("500");
-                }
-
                 kill(pid, SIGSEGV);
                 break;
             }
@@ -200,6 +192,12 @@ std::string CgiHandler::_handlePythonScript(std::string &response) {
             if (waitpid(pid, &status, WNOHANG) == pid) {
                 break;
             }
+        }
+        // Verifica se o processo filho retornou um erro
+        if (WEXITSTATUS(status) != 0) {
+            _closeAll(fdInput, fdOutput, saveStdin, saveStdout, fileInput, fileOutput);
+            kill(pid, SIGSEGV);
+            return ("500");
         }
 
         // le o arquivo temporario e coloca no body da response
