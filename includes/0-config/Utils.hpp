@@ -20,6 +20,8 @@ namespace utils {
 	bool						insertStringIntoFile(std::string file_path, std::string str);
 	std::string					pathIs(std::string path);
 	void						addServerNametoList(std::vector<std::string> names);
+	size_t						sizeBody(const std::string &request);
+	size_t 						findContentLenght(const std::string &request);
 }
 
 #endif

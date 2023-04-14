@@ -1,6 +1,7 @@
 #include "Socket.hpp"
 #include <iostream>
 #include "Server.hpp"
+#include "../../includes/0-config/Utils.hpp"
 #include <fcntl.h>
 
 // -Constructors
@@ -83,6 +84,39 @@ bool Socket::listen(int backlog) {
 		return false;
 	}
 	return (true);
+}
+
+int		Socket::recv(std::string &request){
+	const int				BUFFER_SIZE = 1024;
+	char					buffer[BUFFER_SIZE];
+	int						bytes;
+
+	do {
+		bytes = ::recv(this->getFd(), buffer, BUFFER_SIZE, 0);
+		request.append(buffer, bytes);
+		if(request.find("Expect: 100-continue") != std::string::npos)
+			sleep(2);
+		if( utils::sizeBody(request) < utils::findContentLenght(request))
+			continue;
+
+		// Check if we have received the entire request
+		if (request.find("\r\n\r\n") != std::string::npos || bytes == 0) {
+			break;
+		}
+	}while (bytes > 0);
+	return bytes;
+}
+
+int		Socket::send(const std::string response){
+	int		bytes;
+	
+	for(int bytesSend = 0; (long unsigned int)bytesSend < response.size(); ) {
+		bytes = ::send(this->getFd(), response.c_str(), response.size(), 0);
+		if(bytes <= 0)
+			break;
+		bytesSend += bytes;
+	}
+	return bytes;
 }
 
 int Socket::accept(void) {

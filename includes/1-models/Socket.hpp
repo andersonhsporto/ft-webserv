@@ -34,6 +34,8 @@ class Socket {
 		bool	bind(void);
 		bool	listen(int backlog = 10);
 		int		accept(void);
+		int		recv(std::string &request);
+		int		send(const std::string response);
 		void	setsockopt(int level, int optname, const void* optval, socklen_t optlen);
 		void	close(void);
 

@@ -179,4 +179,32 @@ namespace utils {
 		}
 		outfile.close();
 	}
+
+	size_t	sizeBody(const std::string &request) {
+		bool isBody = false;
+		std::string body;
+		std::vector<std::string> lines = utils::splitStringBy(request, "\r\n");
+
+		for(std::vector<std::string>::iterator it = lines.begin(); it != lines.end(); ++it){
+			if(!isBody && *it == "")
+				isBody = true;
+			if(isBody)
+				body += *it;
+		}
+		return (body.size());
+	}
+
+	size_t  findContentLenght(const std::string &request){
+		size_t ret;
+		std::string line;
+		std::vector<std::string> lines = utils::splitStringBy(request, "\r\n");
+
+		for(std::vector<std::string>::iterator it = lines.begin(); it != lines.end(); ++it){
+			if((*it).find("Content-Length") != std::string::npos)
+				line = *it;
+		}
+		std::stringstream ss(line.empty() ? "0" : utils::splitStringBy(line, " ")[1]);
+		ss >> ret;
+		return (ret);
+	}
 }
